@@ -1,0 +1,24 @@
+<script setup lang="ts">
+    // ユーザーid を params へ渡して遷移する
+    const userId = 1
+
+    const toHome = () => {
+        navigateTo('/Prototype')
+    }
+
+    const toAccount = async () => {
+        navigateTo({name: 'Account-id', params: {id: userId }})
+    }
+
+    const toMonster = () => {
+        navigateTo('/Monster')
+    }
+
+    const toTeam = () => {
+        navigateTo('/Team')
+    }
+</script>
+
+<template>
+    <ui-the-header @home="toHome" @account="toAccount" @monster="toMonster" @team="toTeam"/>
+</template>
