@@ -217,19 +217,21 @@ paths:
       responses:
         "201":
           description: いいね成功
+
+  /likes/{user_id}/{exercise_record_id}:
     delete:
       summary: 運動記録のいいねを外す
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user_id:
-                  type: integer
-                exercise_record_id:
-                  type: integer
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: exercise_record_id
+          required: true
+          schema:
+            type: integer
       responses:
         "200":
           description: いいね解除成功
@@ -242,7 +244,8 @@ paths:
         - in: path
           name: user_id
           required: true
-          schema: integer
+          schema:
+            type: integer
       responses:
         "200":
           description: プロフィール取得成功
@@ -340,6 +343,12 @@ paths:
                 $ref: "#/components/schemas/UserCharacter"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     User:
       type: object
@@ -354,12 +363,6 @@ components:
           type: string
         avatar_url:
           type: string
-
-  securitySchemes:
-    bearerAuth:
-      type: http
-      schema: bearer
-      bearerFormat: JWT
 
     ExerciseRecord:
       type: object
@@ -411,3 +414,11 @@ components:
           $ref: "#/components/schemas/User"
         character:
           $ref: "#/components/schemas/Character"
+
+    Character:
+      type: object
+      properties:
+        name:
+          type: string
+        base_image:
+          type: string
