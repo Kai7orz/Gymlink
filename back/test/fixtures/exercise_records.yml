@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  exercise_time: 1
+  recorded_date: 2025-09-22
+  content: MyText
+
+two:
+  user: two
+  exercise_time: 1
+  recorded_date: 2025-09-22
+  content: MyText
