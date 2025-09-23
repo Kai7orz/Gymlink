@@ -3,7 +3,7 @@
     const userId = 1
 
     const toHome = () => {
-        navigateTo('/Prototype')
+        navigateTo('/prototype')
     }
 
     const toAccount = async () => {
@@ -11,11 +11,11 @@
     }
 
     const toMonster = () => {
-        navigateTo('/Monster')
+        navigateTo('/monster')
     }
 
     const toTeam = () => {
-        navigateTo('/Team')
+        navigateTo('/team')
     }
 </script>
 
