@@ -2,6 +2,8 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import { defineNuxtConfig } from 'nuxt/config'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  srcDir: 'app',
+  serverDir: 'app/server',
   devtools: { enabled: true },
   build: {
     transpile: ['vuetify']

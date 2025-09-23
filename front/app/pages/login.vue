@@ -20,7 +20,7 @@
                 minLoadingPromise
             ]);
             await new Promise(resolve => setTimeout(resolve, 100)); 
-            await navigateTo('/Prototype')
+            await navigateTo('/prototype')
         } catch (error) {
             console.error('SignIn Error:', error);
         } finally {

@@ -78,7 +78,7 @@ paths:
            description: サーバーエラー 
     
 ## 複数レスポンスの例を分離したかっただけなので このエンドポイントは本番環境では利用しないです．
-  /users/{userId}/exercises-eaxmple:
+  /users/{userId}/exercises-example:
     get:
       summary: Get exercises records for a user by ID)
       parameters:

@@ -5,6 +5,11 @@
     import type { exerciseRecordType } from '~/type';
 
     const exerciseMocksList:exerciseRecordType[] = exerciseMocks;
+    const userId = 1
+    const { data, pending, error, refresh } = await useFetch(
+        '/api/users/' + String(userId) + '/exercises-example'
+    );
+    console.log("swaggerObject:",data)
     const detailStore = useDetailStore();
 
     const toDetail = (id:number) => {
