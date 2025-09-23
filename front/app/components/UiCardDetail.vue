@@ -5,7 +5,7 @@ const route = useRoute();
 const detailStore = useDetailStore();
 
 const toHome = () => {
-    navigateTo({ name: 'Prototype' });
+    navigateTo({ name: 'prototype' });
 }
 
 </script>
