@@ -8,6 +8,131 @@ info:
 servers:
   - url: 'http://localhost:8003'
 paths:
+  /users/{userId}/exercises:
+    get:
+      summary: Get exercises records for a user by ID)
+      parameters:
+        - in: path
+          name: userId 
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          description: Numeric ID of the user to get exercises
+      responses:
+        '200':
+          description: A list of exercises
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Exercise'
+
+    post:
+      summary: Create a new exercise record for a user by ID 
+      requestBody:
+        description: Exercise to add to the user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RawExercise'
+      responses:
+        200:
+          description: Successfully created exercise
+          content:
+              application/json:
+                schema:
+                  example:
+                    code: 200 
+                    message: "ok"
+            
+  /exerciseRecords/{exerciseRecordId}/likes:
+    post:
+      summary: 運動記録へのいいね
+      parameters:
+        - in: path
+          name: exerciseRecordId
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: like successfully 
+        "401":
+           description: 未認証
+        "500": 
+           description: サーバーエラー 
+    delete:
+      parameters:
+        - in: path
+          name: exerciseRecordId
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: like successfully 
+        "401":
+           description: 未認証
+        "500": 
+           description: サーバーエラー 
+    
+## 複数レスポンスの例を分離したかっただけなので このエンドポイントは本番環境では利用しないです．
+  /users/{userId}/exercises-eaxmple:
+    get:
+      summary: Get exercises records for a user by ID)
+      parameters:
+        - in: path
+          name: userId 
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          description: Numeric ID of the user to get exercises
+      responses:
+        '200':
+          description: A list of exercises
+          content:
+            application/json:
+              schema:
+                  example:
+                    - id: 1
+                      imageId: 1
+                      time: 45
+                      date: "2024-01-01T10:00:00Z"
+                      comment: "いい感じに動けた"
+                      likesCount: 3
+                    - id: 2
+                      imageId: 2
+                      time: 30
+                      date: "2024-01-02T10:00:00Z"
+                      comment: "疲れた"
+                      likes_count: 0
+                    - id: 3
+                      imageId: 3
+                      time: 60
+                      date: "2024-01-03T10:00:00Z"
+                      comment: "最高の気分"
+                      likesCount: 1
+                    - id: 4
+                      imageId: 4
+                      time: 20
+                      date: "2024-01-04T10:00:00Z"
+                      comment: "もう少し頑張れたかも"
+                      likesCount: 2
+                    - id: 5
+                      imageId: 5
+                      time: 50
+                      date: "2024-01-05T10:00:00Z"
+                      comment: "楽しかった"
+                      likesCount: 2
+                    - id: 6
+                      imageId: 6
+                      time: 40
+                      date: "2024-01-06T10:00:00Z"
+                      comment: "次はもっと頑張る"
+                      likesCount: 1
+
   /users:
     get:
       description: >
@@ -55,7 +180,7 @@ components:
         id:
           type: "integer"
           format: "int64"
-          example: 100
+          example: 1
         name:
           type: "string"
           example: "Taro"
@@ -66,6 +191,61 @@ components:
             - "pending"
             - "active"
             - "inactive"
+
+    Exercise:
+      type: "object"
+      required:
+        - "id" 
+        - "imageId" 
+        - "time" 
+      properties:
+        id:
+          type: "integer"
+          format: "int64" 
+          example: 1 
+        imageId:
+          type: "integer"
+          format: "int64" 
+          example: 1
+        time:
+          type: "integer"
+          format: "int64" 
+          example: 45
+        date:
+          type: "string"
+          format: "date-time"
+          example: "2024-01-01T10:00:00Z"
+        comment:
+          type: "string"
+          example: "いい感じに動けた"
+        likesCount:
+          type: "integer"
+          example: 3
+
+    RawExercise:
+      type: "object" 
+      required:
+        - "imageId" 
+        - "time" 
+      properties:
+        imageId:
+          type: "integer" 
+          format: "int64" 
+          example: 1
+        time: 
+          type: "integer" 
+          format: "int64"
+          example: 20 
+        date:
+          type: "string"
+          format: "date-time"
+          example: "2024-01-01T10:00:00Z"
+        comment:
+          type: "string"
+          example: "いい感じに動けた"
+
+      
+
     Error:
       type: "object"
       properties:
