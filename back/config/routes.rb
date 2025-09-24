@@ -7,4 +7,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  resources :exercise_records, only: [:create, :index, :show, :update, :destroy]
 end
