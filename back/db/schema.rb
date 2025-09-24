@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_22_001801) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_24_011202) do
   create_table "character_growths", force: :cascade do |t|
     t.integer "character_id", null: false
     t.integer "level", null: false
@@ -59,13 +59,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_22_001801) do
   end
 
   create_table "teams", force: :cascade do |t|
-    t.integer "user_id", null: false
     t.string "name", null: false
     t.date "month", null: false
     t.integer "target_duration", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
   create_table "user_characters", force: :cascade do |t|
@@ -97,6 +95,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_22_001801) do
     t.string "avatar_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "team_id", null: false
+    t.string "password"
+    t.index ["team_id"], name: "index_users_on_team_id"
   end
 
   add_foreign_key "character_growths", "characters"
@@ -104,9 +105,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_22_001801) do
   add_foreign_key "follows", "followeds"
   add_foreign_key "follows", "followers"
   add_foreign_key "profiles", "users"
-  add_foreign_key "teams", "users"
   add_foreign_key "user_characters", "characters"
   add_foreign_key "user_characters", "users"
   add_foreign_key "user_likes", "exercise_records"
   add_foreign_key "user_likes", "users"
+  add_foreign_key "users", "teams"
 end
