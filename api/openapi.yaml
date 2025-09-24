@@ -18,7 +18,7 @@ paths:
           content:
             application/json:
               schema:  
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserProfile'
         default:
           description: unexpected error
           content:
@@ -156,9 +156,29 @@ components:
         name:
           type: "string"
           example: "Taro"
+    
+    UserProfile:
+      type: "object"
+      properties:
+        id:
+          type: "integer" 
+          format: "int64"
+          example: 1
+        name:
+          type: "string"
+          example: "Taro"
         profileImage:
           type: "string"
-          example: "/images/test.png"
+          example: "/images/test.png"        
+        followCount:
+          type: "integer"
+          format: "int64"
+          example: 4
+        followerCount:
+          type: "integer"
+          format: "int64"
+          example: 60
+
 
     Exercise:
       type: "object"

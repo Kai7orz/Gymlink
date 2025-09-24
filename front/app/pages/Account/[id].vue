@@ -1,7 +1,8 @@
 <script setup lang="ts">
-        const route = useRoute();
+import Profile from "~/containers/Profile.vue"
+const route = useRoute();
 </script>
 
 <template>
-    <div>params:{{ route.params.id }}</div>
+    <profile />
 </template>
