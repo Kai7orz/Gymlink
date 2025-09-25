@@ -7,23 +7,34 @@ const props = defineProps<{
             time: number,
             date: string,
             comment: string,
+            likesCount: number,
 }>();
 
 const emits = defineEmits<{
     detail: [id:number],
+    like: [id:number], //exercise record のいいねボタン押した際にいいねした人一覧見えるようにするために，クリック時にロジック側にexercise record の id を渡すようにする
 }>();
 
 const clicked = (id:number) => {
     emits('detail',id);
 }
+
+const onLike = (id:number) => {
+    emits('like',id);
+}
+
 </script>
 
 <template>
     <v-hover v-slot="{ isHovering, props: hoverProps }">
-        <v-card class="d-flex flex-column justify-center w-1/4 h-1/2 mx-auto gap-2 p-10 px-7 pb-15 mx-8 my-2 bg-black rounded-xl" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
+        <v-card class="d-flex flex-column justify-center w-1/4 h-1/2 mx-auto gap-2 p-10 px-7 pb-15 mx-8 my-2 bg-grey-lighten-3 rounded-xl" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
             <img :src="props.image" class="w-60 h-50" />
             <v-card-title >{{ props.date }}</v-card-title>
             <v-card-subtitle class="pb-0">運動時間: {{ props.time }}分</v-card-subtitle>
+            <div class="d-flex ml-auto mt-10">
+                <v-icon class="mx-5" icon="mdi-thumb-up" @click.stop="()=>onLike(props.id)"></v-icon>
+                <div>{{ props.likesCount }}</div>
+            </div>        
         </v-card>
     </v-hover>
 </template>
@@ -36,6 +47,7 @@ const clicked = (id:number) => {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        border: 1px solid
      }
 
     .non-hover {
@@ -43,5 +55,6 @@ const clicked = (id:number) => {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        border: 1px dotted
     }
 </style>

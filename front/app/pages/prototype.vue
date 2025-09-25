@@ -5,7 +5,6 @@
 
 <template>
     <v-container class="d-flex">
-        <add-card />
-        <card-list />
+
     </v-container>
 </template>
