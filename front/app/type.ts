@@ -4,4 +4,5 @@ export type exerciseRecordType = {
     time: number,
     date: string, // 簡易のために文字列にしているがソートするなら Date 型にした方がいい
     comment: string,
+    likesCount: number,
 }

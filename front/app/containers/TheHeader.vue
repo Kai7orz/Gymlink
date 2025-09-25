@@ -3,7 +3,7 @@
     const userId = 1
 
     const toHome = () => {
-        navigateTo('/prototype')
+        navigateTo('/home')
     }
 
     const toAccount = async () => {

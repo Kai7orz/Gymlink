@@ -7,15 +7,17 @@ export const useDetailStore = defineStore('detail',
         const detailTime = ref(0);
         const detailDate = ref('');
         const detailComment = ref('');
+        const detailLikesCount = ref(0);
         
-        const setDetail = (id:number,image:string,time:number,date:string,comment:string) => {
+        const setDetail = (id:number,image:string,time:number,date:string,comment:string,likesCount:number) => {
             detailId.value = id;
             detailImage.value = image;
             detailTime.value = time;
             detailDate.value = date;
             detailComment.value = comment;
+            detailLikesCount.value = likesCount;
         }
         
-        return { detailId,detailImage,detailTime,detailDate,detailComment,setDetail }
+        return { detailId,detailImage,detailTime,detailDate,detailComment,detailLikesCount,setDetail }
         },
 );
