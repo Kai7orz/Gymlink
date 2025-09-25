@@ -15,12 +15,29 @@ const emits = defineEmits<{
     like: [id:number], //exercise record のいいねボタン押した際にいいねした人一覧見えるようにするために，クリック時にロジック側にexercise record の id を渡すようにする
 }>();
 
+const isProcessing = ref(false) // 二重でいいねを押せないようにする状態管理フラグ
+
+const sleep = (ms: number) => new Promise<void>( resolve => setTimeout(resolve,ms))
+
 const clicked = (id:number) => {
     emits('detail',id);
 }
 
-const onLike = (id:number) => {
+const onLike = async (id:number) => {
+    if(isProcessing.value){
+        return 
+    }
+
+    isProcessing.value = true 
+
     emits('like',id);
+    
+    try{
+        await sleep(3000)
+    } finally {
+        isProcessing.value = false
+    }
+
 }
 
 </script>
