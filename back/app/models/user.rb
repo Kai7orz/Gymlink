@@ -14,4 +14,11 @@ class User < ApplicationRecord
   has_many :follows_as_followed, class_name: "Follow", foreign_key: "followed_id"
   has_many :followers, through: :follows_as_followed, source: :follower
 
+  validates :firebase_uid, presence: true, uniqueness: true
+  validates :team_id, presence: true
+  validates :name, presence: true
+  validates :email, presence: true, uniqueness: true
+  validates :password, presence: true, uniqueness: true
+  validates :color, presence: true
+
 end

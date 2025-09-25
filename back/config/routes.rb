@@ -9,4 +9,12 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   resources :exercise_records, only: [:create, :index, :show, :update, :destroy]
+  namespace :api do
+    namespace :v1 do
+      # 新規登録
+      post "users", to: "users#create"
+      # ログイン
+      post "login", to: "sessions#create"
+    end
+  end
 end
