@@ -3,7 +3,7 @@ class Api::V1::LikesController < ApplicationController
 
   # POST /api/v1/exercise_records/:exercise_record_id/likes
   def create
-    like = @record.likes.build(user: @current_user)
+    like = @record.likes.build(user: current_user)
 
     if like.save
       render json: { message: "Liked" }, status: :created
@@ -13,8 +13,8 @@ class Api::V1::LikesController < ApplicationController
   end
 
   # DELETE /api/v1/exercise_records/:exercise_record_id/likes
-  def delete
-    like = @record.likes.find_by(user: @current_user)
+  def destroy
+    like = @record.likes.find_by(user: current_user)
 
     if like
       like.destroy
