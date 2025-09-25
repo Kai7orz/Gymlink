@@ -39,6 +39,11 @@ paths:
                 type: array
                 items: 
                   $ref: '#/components/schemas/Exercise'
+  
+  # /exercises:
+  #   get:
+  #     summary: Get latest 20 exercises records
+  #     description: 
 
     post:
       summary: Create a new exercise record for a user by ID 
@@ -87,6 +92,32 @@ paths:
            description: 未認証
         "500": 
            description: サーバーエラー 
+    
+  /teams:
+    get:
+      summary: 所属チームのプロフィール
+      responses:
+        "200":
+          description: チーム情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+              example:
+                teamName: "DAKAI"
+                teamTarget: 10
+                member:
+                  - name: "taro"
+                    profileImage: "/images/test.png"
+                    exerciseCount: 5
+                  - name: "yumi"
+                    profileImage: "/images/yumi.png"
+                    exerciseCount: 2
+                  - name: "satoshi"
+                    profileImage: "/images/satoshi.png"
+                    exerciseCount: 7
+
+
     
 ## 複数レスポンスの例を分離したかっただけなので このエンドポイントは本番環境では利用しないです．
   /users/{userId}/exercises-example:
@@ -179,7 +210,6 @@ components:
           format: "int64"
           example: 60
 
-
     Exercise:
       type: "object"
       required:
@@ -232,7 +262,40 @@ components:
           type: "string"
           example: "いい感じに動けた"
 
-      
+    Team:
+      type: object
+      required:
+        - teamName
+        - teamTarget
+        - member
+      properties:
+        teamName:
+          type: string
+          description: チーム名
+          example: DAKAI
+        teamTarget:
+          type: integer
+          description: チームの目標
+          example: 10
+        member:
+          type: array
+          description: チームメンバー一覧
+          items:
+            type: object
+            required: [name, profileImage, exerciseCount]
+            properties:
+              name:
+                type: string
+                description: メンバー名
+                example: taro
+              profileImage:
+                type: string
+                description: プロフィール画像 URL
+                example: /images/test.png
+              exerciseCount:
+                type: integer
+                description: メンバーの運動投稿回数
+                example: 3
 
     Error:
       type: "object"
