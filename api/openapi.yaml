@@ -88,6 +88,19 @@ paths:
         "500": 
            description: サーバーエラー 
     
+  /teams:
+    get:
+      summary: 所属チームのプロフィール
+      responses:
+        "200":
+          description: チーム情報
+          content:
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+    
 ## 複数レスポンスの例を分離したかっただけなので このエンドポイントは本番環境では利用しないです．
   /users/{userId}/exercises-example:
     get:
@@ -179,7 +192,6 @@ components:
           format: "int64"
           example: 60
 
-
     Exercise:
       type: "object"
       required:
@@ -231,8 +243,25 @@ components:
         comment:
           type: "string"
           example: "いい感じに動けた"
-
-      
+    Team:
+      type: "object"
+      properties:
+        temaName:
+          type: string
+          description: チーム名
+          example: team Dakai
+        memberName:
+          type: string
+          description: チームメンバー
+          example: kaito
+        memberProfileImage:
+          type: string 
+          description: 各メンバープロフィール画像 url
+          example: /images/test.png
+        memberExerciseCount:
+          type: integer
+          description: メンバーの運動投稿回数
+          example: 3
 
     Error:
       type: "object"
