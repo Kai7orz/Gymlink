@@ -39,6 +39,11 @@ paths:
                 type: array
                 items: 
                   $ref: '#/components/schemas/Exercise'
+  
+  # /exercises:
+  #   get:
+  #     summary: Get latest 20 exercises records
+  #     description: 
 
     post:
       summary: Create a new exercise record for a user by ID 
@@ -95,11 +100,24 @@ paths:
         "200":
           description: チーム情報
           content:
-            application/json: 
+            application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Team'
+                $ref: '#/components/schemas/Team'
+              example:
+                teamName: "DAKAI"
+                teamTarget: 10
+                member:
+                  - name: "taro"
+                    profileImage: "/images/test.png"
+                    exerciseCount: 5
+                  - name: "yumi"
+                    profileImage: "/images/yumi.png"
+                    exerciseCount: 2
+                  - name: "satoshi"
+                    profileImage: "/images/satoshi.png"
+                    exerciseCount: 7
+
+
     
 ## 複数レスポンスの例を分離したかっただけなので このエンドポイントは本番環境では利用しないです．
   /users/{userId}/exercises-example:
@@ -243,25 +261,41 @@ components:
         comment:
           type: "string"
           example: "いい感じに動けた"
+
     Team:
-      type: "object"
+      type: object
+      required:
+        - teamName
+        - teamTarget
+        - member
       properties:
-        temaName:
+        teamName:
           type: string
           description: チーム名
-          example: team Dakai
-        memberName:
-          type: string
-          description: チームメンバー
-          example: kaito
-        memberProfileImage:
-          type: string 
-          description: 各メンバープロフィール画像 url
-          example: /images/test.png
-        memberExerciseCount:
+          example: DAKAI
+        teamTarget:
           type: integer
-          description: メンバーの運動投稿回数
-          example: 3
+          description: チームの目標
+          example: 10
+        member:
+          type: array
+          description: チームメンバー一覧
+          items:
+            type: object
+            required: [name, profileImage, exerciseCount]
+            properties:
+              name:
+                type: string
+                description: メンバー名
+                example: taro
+              profileImage:
+                type: string
+                description: プロフィール画像 URL
+                example: /images/test.png
+              exerciseCount:
+                type: integer
+                description: メンバーの運動投稿回数
+                example: 3
 
     Error:
       type: "object"

@@ -1,15 +1,18 @@
 <script setup lang="ts">
-    const { data } = await useFetch(
+    const { data: team } = await useFetch(
         '/api/teams'
     )
 
-
-    console.log(data.value)
-
+    const teamName   = computed(() => team.value?.teamName  ?? '')
+    const teamTarget = computed(() => team.value?.teamTarget ?? 0)
+    const teamMember = computed(() => team.value?.member    ?? [])
+    console.log("team:->:",team.value)
 </script>
 
 <template>
   <ui-team-profile
-                  :data="data"
+                   :team-name="teamName"
+                   :team-target="teamTarget"
+                   :team-member="teamMember"
                   />
 </template>
