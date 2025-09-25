@@ -7,9 +7,14 @@
     }>();
 
     const userId = 1
-    const { data, pending, error, refresh } = await useFetch(
-        '/api/users/' + String(userId) + '/exercises-example'
-    );
+    // cardList が自身のものか全体共有用のものかで URL分岐
+    const url = computed(()=>
+    props.isOwner
+    ? '/api/users/' + String(userId) + '/exercises-example'
+    : '/api/exercises' );
+    const { data }  = await useFetch(url)
+
+
     console.log("swaggerObject:",data.value[1].id)
     const exerciseMocksList:exerciseRecordType[] = data.value
     console.log("data:",data.value)
@@ -36,6 +41,8 @@
             }
         }
     }
+
+
 
 </script>
 

@@ -29,7 +29,7 @@ paths:
   /users/exercises:
     get:
       summary: Get exercises records for a user by ID)
-      description: Numeric ID of the user to get exercises
+      description: ログインしたユーザの運動投稿記録を取得するための API
       responses:
         '200':
           description: A list of exercises
@@ -40,10 +40,19 @@ paths:
                 items: 
                   $ref: '#/components/schemas/Exercise'
   
-  # /exercises:
-  #   get:
-  #     summary: Get latest 20 exercises records
-  #     description: 
+  /exercises:
+    get:
+      summary: Get latest 20 exercises records
+      description: /users/exercises とは異なり自身の記録ではなく，投稿された記録の最新20件を取り出すための API 
+      responses:
+        '200':
+          description: A list of exercises
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Exercise'
 
     post:
       summary: Create a new exercise record for a user by ID 
