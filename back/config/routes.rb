@@ -11,6 +11,10 @@ Rails.application.routes.draw do
   resources :exercise_records, only: [:create, :index, :show, :update, :destroy]
   namespace :api do
     namespace :v1 do
+      resources :exercise_records do
+        # 運動記録にいいね
+        resource :like, only: [:create, :destroy]
+      end
       # 新規登録
       post "users", to: "users#create"
       # ログイン
