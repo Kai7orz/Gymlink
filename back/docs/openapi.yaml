@@ -28,6 +28,8 @@ paths:
                   type: string
                 avatar_url:
                   type: string
+                password:
+                  type: string
       responses:
         "201":
           description: ユーザー作成成功
@@ -48,17 +50,13 @@ paths:
       responses:
         "200":
           description: ユーザーが存在する
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
         "404":
           description: ユーザーが存在しない
         "401":
           description: トークンが無効または期限切れ
 
   # アプリの内部的なユーザー情報を参照・管理する
-  /users/{id}:
+  /users:
     get:
       summary: ユーザー情報取得
       parameters:
@@ -114,6 +112,21 @@ paths:
       responses:
         "200":
           description: 運動記録一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExerciseRecord"
+
+  /exercise_records/my_records:
+    get:
+      summary: 自分の運動記録一覧を取得
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 自分の運動記録一覧
           content:
             application/json:
               schema:
@@ -210,8 +223,6 @@ paths:
             schema:
               type: object
               properties:
-                user_id:
-                  type: integer
                 exercise_record_id:
                   type: integer
       responses:

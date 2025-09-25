@@ -8,17 +8,25 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  resources :exercise_records, only: [:create, :index, :show, :update, :destroy]
   namespace :api do
     namespace :v1 do
-      resources :exercise_records do
-        # 運動記録にいいね
-        resource :like, only: [:create, :destroy]
-      end
+      # 運動記録にいいね
+      resource :like, only: [:create, :destroy]
+
       # 新規登録
       post "users", to: "users#create"
       # ログイン
       post "login", to: "sessions#create"
+
+      # プロフィール表示
+      get "user/profile", to: "users#profile"
+
+      # フォロー機能
+      resources :follows, only: [:create, :destroy]
+
+      # 運動記録機能
+      resources :exercise_records, only: [:create, :index]
+      get "exercise_records/my_records", to: "exercise_records#my_records"
     end
   end
 end
