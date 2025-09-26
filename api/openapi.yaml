@@ -101,7 +101,6 @@ paths:
                 items: 
                   $ref: '#/components/schemas/Exercise'
 
-
     post:
       summary: Create a new exercise record for a user by ID 
       requestBody:
@@ -362,20 +361,18 @@ components:
     RawExercise:
       type: "object" 
       required:
-        - "imageUrl" 
+        - "image_url" 
         - "time" 
       properties:
         image_url:
-          type: "integer" 
-          format: "int64" 
-          example: 1
+          type: "string"  
+          example: "/images/test.png"
         time: 
-          type: "integer" 
+          type: "integer"
           format: "int64"
           example: 20 
         date:
           type: "string"
-          format: "date-time"
           example: "2024-01-01T10:00:00Z"
         comment:
           type: "string"

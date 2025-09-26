@@ -26,6 +26,7 @@ import type { ExerciseRecordType } from '~/type';
         <ui-card v-for="(exerciseMock, index) in props.exerciseMocksList" 
                                                                          :key="index" 
                                                                          :id="exerciseMock.id" 
+                                                                         :userName="exerciseMock.user_name"
                                                                          :image="exerciseMock.image_url" 
                                                                          :time="exerciseMock.time"
                                                                          :date="exerciseMock.date" 
