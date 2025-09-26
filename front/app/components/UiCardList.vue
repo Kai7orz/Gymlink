@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { exerciseRecordType } from '~/type';
+import type { ExerciseRecordType } from '~/type';
 
     const props = defineProps<{
-        exerciseMocksList: exerciseRecordType[]
+        exerciseMocksList: ExerciseRecordType[]
     }>();
 
     const emits = defineEmits<{
@@ -17,7 +17,7 @@ import type { exerciseRecordType } from '~/type';
     const like = (id:number) => {
         emits('like',id)
     }
-    console.log("props.list:",props.exerciseMocksList)
+
 
 </script>
 
@@ -26,11 +26,11 @@ import type { exerciseRecordType } from '~/type';
         <ui-card v-for="(exerciseMock, index) in props.exerciseMocksList" 
                                                                          :key="index" 
                                                                          :id="exerciseMock.id" 
-                                                                         :image="exerciseMock.imageUrl" 
-                                                                         :time="exerciseMock.time" 
+                                                                         :image="exerciseMock.image_url" 
+                                                                         :time="exerciseMock.time"
                                                                          :date="exerciseMock.date" 
                                                                          :comment="exerciseMock.comment" 
-                                                                         :likesCount="exerciseMock.likesCount" 
+                                                                         :likesCount="exerciseMock.likes_count" 
                                                                          @detail="toDetail"
                                                                          @like="like"
                                                                          />
