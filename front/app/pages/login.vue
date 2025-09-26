@@ -1,26 +1,40 @@
 <script setup lang="ts">
     // middleware からのログインページへの遷移時にハイドレーションミスマッチがおきるので ClientOnly で対応している
     import {signIn}  from '~/composables/SignInUser';
+    import { useUserStore } from '~/stores/userStore';
 
     const email = ref('')
     const password = ref('')
     const isLoading = ref(false)
+    const firebaseData = ref({})
+    const userData = ref({})
+    const userStore = useUserStore()
 
     watch(isLoading, val => {
             val && setTimeout(() => {
             isLoading.value = false
+            console.log("firebase data:",firebaseData.value)
             }, 3000)
         })
+
+    watch(userData,val=>{
+        userStore.setUser(val.id,val.name)
+    })
 
     const signInUser = async () => {
         isLoading.value = true
         const minLoadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
         try{
-            await Promise.all([
-                signIn(email.value, password.value),
-                minLoadingPromise
-            ]);
-            await new Promise(resolve => setTimeout(resolve, 100)); 
+
+            firebaseData.value = await signIn(email.value,password.value)
+            await minLoadingPromise;
+            await new Promise(resolve => setTimeout(resolve, 100));
+            userData.value = await $fetch("/api/login",
+                {
+                    method: 'POST',
+                }
+            )
+            
             await navigateTo('/home')
         } catch (error) {
             console.error('SignIn Error:', error);

@@ -1,14 +1,30 @@
 <script setup lang="ts">
     import { useDetailStore } from '~/stores/detailStore';
     import type { exerciseRecordType } from '~/type';
+    import { useAuthStore } from '~/stores/auth';
+    import { useUserStore } from '~/stores/userStore';
     //CardList の親は，ユーザー自身のカードリストを呼ぶ場合は isOwner=true, 他の人のカードリスト呼ぶ場合は isOwner=false で呼び出す必要がある
+    
+    const auth = useAuthStore()
+    const user = useUserStore()
+
     const props = defineProps<{
         isOwner: boolean,
     }>();
 
     const userId = 1
+    const url = ref("")
+    const TOKEN = auth.idToken
+
     const { data, pending, error, refresh } = await useFetch(
-        '/api/users/' + String(userId) + '/exercises-example'
+        '/api/users/' + String(user.userId) + '/exercises',
+        {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + TOKEN,
+                'Content-Type': 'application/json'
+            }
+        }
     );
     console.log("swaggerObject:",data.value[1].id)
     const exerciseMocksList:exerciseRecordType[] = data.value

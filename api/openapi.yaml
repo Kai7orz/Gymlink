@@ -20,13 +20,9 @@ paths:
             schema:
               type: object
               properties:
-                firebase_uid:
-                  type: string
                 name:
                   type: string
                 email:
-                  type: string
-                password:
                   type: string
                 avatar_url:
                   type: string
@@ -77,7 +73,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /users/exercises:
+  /users/{user_id}/exercises:
     get:
       summary: Get exercises records for a user by ID)
       description: Numeric ID of the user to get exercises
@@ -309,14 +305,14 @@ components:
         name:
           type: "string"
           example: "Taro"
-        profileImage:
+        profile_image:
           type: "string"
           example: "/images/test.png"        
-        followCount:
+        follow_count:
           type: "integer"
           format: "int64"
           example: 4
-        followerCount:
+        follower_count:
           type: "integer"
           format: "int64"
           example: 60
