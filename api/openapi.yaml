@@ -328,12 +328,11 @@ components:
           type: "integer"
           format: "int64" 
           example: 1 
-        userName:
+        user_name:
           type: "string"
           example: "ABC"
-        imageUrl:
-          type: "integer"
-          format: "int64" 
+        image_url:
+          type: "string" 
           example:  '/images/sportImage.png'
         time:
           type: "integer"
@@ -346,7 +345,7 @@ components:
         comment:
           type: "string"
           example: "いい感じに動けた"
-        likesCount:
+        likes_count:
           type: "integer"
           example: 3
 
@@ -356,7 +355,7 @@ components:
         - "imageUrl" 
         - "time" 
       properties:
-        imageUrl:
+        image_url:
           type: "integer" 
           format: "int64" 
           example: 1

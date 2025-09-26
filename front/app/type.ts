@@ -1,8 +1,9 @@
-export type exerciseRecordType = {
+export type ExerciseRecordType = {
     id: number,
-    imageUrl: string,
+    user_name: string,
+    image_url: string,
     time: number,
     date: string, // 簡易のために文字列にしているがソートするなら Date 型にした方がいい
     comment: string,
-    likesCount: number,
+    likes_count: number,
 }
