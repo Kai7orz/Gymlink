@@ -20,6 +20,6 @@ export const useDetailStore = defineStore('detail',
             detailLikesCount.value = likesCount;
         }
         
-        return { detailId,detailImage,detailTime,detailDate,detailComment,detailLikesCount,setDetail }
+        return { detailId,detailName,detailImage,detailTime,detailDate,detailComment,detailLikesCount,setDetail }
         },
 );

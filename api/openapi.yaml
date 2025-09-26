@@ -97,9 +97,28 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items: 
-                  $ref: '#/components/schemas/Exercise'
+                  example:
+                    - id: 1
+                      user_name: "taro"
+                      image_url: "/images/sportImage.png"
+                      time: 45
+                      date: "2024-01-01T10:00:00Z"
+                      comment: "いい感じに動けた"
+                      likes_count: 3
+                    - id: 2
+                      user_name: "yumi"
+                      image_url: "/images/sportImage.png"
+                      time: 30
+                      date: "2024-01-02T10:00:00Z"
+                      comment: "疲れた"
+                      likes_count: 0
+                    - id: 3
+                      user_name: "satoshi"
+                      image_url: "/images/sportImage.png"
+                      time: 60
+                      date: "2024-01-03T10:00:00Z"
+                      comment: "最高の気分"
+                      likes_count: 1
 
     post:
       summary: Create a new exercise record for a user by ID 
@@ -337,7 +356,7 @@ components:
       type: "object"
       required:
         - "id" 
-        - "imageUrl" 
+        - "image_url" 
         - "time" 
       properties:
         id:

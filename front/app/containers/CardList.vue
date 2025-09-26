@@ -12,12 +12,9 @@
         isOwner: boolean,
     }>();
 
-    const userId = 1
-    const url = ref("")
     const TOKEN = auth.idToken
-
-    const { data, pending, error, refresh } = await useFetch(
-        '/api/users/' + String(user.userId) + '/exercises',
+    const url =   props.isOwner? '/api/users/' + String(user.userId) + '/exercises' : '/api/exercises'
+    const { data, pending, error, refresh } = await useFetch( url,
         {
             method: 'GET',
             headers: {
@@ -26,7 +23,7 @@
             }
         }
     );
-    console.log("data->>>>",data.value)
+
     const exerciseMocksList:ExerciseRecordType[] = data.value
 
     const detailStore = useDetailStore();

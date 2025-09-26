@@ -17,8 +17,18 @@
     const toTeam = () => {
         navigateTo('/team')
     }
+
+    const toShare = () => {
+        navigateTo('/share')
+    }
+
 </script>
 
 <template>
-    <ui-the-header @home="toHome" @account="toAccount" @monster="toMonster" @team="toTeam"/>
+    <ui-the-header 
+                  @home="toHome" 
+                  @account="toAccount" 
+                  @monster="toMonster" 
+                  @team="toTeam"
+                  @share="toShare" />
 </template>
