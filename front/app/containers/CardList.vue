@@ -12,7 +12,6 @@
     );
     console.log("swaggerObject:",data.value[1].id)
     const exerciseMocksList:exerciseRecordType[] = data.value
-    console.log("data:",data.value)
     const detailStore = useDetailStore();
     const toDetail = (id:number) => {
         // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す

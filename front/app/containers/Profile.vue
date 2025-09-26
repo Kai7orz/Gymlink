@@ -1,5 +1,4 @@
 <script setup lang="ts">
-    console.log()
     const {data} = await useFetch(
         '/api/users/profile'
     );

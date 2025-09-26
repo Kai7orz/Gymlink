@@ -74,6 +74,5 @@ exerciseMocks[2].date = '2025-09-20';
 exerciseMocks[2].comment = '疲れた'
 }
 
-console.log("exerciseMocks:",exerciseMocks)
 
 export { exerciseMock,exerciseMocks };

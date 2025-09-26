@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import {signUp}  from '~/composables/SignUpUser';
+    // middleware からのログインページへの遷移時にハイドレーションミスマッチがおきるので ClientOnly で対応している
+    import {signIn}  from '~/composables/SignInUser';
 
     const email = ref('')
     const password = ref('')
@@ -20,7 +21,7 @@
                 minLoadingPromise
             ]);
             await new Promise(resolve => setTimeout(resolve, 100)); 
-            await navigateTo('/prototype')
+            await navigateTo('/home')
         } catch (error) {
             console.error('SignIn Error:', error);
         } finally {
@@ -30,6 +31,7 @@
 </script>
 
 <template>
+  <ClientOnly>
     <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg rounded-lg">
         <v-card-title class="d-flex justify-center">サインイン</v-card-title>
         <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
@@ -49,4 +51,5 @@
             </v-overlay>
         </v-btn>
     </v-card>
+  </ClientOnly>
 </template>
