@@ -26,6 +26,7 @@
             }
         }
     );
+    console.log("data->>>>",data.value)
     const exerciseMocksList:ExerciseRecordType[] = data.value
 
     const detailStore = useDetailStore();
@@ -45,7 +46,18 @@
         }
         else{
             try{
-                await useFetch("/api/exerciseRecords/"+String(id)+"/likes")
+                await useFetch("/api/likes",
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + TOKEN,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            exercise_record_id: id
+                        },
+                    }
+                )
             } catch(e){
                 console.log("likes post error: ",e)
             }
