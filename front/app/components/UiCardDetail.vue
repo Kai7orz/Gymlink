@@ -3,16 +3,19 @@ import { useDetailStore } from '~/stores/detailStore';
 
 const route = useRoute();
 const detailStore = useDetailStore();
-
-const toHome = () => {
-    navigateTo({ name: 'home' });
+const user = useUserStore();
+const toBack = () => {
+    console.log("detailName:::",detailStore.detailName)
+        console.log("userlName:::",user.userName)
+    if(user.userName === detailStore.detailName) navigateTo({ name: 'home' });
+    else navigateTo({ name: 'share'});
 }
 
 </script>
 
 <template>
         <v-hover v-slot="{ isHovering, props: hoverProps}">
-            <v-icon icon="mdi-arrow-left" class="m-3" :size="isHovering ? 'x-large':'small'" v-bind="hoverProps" @click="toHome"></v-icon>     
+            <v-icon icon="mdi-arrow-left" class="m-3" :size="isHovering ? 'x-large':'small'" v-bind="hoverProps" @click="toBack"></v-icon>     
         </v-hover>
         <v-card class="d-flex flex-column justify-center align-center mx-auto gap-2 p-10 m-10">
             <div>exercise id:{{ route.params.id }} </div>
