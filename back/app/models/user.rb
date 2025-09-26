@@ -6,12 +6,29 @@ class User < ApplicationRecord
   has_many :user_likes, dependent: :destroy
 
   # 自分がフォローしている関係
-  has_many :follows_as_follower, class_name: "Follow", foreign_key: "follower_id"
+  has_many :follows_as_follower, class_name: "Follow", foreign_key: "follower_id", dependent: :destroy
   has_many :following, through: :follows_as_follower, source: :followed
 
 
   # 自分をフォローしている関係
-  has_many :follows_as_followed, class_name: "Follow", foreign_key: "followed_id"
+  has_many :follows_as_followed, class_name: "Follow", foreign_key: "followed_id", dependent: :destroy
   has_many :followers, through: :follows_as_followed, source: :follower
+
+  validates :firebase_uid, presence: true, uniqueness: true
+  validates :team_id, presence: true
+  validates :name, presence: true
+  validates :email, presence: true, uniqueness: true
+  validates :password, presence: true, uniqueness: true
+  validates :color, presence: true
+
+  # フォロー数を取得
+  def following_count
+    following.count
+  end
+
+  # フォロワー数を取得
+  def followers_count
+    followers.count
+  end
 
 end

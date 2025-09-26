@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, getAuth, type Auth } from "firebase/auth";
+import { signInWithEmailAndPassword, type Auth } from "firebase/auth";
 import { FirebaseError } from '@firebase/util'
 
 export const signIn = async (email:string,password:string)=>{
@@ -6,7 +6,7 @@ export const signIn = async (email:string,password:string)=>{
     const auth = $firebaseAuth as Auth;
 
     try{
-        await signInWithEmailAndPassword(auth,email,password)
+        return await signInWithEmailAndPassword(auth,email,password)
     } catch(e) {
         if ( e instanceof FirebaseError ) {
             console.error('Firebase Login Error', e.code,e.message);

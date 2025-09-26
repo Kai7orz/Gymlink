@@ -1,26 +1,41 @@
 <script setup lang="ts">
-    import {signUp}  from '~/composables/SignUpUser';
+    // middleware からのログインページへの遷移時にハイドレーションミスマッチがおきるので ClientOnly で対応している
+    import {signIn}  from '~/composables/SignInUser';
+    import { useUserStore } from '~/stores/userStore';
 
     const email = ref('')
     const password = ref('')
     const isLoading = ref(false)
+    const firebaseData = ref({})
+    const userData = ref({})
+    const userStore = useUserStore()
 
     watch(isLoading, val => {
             val && setTimeout(() => {
             isLoading.value = false
+            console.log("firebase data:",firebaseData.value)
             }, 3000)
         })
+
+    watch(userData,val=>{
+        userStore.setUser(val.id,val.name)
+    })
 
     const signInUser = async () => {
         isLoading.value = true
         const minLoadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
         try{
-            await Promise.all([
-                signIn(email.value, password.value),
-                minLoadingPromise
-            ]);
-            await new Promise(resolve => setTimeout(resolve, 100)); 
-            await navigateTo('/prototype')
+
+            firebaseData.value = await signIn(email.value,password.value)
+            await minLoadingPromise;
+            await new Promise(resolve => setTimeout(resolve, 100));
+            userData.value = await $fetch("/api/login",
+                {
+                    method: 'POST',
+                }
+            )
+            
+            await navigateTo('/home')
         } catch (error) {
             console.error('SignIn Error:', error);
         } finally {
@@ -30,6 +45,7 @@
 </script>
 
 <template>
+  <ClientOnly>
     <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg rounded-lg">
         <v-card-title class="d-flex justify-center">サインイン</v-card-title>
         <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
@@ -49,4 +65,5 @@
             </v-overlay>
         </v-btn>
     </v-card>
+  </ClientOnly>
 </template>

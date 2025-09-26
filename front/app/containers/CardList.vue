@@ -1,29 +1,39 @@
 <script setup lang="ts">
     import { useDetailStore } from '~/stores/detailStore';
-    import type { exerciseRecordType } from '~/type';
+    import type { ExerciseRecordType } from '~/type';
+    import { useAuthStore } from '~/stores/auth';
+    import { useUserStore } from '~/stores/userStore';
     //CardList の親は，ユーザー自身のカードリストを呼ぶ場合は isOwner=true, 他の人のカードリスト呼ぶ場合は isOwner=false で呼び出す必要がある
+    
+    const auth = useAuthStore()
+    const user = useUserStore()
+
     const props = defineProps<{
         isOwner: boolean,
     }>();
 
     const userId = 1
-    // cardList が自身のものか全体共有用のものかで URL分岐
-    const url = computed(()=>
-    props.isOwner
-    ? '/api/users/' + String(userId) + '/exercises-example'
-    : '/api/exercises' );
-    const { data }  = await useFetch(url)
+    const url = ref("")
+    const TOKEN = auth.idToken
 
+    const { data, pending, error, refresh } = await useFetch(
+        '/api/users/' + String(user.userId) + '/exercises',
+        {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + TOKEN,
+                'Content-Type': 'application/json'
+            }
+        }
+    );
+    const exerciseMocksList:ExerciseRecordType[] = data.value
 
-    console.log("swaggerObject:",data.value[1].id)
-    const exerciseMocksList:exerciseRecordType[] = data.value
-    console.log("data:",data.value)
     const detailStore = useDetailStore();
     const toDetail = (id:number) => {
         // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
         const detailRecord = exerciseMocksList[id-1]; //mockのlist は id=0 からスタートしているが，mockオブジェクト自体のidは1からスタートしているため，-1している　バックエンドから受け取るexerciseList のid=1からスタートすればid-1 は不要
         if(!detailRecord) return;
-        detailStore.setDetail(detailRecord.id,detailRecord.imageUrl,detailRecord.time,detailRecord.date,detailRecord.comment,detailRecord.likesCount)
+        detailStore.setDetail(detailRecord.id,detailRecord.user_name,detailRecord.image_url,detailRecord.time,detailRecord.date,detailRecord.comment,detailRecord.likes_count)
         navigateTo({name: 'Detail-id', params: {id: id }})
     }
 

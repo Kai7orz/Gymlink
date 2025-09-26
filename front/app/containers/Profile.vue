@@ -1,7 +1,8 @@
 <script setup lang="ts">
-    console.log()
+    import { useUserStore } from '~/stores/userStore';
+    const user = useUserStore()
     const {data} = await useFetch(
-        '/api/users/profile'
+        `/api/user_profiles/${user.userId}`
     );
     console.log("get profile:",data.value.name,data.value.profileImage)
 </script>
@@ -10,8 +11,8 @@
     <ui-profile 
                 :id="data.id" 
                 :name="data.name" 
-                :profileImage="data.profileImage"
-                :followCount="data.followCount"
-                :followerCount="data.followerCount"
+                :profileImage="data.profile_image"
+                :followCount="data.follow_count"
+                :followerCount="data.follower_count"
                 />
 </template>
