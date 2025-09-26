@@ -8,7 +8,58 @@ info:
 servers:
   - url: 'http://localhost:8003'
 paths:
-  /users/profile:
+# 新規登録画面
+  /users:
+    post:
+      summary: ユーザー登録
+      description: Firebase認証後にバックエンドに登録する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firebase_uid:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                avatar_url:
+                  type: string
+      responses:
+        "201":
+          description: ユーザー作成成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: 既に存在するUIDで登録しようとした
+
+  # ログイン画面
+  /login:
+    post:
+      summary: ログイン(Firebaseトークン検証)
+      description: フロントエンドから渡されるFirebase IDトークンを検証し、ユーザーを返す
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: ユーザーが存在する
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: ユーザーが存在しない
+        "401":
+          description: トークンが無効または期限切れ
+
+  /user_profiles/{user_id}:
     get:
       description: >
         Return user profile
@@ -44,7 +95,7 @@ paths:
   #   get:
   #     summary: Get latest 20 exercises records
   #     description: 
-
+          
     post:
       summary: Create a new exercise record for a user by ID 
       requestBody:
@@ -64,34 +115,41 @@ paths:
                     code: 200 
                     message: "ok"
   
-  /exerciseRecords/{exerciseRecordId}/likes:
+  # ホーム画面 & 投稿共有画面
+  /likes:
     post:
-      summary: 運動記録へのいいね
-      parameters:
-        - in: path
-          name: exerciseRecordId
-          required: true
-          schema: { type: integer }
+      summary: 運動記録に「いいね」する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exerciseRecordId:
+                  type: integer
       responses:
-        '204':
-          description: like successfully 
-        "401":
-           description: 未認証
-        "500": 
-           description: サーバーエラー 
+        "201":
+          description: いいね成功
+        
+  /likes/{exercise_record_id}:
     delete:
+      summary: 運動記録のいいねを外す
       parameters:
         - in: path
-          name: exerciseRecordId
+          name: user_id
           required: true
-          schema: { type: integer }
+          schema:
+            type: integer
+        - in: path
+          name: exercise_record_id
+          required: true
+          schema:
+            type: integer
       responses:
-        '204':
-          description: like successfully 
-        "401":
-           description: 未認証
-        "500": 
-           description: サーバーエラー 
+        "200":
+          description: いいね解除成功
+
     
   /teams:
     get:
@@ -116,7 +174,60 @@ paths:
                   - name: "satoshi"
                     profileImage: "/images/satoshi.png"
                     exerciseCount: 7
-
+            
+  /follows:
+      post:
+        summary: フォローする
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  follower_id:
+                    type: integer
+                  followed_id:
+                    type: integer
+        responses:
+          "201":
+            description: フォロー成功
+            
+    # 他人のプロフィール画面 & フォロー画面 & フォロワー画面
+  /follows/unfollow:
+    post:
+      summary: フォロー解除
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                follower_id:
+                  type: integer
+                followed_id:
+                  type: integer
+      responses:
+        "200":
+          description: フォロー解除成功
+  # キャラクター画面
+  /user_characters/{user_id}:
+    get:
+      summary: ユーザーのキャラクター情報を取得
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: キャラクター情報
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCharacter"
 
     
 ## 複数レスポンスの例を分離したかっただけなので このエンドポイントは本番環境では利用しないです．
@@ -221,6 +332,9 @@ components:
           type: "integer"
           format: "int64" 
           example: 1 
+        userName:
+          type: "string"
+          example: "ABC"
         imageUrl:
           type: "integer"
           format: "int64" 
@@ -282,7 +396,7 @@ components:
           description: チームメンバー一覧
           items:
             type: object
-            required: [name, profileImage, exerciseCount]
+            required: [name, profile_image, exercise_count]
             properties:
               name:
                 type: string
@@ -296,7 +410,26 @@ components:
                 type: integer
                 description: メンバーの運動投稿回数
                 example: 3
-
+        
+    UserCharacter:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        character_id:
+          type: integer
+        level:
+          type: integer
+        current_points:
+          type: integer
+        required_points:
+          type: integer
+        character_animation:
+          type: string
+          example: /assets/animations/huwaData.json
+          
     Error:
       type: "object"
       properties:
