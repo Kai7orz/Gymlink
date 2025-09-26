@@ -131,11 +131,18 @@ paths:
             schema:
               type: object
               properties:
-                exerciseRecordId:
+                exercise_record_id:
                   type: integer
       responses:
         "201":
           description: いいね成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 201 }
+                  message: { type: string, example: "created" }
         
   /likes/{exercise_record_id}:
     delete:
