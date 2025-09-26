@@ -18,6 +18,10 @@ import type { ExerciseRecordType } from '~/type';
         emits('like',id)
     }
 
+    const toAccount = (uid:number) => {
+        emits('account',uid)
+    }
+
 
 </script>
 
@@ -26,6 +30,7 @@ import type { ExerciseRecordType } from '~/type';
         <ui-card v-for="(exerciseMock, index) in props.exerciseMocksList" 
                                                                          :key="index" 
                                                                          :id="exerciseMock.id" 
+                                                                         :userId="exerciseMock.user_id"
                                                                          :userName="exerciseMock.user_name"
                                                                          :image="exerciseMock.image_url" 
                                                                          :time="exerciseMock.time"
@@ -34,6 +39,7 @@ import type { ExerciseRecordType } from '~/type';
                                                                          :likesCount="exerciseMock.likes_count" 
                                                                          @detail="toDetail"
                                                                          @like="like"
+                                                                         @account="toAccount"
                                                                          />
     </v-container>
 </template>
