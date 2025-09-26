@@ -226,6 +226,14 @@ paths:
         responses:
           "201":
             description: フォロー成功
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    code: { type: integer, example: 201 }
+                    message: { type: string, example: "created" }
+          
             
     # 他人のプロフィール画面 & フォロー画面 & フォロワー画面
   /follows/unfollow:
