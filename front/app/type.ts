@@ -7,3 +7,7 @@ export type ExerciseRecordType = {
     comment: string,
     likes_count: number,
 }
+
+export type Illustration = {
+    src: string
+}

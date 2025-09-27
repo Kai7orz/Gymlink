@@ -1,12 +1,20 @@
 <script setup lang="ts">
+    import type { Illustration } from '~/type';
+
+    const props = defineProps<{
+        illustObjs: Record<string,Illustration>
+        imageUrl: string
+    }>();
+
     const emits = defineEmits<{
         record: [],
         close: [],
+        test:[imageId:string],
     }>();
 
+    const selected = ref('')
     const exerciseTimeLabel = "運動時間（min）"
     const exerciseCommentLabel = "コメント"
-    const imageUrl = defineModel<string>('imageUrl')
     const isShownMenu = defineModel<boolean>('isShownMenu')
     const exerciseTime = defineModel<number>('exerciseTime')
     const comment = defineModel<string>('comment')
@@ -17,6 +25,11 @@
         emits('close')
     }
 
+    watch(selected,(val)=>{
+        emits('select',val)
+    })
+
+    const imageItems = Object.keys(props.illustObjs)
 </script>
 
 <template>
@@ -24,7 +37,12 @@
         <v-card>
             <v-btn color="primary" text @click="emits('close')">Close</v-btn>
             <v-card-title class="text-h5">運動記録</v-card-title>
-            <img src="/images/sportImage.png" class="w-60 h-50 mx-auto my-5" />
+            <v-select
+                     label="Select"
+                     :items="imageItems"
+                     v-model="selected"
+            ></v-select>
+            <img v-if="selected!==undefined" :src="props.imageUrl" class="w-60 h-50 mx-auto my-5" />
             <v-text-field v-model="exerciseTime" :label="exerciseTimeLabel"></v-text-field>
             <v-text-field v-model="comment" :label="exerciseCommentLabel"></v-text-field>
             <v-container>
