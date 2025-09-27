@@ -15,8 +15,8 @@
 </script>
 
 <template>
-    <v-container>
-        <v-sheet class="d-flex mx-auto">
+    <v-container class="m-10 rounded bg-black">
+        <v-sheet class="d-flex mx-auto my-10">
             <v-card v-for="(item,index) in props.teamMember" class="d-flex flex-row m-5 mx-auto">
                 <v-card class="d-flex flex-column px-10">
                     <v-avatar :image="item.profileImage" size="200" class="mx-auto my-3 p-5" />

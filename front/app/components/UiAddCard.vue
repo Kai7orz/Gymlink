@@ -16,8 +16,7 @@
 </script>
 
 <template>
-    <v-card class="d-flex flex-column justify-center mx-auto gap-2 p-10 m-10">
-        <v-card-title @click="emits('open')">+</v-card-title>
+        <v-icon class="mx-5 my-auto" size="50" icon="mdi-plus-box" @click="emits('open')"></v-icon>
         <exercise-modal
                         v-model:imageUrl="imageUrl"
                         v-model:exerciseTime="exerciseTime"
@@ -26,5 +25,5 @@
                         v-model:is-shown-menu="isShownMenu" 
                         @record="emits('add')" 
                         @close="emits('close')"></exercise-modal>
-    </v-card>
+
 </template>
