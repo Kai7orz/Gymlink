@@ -26,4 +26,14 @@ main {
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.2s;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(1rem);
+}
 </style>
