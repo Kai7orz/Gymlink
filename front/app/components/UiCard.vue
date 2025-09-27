@@ -45,8 +45,8 @@ const onLike = async (id:number) => {
 
 <template>
     <v-hover v-slot="{ isHovering, props: hoverProps }">
-        <v-card class="d-flex flex-column justify-center w-1/4 h-1/2 mx-auto gap-2 p-10 px-7 pb-15 mx-8 my-2 bg-grey-lighten-3 rounded-xl" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
-            <img :src="props.image" class="w-60 h-50" />
+        <v-card class="d-flex flex-column justify-center w-1/4 h-100 mx-auto gap-2 p-10 px-7 pb-15 mx-8 my-2 bg-grey-darken-4 rounded-xl card" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
+            <img :src="props.image" class="w-60 h-50 rounded-xl" />
             <v-card-title >{{ props.date }}</v-card-title>
             <v-card-subtitle class="pb-0">運動時間: {{ props.time }}分</v-card-subtitle>
             <div class="d-flex ml-auto mt-10">
@@ -58,6 +58,25 @@ const onLike = async (id:number) => {
 </template>
 
 <style scoped>
+
+.card {
+
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+  border: 1px solid rgba(255, 255, 255, 0.25); /* 縁取りでガラス感 */
+  border-radius: 20px;
+
+  color: #ffffff; /* 背景に溶けないよう白字 */
+  padding: 1rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3); /* 浮かせる影 */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
     .on-hover {
         min-width:300px;
         min-height: 250px;
