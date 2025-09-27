@@ -22,6 +22,21 @@
                     })
     }
 
+    const unfollow = async (id:number) => {
+        await $fetch("/api/unfollows", {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + TOKEN,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            follower_id: user.userId,
+                            followed_id: id
+                        },
+                    })
+    }
+
+
 </script>
 
 <template>

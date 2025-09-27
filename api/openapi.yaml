@@ -236,7 +236,7 @@ paths:
           
             
     # 他人のプロフィール画面 & フォロー画面 & フォロワー画面
-  /follows/unfollow:
+  /unfollows:
     post:
       summary: フォロー解除
       requestBody:

@@ -5,8 +5,6 @@ const route = useRoute();
 const detailStore = useDetailStore();
 const user = useUserStore();
 const toBack = () => {
-    console.log("detailName:::",detailStore.detailName)
-        console.log("userlName:::",user.userName)
     if(user.userName === detailStore.detailName) navigateTo({ name: 'home' });
     else navigateTo({ name: 'share'});
 }
