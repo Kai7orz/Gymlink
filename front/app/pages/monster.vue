@@ -2,8 +2,10 @@
     import LottieContainer from '~/containers/LottieContainer.vue';
 </script>
 <template>
+  <div>
     <lottie-container />
     <h1 class="text-h4 text-center mt-10">
       今日も１日頑張りましょう
     </h1>
+  </div>
 </template>

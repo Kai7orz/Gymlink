@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import animationData from '~/assets/animations/huwaData.json'
+import animationData from '~/assets/animations/huwaData2.json'
 
 </script>
 

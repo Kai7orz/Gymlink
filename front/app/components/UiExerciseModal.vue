@@ -9,7 +9,7 @@
     const emits = defineEmits<{
         record: [],
         close: [],
-        test:[imageId:string],
+        select:[imageId:string],
     }>();
 
     const selected = ref('')

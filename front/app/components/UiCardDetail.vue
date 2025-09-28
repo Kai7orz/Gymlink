@@ -12,16 +12,18 @@ const toBack = () => {
 </script>
 
 <template>
+    <div>
         <v-hover v-slot="{ isHovering, props: hoverProps}">
             <v-icon icon="mdi-arrow-left" class="m-3" :size="isHovering ? 'x-large':'small'" v-bind="hoverProps" @click="toBack"></v-icon>     
         </v-hover>
-        <v-card class="d-flex flex-column justify-center align-center mx-auto gap-2 p-10 m-10">
-            <div>exercise id:{{ route.params.id }} </div>
-            <img :src="detailStore.detailImage" class="w-60 h-50" />
-            <v-card-title >{{ detailStore.detailDate }}</v-card-title>
-            <v-card-subtitle class="pb-0">運動時間：{{ detailStore.detailTime }}分</v-card-subtitle>
-            <v-card-text class="pt-0" color="grey">コメント：{{ detailStore.detailComment }}</v-card-text>
-        </v-card>
+        <div class="d-flex flex-column justify-center align-center mx-auto gap-2 m-10">
+            <div class="text-h2 m-3">{{ detailStore.detailName }} </div>
+            <img :src="detailStore.detailImage" class="w-1/2 h-50" />
+            <div class="text-h2 m-5">{{ detailStore.detailDate }}</div>
+            <div class="text-h2 m-5 pb-0">運動時間：{{ detailStore.detailTime }}分</div>
+            <div class="text-h2 m-5" color="grey">コメント：{{ detailStore.detailComment }}</div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
