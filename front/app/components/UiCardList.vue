@@ -18,6 +18,9 @@ import type { ExerciseRecordType } from '~/type';
         emits('like',id)
     }
 
+    const toAccount = (uid:number) => {
+        emits('account',uid)
+    }
 
 </script>
 
@@ -35,6 +38,7 @@ import type { ExerciseRecordType } from '~/type';
                                                                          :likesCount="exerciseMock.likes_count" 
                                                                          @detail="toDetail"
                                                                          @like="like"
+                                                                         @account="toAccount"
                                                                          />
     </v-container>
 </template>

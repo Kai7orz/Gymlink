@@ -1,5 +1,6 @@
 export type ExerciseRecordType = {
     id: number,
+    user_id: number,
     user_name: string,
     image_url: string,
     time: number,

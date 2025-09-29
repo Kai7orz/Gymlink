@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 export const useDetailStore = defineStore('detail',
     ()=>{
         const detailId = ref(0);
+        const detailUserId = ref(0);
         const detailName = ref('')
         const detailImage = ref('');
         const detailTime = ref(0);
@@ -10,8 +11,9 @@ export const useDetailStore = defineStore('detail',
         const detailComment = ref('');
         const detailLikesCount = ref(0);
         
-        const setDetail = (id:number,name:string,image:string,time:number,date:string,comment:string,likesCount:number) => {
+        const setDetail = (id:number,user_id:number,name:string,image:string,time:number,date:string,comment:string,likesCount:number) => {
             detailId.value = id;
+            detailUserId.value = user_id
             detailName.value = name;
             detailImage.value = image;
             detailTime.value = time;
@@ -20,6 +22,6 @@ export const useDetailStore = defineStore('detail',
             detailLikesCount.value = likesCount;
         }
         
-        return { detailId,detailName,detailImage,detailTime,detailDate,detailComment,detailLikesCount,setDetail }
+        return { detailId,detailUserId,detailName,detailImage,detailTime,detailDate,detailComment,detailLikesCount,setDetail }
         },
 );
