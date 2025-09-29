@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  belongs_to :team
+  belongs_to :team, optional: true
 
   has_one :profile, dependent: :destroy
   has_one :user_character, dependent: :destroy
