@@ -8,7 +8,8 @@
     const isLoading = ref(false)
     const firebaseData = ref({})
     const userData = ref({})
-    const userStore = useUserStore()
+    const user = useUserStore()
+    const auth = useAuthStore()
 
     await signOutUser()
 
@@ -20,7 +21,7 @@
         })
 
     watch(userData,val=>{
-        userStore.setUser(val.id,val.name)
+        user.setUser(val.id,val.name)
     })
 
     const signInUser = async () => {
@@ -34,10 +35,15 @@
 
             firebaseData.value = await signIn(email.value,password.value)
             await minLoadingPromise;
+            const TOKEN = auth.idToken
             await new Promise(resolve => setTimeout(resolve, 100));
             userData.value = await $fetch("/api/login",
                 {
                     method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + TOKEN,
+                        'Content-Type': 'application/json'
+                    },
                 }
             )
             
