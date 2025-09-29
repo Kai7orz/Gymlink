@@ -1,13 +1,15 @@
 <script setup lang="ts">
+
+    import { useUserStore } from "~/stores/userStore"
     // ユーザーid を params へ渡して遷移する
-    const userId = 1
+    const user = useUserStore()
 
     const toHome = () => {
         navigateTo('/home')
     }
 
     const toAccount = async () => {
-        navigateTo({name: 'Account-id', params: {id: userId }})
+        navigateTo({name: 'Account-id', params: {id: user.userId }})
     }
 
     const toMonster = () => {

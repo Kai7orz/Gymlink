@@ -6,8 +6,6 @@ export default defineNuxtRouteMiddleware(async (to,from) => {
     const auth = useAuthStore()
     const allowlist = new Set<string>(['/','/login','/signin','/signup'])
 
-    console.log("middleware: auth uid email",auth.uid,auth.email,auth.isAuthenticated,allowlist.has(to.path),auth.loading)
-
     if(allowlist.has(to.path)) return 
 
     if(auth.loading){

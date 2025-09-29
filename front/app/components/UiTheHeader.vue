@@ -4,6 +4,7 @@
     account: [],
     monster: [],
     team: [],
+    share:[],
   }>();
 </script>
 
