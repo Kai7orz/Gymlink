@@ -45,8 +45,9 @@
 </script>
 
 <template>
+  <div>
   <ClientOnly>
-    <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg rounded-lg">
+    <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 bg-grey-darken-3 border-lg rounded-lg">
         <v-card-title class="d-flex justify-center">サインイン</v-card-title>
         <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
         <v-text-field v-model="password" class="w-1/2 mx-auto m-5" label="パスワード" type="password" />
@@ -66,4 +67,5 @@
         </v-btn>
     </v-card>
   </ClientOnly>
+  </div>
 </template>
