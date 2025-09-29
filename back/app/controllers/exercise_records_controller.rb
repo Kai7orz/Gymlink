@@ -5,7 +5,17 @@ class ExerciseRecordsController < ApplicationController
   def create
     exercise_record = current_user.exercise_records.build(exercise_record_params)
     if exercise_record.save
-      render json: exercise_record, status: :created
+      record_with_details = {
+        id: exercise_record.id,
+        user_id: exercise_record.user.id,
+        user_name: exercise_record.user.name,
+        image_url: "/images/sportImage.png",
+        time: exercise_record.exercise_time,
+        date: exercise_record.recorded_date,
+        comment: exercise_record.content,
+        likes_count: 0
+      }
+      render json: record_with_details, status: :created
     else
       render json: { errors: exercise_record.errors.full_messages }, status: :unprocessable_entity
     end
