@@ -96,6 +96,8 @@ GEM
     drb (2.2.3)
     erb (5.0.2)
     erubi (1.13.1)
+    faker (3.5.2)
+      i18n (>= 1.8.11, < 2)
     firebase_id_token (3.0.0)
       activesupport (~> 7.0, >= 7.0.4.3)
       httparty (~> 0.21.0)
@@ -276,6 +278,7 @@ DEPENDENCIES
   csv
   debug
   dotenv-rails
+  faker
   firebase_id_token
   puma (>= 5.0)
   rack-cors
