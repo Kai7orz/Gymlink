@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user!, only: [:profile]
 
 
   # POST /api/v1/users
@@ -31,14 +30,17 @@ class UsersController < ApplicationController
   end
 
 
-  # GET /api/v1/users/profile
+  # GET /user_profiles/:user_id
   def profile
+    user = User.find_by(id: params[:user_id])
+    return render json: { error: "User not found" }, status: :not_found unless user
+
     render json: {
-      id: current_user.id,
-      name: current_user.name,
-      profile_image: current_user.avatar_url,
-      following_count: current_user.following_count,
-      followers_count: current_user.followers_count
+      id: user.id,
+      name: user.name,
+      profile_image: user.avatar_url,
+      following_count: user.following_count,
+      followers_count: user.followers_count
     }
   end
 
