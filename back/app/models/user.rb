@@ -18,8 +18,6 @@ class User < ApplicationRecord
   validates :firebase_uid, presence: true, uniqueness: true
   validates :team_id, presence: true
   validates :name, presence: true
-  validates :email, presence: true, uniqueness: true
-  validates :password, presence: true, uniqueness: true
   validates :color, presence: true
 
   # フォロー数を取得
