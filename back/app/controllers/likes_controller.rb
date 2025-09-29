@@ -1,32 +1,27 @@
 class LikesController < ApplicationController
-  before_action :set_record
-
-  # POST /api/v1/exercise_records/:exercise_record_id/likes
+  # POST /likes
   def create
-    like = @record.likes.build(user: current_user)
+    exercise_record_id = params[:exercise_record_id]
+    exercise_record = ExerciseRecord.find(exercise_record_id)
+    like = exercise_record.likes.build(user: current_user)
 
     if like.save
-      render json: { message: "Liked" }, status: :created
+      render json: { code: 201, message: "created" }, status: :created
     else
       render json: { errors: like.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /api/v1/exercise_records/:exercise_record_id/likes
+  # DELETE /likes/:exercise_record_id
   def destroy
-    like = @record.likes.find_by(user: current_user)
+    exercise_record = ExerciseRecord.find(params[:exercise_record_id])
+    like = exercise_record.likes.find_by(user: current_user)
 
     if like
       like.destroy
-      render json: { message: "Unliked" }, status: :ok
+      render json: { message: "Unlike successful" }, status: :ok
     else
-      render json: { errors: "Not liked found" }, status: :not_found
+      render json: { errors: "Like not found" }, status: :not_found
     end
-  end
-
-  private
-
-  def set_record
-    @record = ExerciseRecord.find(params[:exercise_record_id])
   end
 end
