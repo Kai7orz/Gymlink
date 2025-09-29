@@ -1,4 +1,4 @@
-class Api::V1::ExerciseRecordsController < ApplicationController
+class ExerciseRecordsController < ApplicationController
   before_action :authenticate_user!
 
   # 運動記録を投稿

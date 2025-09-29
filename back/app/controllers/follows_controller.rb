@@ -1,4 +1,4 @@
-class Api::V1::FollowsController < ApplicationController
+class FollowsController < ApplicationController
   before_action :authenticate_user!
 
   # POST /api/v1/follows

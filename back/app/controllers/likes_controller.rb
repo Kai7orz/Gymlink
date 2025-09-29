@@ -1,4 +1,4 @@
-class Api::V1::LikesController < ApplicationController
+class LikesController < ApplicationController
   before_action :set_record
 
   # POST /api/v1/exercise_records/:exercise_record_id/likes
