@@ -2,6 +2,7 @@ class User < ApplicationRecord
   belongs_to :team
 
   has_one :profile, dependent: :destroy
+  has_one :user_character, dependent: :destroy
   has_many :exercise_records, dependent: :destroy
   has_many :user_likes, dependent: :destroy
 
