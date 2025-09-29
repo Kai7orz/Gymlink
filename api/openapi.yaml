@@ -99,7 +99,6 @@ paths:
               schema:
                   example:
                     - id: 1
-                      user_id: "2"
                       user_name: "taro"
                       image_url: "/images/sportImage.png"
                       time: 45
@@ -107,7 +106,6 @@ paths:
                       comment: "いい感じに動けた"
                       likes_count: 3
                     - id: 2
-                      user_id: "32"
                       user_name: "yumi"
                       image_url: "/images/sportImage.png"
                       time: 30
@@ -115,7 +113,6 @@ paths:
                       comment: "疲れた"
                       likes_count: 0
                     - id: 3
-                      user_id: "21"
                       user_name: "satoshi"
                       image_url: "/images/sportImage.png"
                       time: 60
@@ -374,9 +371,6 @@ components:
           type: "integer"
           format: "int64" 
           example: 1 
-        user_id:
-          type: "integer"
-          example: 20
         user_name:
           type: "string"
           example: "ABC"
