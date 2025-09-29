@@ -12,29 +12,39 @@ class ExerciseRecordsController < ApplicationController
   end
 
   # 自分の運動記録一覧を取得
-  def my_records
-    exercise_records = current_user.exercise_records.order(recorded_date: :desc)
-    render json: exercise_records
-  end
-
-  # 全ユーザーの運動記録一覧を取得
-  def index
-    exercise_records = ExerciseRecord.includes(:user).order(recorded_date: :desc)
-    records_with_user = exercise_records.map do |record|
+  def user_exercises
+    exercise_records = current_user.exercise_records.includes(:user, :likes).order(recorded_date: :desc)
+    records_with_details = exercise_records.map do |record|
       {
         id: record.id,
-        exercise_time: record.exercise_time,
-        content: record.content,
-        recorded_date: record.recorded_date,
-        created_at: record.created_at,
-        updated_at: record.updated_at,
-        user: {
-          id: record.user.id,
-          name: record.user.name
-        }
+        user_id: record.user.id,
+        user_name: record.user.name,
+        image_url: "/images/sportImage.png",
+        time: record.exercise_time,
+        date: record.recorded_date,
+        comment: record.content,
+        likes_count: record.likes.count
       }
     end
-    render json: records_with_user
+    render json: records_with_details
+  end
+
+  # 全ユーザーの運動記録一覧を取得（最新20件）
+  def index
+    exercise_records = ExerciseRecord.includes(:user, :likes).order(recorded_date: :desc).limit(20)
+    records_with_details = exercise_records.map do |record|
+      {
+        id: record.id,
+        user_id: record.user.id,
+        user_name: record.user.name,
+        image_url: "/images/sportImage.png",
+        time: record.exercise_time,
+        date: record.recorded_date,
+        comment: record.content,
+        likes_count: record.likes.count
+      }
+    end
+    render json: records_with_details
   end
 
   private
