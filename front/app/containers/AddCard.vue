@@ -17,7 +17,6 @@ import { illustrations } from '~/data/illustrations';
     const addCard = ()=>{
         console.log("add card")
         // ここでカード追加の処理を実装 API 絡み
-        console.log("image->",image_url.value,time.value,date.value,comment.value)
         const TOKEN = user.idToken
         $fetch('/api/userExercise',{
             method: 'POST',
@@ -26,7 +25,7 @@ import { illustrations } from '~/data/illustrations';
                 'Content-Type': 'application/json'
             },
             body: {
-                "image_url": image_url.value,
+                "image_url": imageUrl.value,
                 "time": time.value,
                 "date": date.value,
                 "comment": comment.value,
