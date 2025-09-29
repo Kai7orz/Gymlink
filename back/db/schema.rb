@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_29_161645) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_29_170518) do
   create_table "character_growths", force: :cascade do |t|
     t.integer "character_id", null: false
     t.integer "level", null: false
@@ -90,13 +90,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_29_161645) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "firebase_uid", null: false
+    t.string "firebase_uid"
     t.string "name", null: false
-    t.string "color", null: false
+    t.string "color"
     t.string "avatar_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "team_id", null: false
+    t.integer "team_id"
     t.index ["team_id"], name: "index_users_on_team_id"
   end
 
