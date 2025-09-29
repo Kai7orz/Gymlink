@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
 
     # レスポンスの分岐
     if user
-      render json: { message: "Login successful", user: user }, status: :ok
+      render json: { id: user.id, name: user.name }, status: :ok
     else
       render json: { error: "User not found" }, status: :not_found
     end
