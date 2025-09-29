@@ -5,7 +5,7 @@
 </script>
 
 <template>
-    <v-container class="d-flex">
+    <v-container  class="p-100 min-h-screen" style="background: linear-gradient(135deg, #0044ff, #ff5e5e);">
         <add-card />
         <card-list :is-owner="isOwner" />
     </v-container>

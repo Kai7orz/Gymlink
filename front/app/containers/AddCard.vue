@@ -4,21 +4,21 @@ import { illustrations } from '~/data/illustrations';
     import { useUserStore } from '~/stores/userStore';
 
     const isShownMenu = ref(false);
-    const time = ref(0)
+    const time = ref("")
     const date = ref("2025/09/27")
     const comment = ref('')
     const imageUrl = ref('')
     const user = useUserStore()
-
+    const auth = useAuthStore()
     // イラスト一覧を読み込んで propsとして渡して表示する
     const illustrationsObjs = illustrations
 
 
-    const addCard = ()=>{
+    const addCard = async ()=>{
         console.log("add card")
-        // ここでカード追加の処理を実装 API 絡み
-        const TOKEN = user.idToken
-        $fetch('/api/userExercise',{
+
+        const TOKEN = auth.idToken
+        await $fetch('/api/userExercise',{
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + TOKEN,
@@ -26,12 +26,15 @@ import { illustrations } from '~/data/illustrations';
             },
             body: {
                 "image_url": imageUrl.value,
-                "time": time.value,
+                "time": Number(time.value),
                 "date": date.value,
                 "comment": comment.value,
             }
         }
         );
+
+        navigateTo('/home')
+
     }
 
     const closeMenu = ()=>{

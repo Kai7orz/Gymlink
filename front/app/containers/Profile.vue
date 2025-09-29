@@ -1,12 +1,16 @@
 <script setup lang="ts">
     
     import { useUserStore } from '~/stores/userStore';
+    const props = defineProps<{
+        userId: string,
+    }>();
+
     const user = useUserStore()
     const auth = useAuthStore()
     const TOKEN = auth.idToken
     console.log("testtest",user.userId)
     const data = await $fetch(
-        `/api/user_profiles/${user.userId}`,{
+        `/api/user_profiles/${Number(props.userId)}`,{
           headers: {
                         'Authorization': 'Bearer ' + TOKEN,
                         'Content-Type': 'application/json'
@@ -15,6 +19,7 @@
     );
 
     const follow = async (id:number) => {
+        await navigateTo('/following')
         await $fetch("/api/follows", {
                         method: 'POST',
                         headers: {

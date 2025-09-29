@@ -16,7 +16,7 @@
     const exerciseTimeLabel = "運動時間（min）"
     const exerciseCommentLabel = "コメント"
     const isShownMenu = defineModel<boolean>('isShownMenu')
-    const exerciseTime = defineModel<number>('exerciseTime')
+    const exerciseTime = defineModel<string>('exerciseTime')
     const comment = defineModel<string>('comment')
     const selectedDate = ref(null)
 

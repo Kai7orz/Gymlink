@@ -3,5 +3,7 @@
 </script>
 
 <template>
-        <ui-card-detail />
+        <div>
+                <ui-card-detail />
+        </div>
 </template>

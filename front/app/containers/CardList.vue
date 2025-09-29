@@ -30,7 +30,7 @@
     }
 
     const exerciseMocksList:ExerciseRecordType[] = data.value
-    console.log("valuedata -.",exerciseMocksList)
+
     const detailStore = useDetailStore();
     const toDetail = (id:number) => {
         // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す

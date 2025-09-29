@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event)=> {
     const  userId  = getRouterParam(event,'userId')
-    const  idToken  = getRequestHeaders(event,'authorization')
-    const data = await $fetch(`http://swagger-api:4010/users/${userId}/exercises`,
+    const  idToken  = getRequestHeader(event,'authorization')
+    const data = await $fetch(`http://host.docker.internal:3001/users/${userId}/exercises`,
                                 {
                                     method: 'GET',
                                     headers: {
