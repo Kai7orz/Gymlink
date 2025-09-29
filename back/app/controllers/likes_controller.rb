@@ -1,15 +1,27 @@
 class LikesController < ApplicationController
+  before_action :authenticate_user!
+
   # POST /likes
   def create
     exercise_record_id = params[:exercise_record_id]
     exercise_record = ExerciseRecord.find(exercise_record_id)
-    like = exercise_record.user_likes.build(user: current_user)
+
+    # 既存のいいねがあるかチェック
+    existing_like = exercise_record.user_likes.find_by(user: current_user)
+    if existing_like
+      return render json: { errors: "Already liked" }, status: :unprocessable_entity
+    end
+
+    like = UserLike.new(user: current_user, exercise_record: exercise_record)
 
     if like.save
       render json: { code: 201, message: "created" }, status: :created
     else
+      Rails.logger.error "UserLike save failed: #{like.errors.full_messages}"
       render json: { errors: like.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotFound
+    render json: { errors: "Exercise record not found" }, status: :not_found
   end
 
   # DELETE /likes/:exercise_record_id
@@ -23,5 +35,7 @@ class LikesController < ApplicationController
     else
       render json: { errors: "Like not found" }, status: :not_found
     end
+  rescue ActiveRecord::RecordNotFound
+    render json: { errors: "Exercise record not found" }, status: :not_found
   end
 end
