@@ -43,7 +43,7 @@
         }
         else{
             try{
-                await useFetch("/api/likes",
+                await $fetch("/api/likes",
                     {
                         method: 'POST',
                         headers: {

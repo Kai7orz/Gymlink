@@ -34,7 +34,7 @@
 
 <template>
     <v-dialog v-model="isShownMenu" max-width="500">
-        <v-card>
+        <v-card class="bg-grey-darken-3">
             <v-btn color="primary" text @click="emits('close')">Close</v-btn>
             <v-card-title class="text-h5">運動記録</v-card-title>
             <v-select
@@ -47,7 +47,7 @@
             <v-text-field v-model="comment" :label="exerciseCommentLabel"></v-text-field>
             <v-container>
                 <v-row justify="space-around">
-                <v-date-picker v-model="selectedDate" show-adjacent-months></v-date-picker>                    
+                <v-date-picker class="bg-black m-3" v-model="selectedDate" show-adjacent-months></v-date-picker>                    
                 </v-row>
             </v-container>           
             <v-spacer></v-spacer>

@@ -4,6 +4,7 @@ import { mergeProps } from 'vue';
 const props = defineProps<{
             id: number,
             userName: string,
+            userId: number,
             image: string
             time: number,
             date: string,
