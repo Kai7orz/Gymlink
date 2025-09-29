@@ -3,7 +3,7 @@ class LikesController < ApplicationController
   def create
     exercise_record_id = params[:exercise_record_id]
     exercise_record = ExerciseRecord.find(exercise_record_id)
-    like = exercise_record.likes.build(user: current_user)
+    like = exercise_record.user_likes.build(user: current_user)
 
     if like.save
       render json: { code: 201, message: "created" }, status: :created
@@ -15,7 +15,7 @@ class LikesController < ApplicationController
   # DELETE /likes/:exercise_record_id
   def destroy
     exercise_record = ExerciseRecord.find(params[:exercise_record_id])
-    like = exercise_record.likes.find_by(user: current_user)
+    like = exercise_record.user_likes.find_by(user: current_user)
 
     if like
       like.destroy
