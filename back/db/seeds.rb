@@ -18,46 +18,46 @@ dummy_team = Team.create!(
   month: Date.today
 )
 
-User.find_or_create_by!(
-  firebase_uid: "uid_001",
-  email: "taro@example.com"
-) do |user|
-  user.name = "Taro Yamada"
-  user.color = "#ff0000"
-  user.avatar_url = "https://example.com/avatar1.png"
-  user.team_id = dummy_team.id
-  user.password = "password123"
-end
 
-User.find_or_create_by!(
-  firebase_uid: "uid_002",
-  email: "hanako@example.com"
-) do |user|
-  user.name = "Hanako Suzuki"
-  user.color = "#00ff00"
-  user.avatar_url = "https://example.com/avatar2.png"
-  user.team_id = dummy_team.id
-  user.password = "password1234"
-end
+
+
+
+users = [
+  User.find_or_create_by!(firebase_uid: "uid_001") do |u|
+    u.name = "Taro Yamada"
+    u.color = "#ff0000"
+    u.avatar_url = "https://example.com/avatar1.png"
+    u.team_id = dummy_team.id
+  end,
+  User.find_or_create_by!(firebase_uid: "uid_002") do |u|
+    u.name = "Hanako Suzuki"
+    u.color = "#00ff00"
+    u.avatar_url = "https://example.com/avatar2.png"
+    u.team_id = dummy_team.id
+  end,
+  User.find_or_create_by!(firebase_uid: "uid_003") do |u|
+    u.name = "Tomoko Yamamoto"
+    u.color = "red"
+    u.avatar_url = "https://example.com/avatar3.png"
+    u.team_id = dummy_team.id
+  end
+]
 
 
 
 puts "Seeding exercise_records"
 
-user = User.first
-ExerciseRecord.find_or_create_by!(
-  user_id: user.id,
-  recorded_date: Date.today,
-  content: "ランニング30分",
-  exercise_time: 30
-)
+exercise_records = 10.times.map do |i|
+  ExerciseRecord.create!(
+    user_id: users.sample.id,
+    exercise_time: rand(10..120),
+    content: "運動内容#{i + 1}",
+    recorded_date: Date.today - i.days
+  )
+end
 
-ExerciseRecord.find_or_create_by!(
-  user_id: user.id,
-  recorded_date: Date.today - 1,
-  content: "筋トレ（腕立て・腹筋）20分",
-  exercise_time: 20
-)
+puts "✅ ExerciseRecords created: #{exercise_records.size}"
+
 
 
 puts "Seeding characters..."
@@ -75,10 +75,10 @@ Character.find_or_create_by!(
 
 
 
+puts "Seeding user_characters"
 
-puts "Seeding user_characters..."
 
-user = User.first
+user = users.first
 character = Character.first
 
 if user && character
@@ -96,3 +96,63 @@ if user && character
 else
   puts "⚠️ User または Character のデータが存在しないため、user_characters は作成されませんでした"
 end
+
+
+Profile.find_or_create_by!(
+  user_id: users[0].id,
+  name: "山田太郎",
+  profile_image: "/images/profile1.png"
+)
+Profile.find_or_create_by!(
+  user_id: users[1].id,
+  name: "佐藤花子",
+  profile_image: "/images/profile2.png"
+)
+Profile.find_or_create_by!(
+  user_id: users[2].id,
+  name: "山本ともこ",
+  profile_image: "/images/profile3.png"
+)
+
+
+
+
+# User1 → User2, User3 をフォロー
+Follow.find_or_create_by!(follower_id: users[0].id, followed_id: users[1].id)
+Follow.find_or_create_by!(follower_id: users[0].id, followed_id: users[2].id)
+
+# User2 → User1 をフォロー
+Follow.find_or_create_by!(follower_id: users[1].id, followed_id: users[0].id)
+
+# User3 → User1, User2 をフォロー
+Follow.find_or_create_by!(follower_id: users[2].id, followed_id: users[0].id)
+Follow.find_or_create_by!(follower_id: users[2].id, followed_id: users[1].id)
+
+
+puts "✅ Follows created!"
+
+20.times do
+  liker = users.sample
+  record = exercise_records.sample
+  UserLike.find_or_create_by!(user_id: liker.id, exercise_record_id: record.id)
+end
+
+puts "✅ UserLike dummy data created!"
+
+
+
+
+puts "Seeding character_growths..."
+Character.all.each do |character|
+  (1..5).each do |level|
+    CharacterGrowth.find_or_create_by!(
+      character_id: character.id,
+      level: level
+    ) do |growth|
+      growth.required_points = level * 100
+      growth.reward_image_url = "/images/#{character.name.downcase}_level#{level}.png"
+    end
+  end
+end
+
+puts "✅ CharacterGrowths created!"
