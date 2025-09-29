@@ -12,5 +12,6 @@ export const signUp = async (email:string,password:string)=>{
         if ( e instanceof FirebaseError ) {
             console.error('FirebaseError', e.code,e.message);
         }
+        throw e
     }
 }

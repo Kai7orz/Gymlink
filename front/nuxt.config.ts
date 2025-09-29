@@ -5,6 +5,11 @@ export default defineNuxtConfig({
   srcDir: 'app',
   serverDir: 'app/server',
   devtools: { enabled: true },
+  nitro: {
+    devProxy: {
+      '/externalApi/': { target: 'http://host.docker.internal:3001', changeOrigin: true}
+    }
+  },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' }
   },
