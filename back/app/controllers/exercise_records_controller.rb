@@ -60,6 +60,10 @@ class ExerciseRecordsController < ApplicationController
   private
 
   def exercise_record_params
-    params.require(:exercise_record).permit(:exercise_time, :content, :recorded_date)
+    params.permit(:time, :comment, :date).tap do |permitted|
+      permitted[:exercise_time] = permitted.delete(:time)
+      permitted[:content] = permitted.delete(:comment)
+      permitted[:recorded_date] = permitted.delete(:date)
+    end
   end
 end
