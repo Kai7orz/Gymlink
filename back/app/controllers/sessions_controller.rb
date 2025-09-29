@@ -1,4 +1,4 @@
-class Api::V1::SessionsController < ApplicationController
+class SessionsController < ApplicationController
   # Firebaseトークンでユーザーを認証
   def create
     token = request.headers["Authorization"]&.split(" ")&.last
