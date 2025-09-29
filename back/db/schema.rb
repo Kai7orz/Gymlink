@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_24_011202) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_29_101140) do
   create_table "character_growths", force: :cascade do |t|
     t.integer "character_id", null: false
     t.integer "level", null: false
@@ -73,6 +73,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_24_011202) do
     t.integer "current_points", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "chracter_animation", null: false
+    t.integer "require_points", null: false
     t.index ["character_id"], name: "index_user_characters_on_character_id"
     t.index ["user_id"], name: "index_user_characters_on_user_id"
   end
@@ -102,8 +104,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_24_011202) do
 
   add_foreign_key "character_growths", "characters"
   add_foreign_key "exercise_records", "users"
-  add_foreign_key "follows", "followeds"
-  add_foreign_key "follows", "followers"
+  add_foreign_key "follows", "users", column: "followed_id"
+  add_foreign_key "follows", "users", column: "follower_id"
   add_foreign_key "profiles", "users"
   add_foreign_key "user_characters", "characters"
   add_foreign_key "user_characters", "users"
