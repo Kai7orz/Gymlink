@@ -7,7 +7,7 @@ class LikesController < ApplicationController
     exercise_record = ExerciseRecord.find(exercise_record_id)
 
     # 既存のいいねがあるかチェック
-    existing_like = exercise_record.user_likes.find_by(user: current_user)
+    existing_like = UserLike.find_by(user_id: current_user.id, exercise_record_id: exercise_record.id)
     if existing_like
       return render json: { errors: "Already liked" }, status: :unprocessable_entity
     end
