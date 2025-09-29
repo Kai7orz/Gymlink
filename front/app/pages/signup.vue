@@ -7,18 +7,23 @@
     const avatarUrl = ref('/images/test.png')
     const isLoading = ref(false)
     const isError = ref(false)
+    const auth = useAuthStore()
 
     const signUpUser = async () => {
         isLoading.value = true
 
         try{
             await signUp(email.value,password.value)
+            const TOKEN = auth.idToken
             await $fetch("/api/signup",
                 {
                     method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + TOKEN,
+                        'Content-Type': 'application/json'
+                    },
                     body: {
                         name:  name.value,
-                        email: email.value,
                         avatar_url: avatarUrl.value
                     }
                 }
