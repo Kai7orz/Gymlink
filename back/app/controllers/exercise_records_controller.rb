@@ -23,7 +23,7 @@ class ExerciseRecordsController < ApplicationController
 
   # 自分の運動記録一覧を取得
   def user_exercises
-    exercise_records = current_user.exercise_records.includes(:user, :likes).order(recorded_date: :desc)
+    exercise_records = current_user.exercise_records.includes(:user, :user_likes).order(recorded_date: :desc)
     records_with_details = exercise_records.map do |record|
       {
         id: record.id,
@@ -33,7 +33,7 @@ class ExerciseRecordsController < ApplicationController
         time: record.exercise_time,
         date: record.recorded_date,
         comment: record.content,
-        likes_count: record.likes.count
+        likes_count: record.user_likes.count
       }
     end
     render json: records_with_details
@@ -41,7 +41,7 @@ class ExerciseRecordsController < ApplicationController
 
   # 全ユーザーの運動記録一覧を取得（最新20件）
   def index
-    exercise_records = ExerciseRecord.includes(:user, :likes).order(recorded_date: :desc).limit(20)
+    exercise_records = ExerciseRecord.includes(:user, :user_likes).order(recorded_date: :desc).limit(20)
     records_with_details = exercise_records.map do |record|
       {
         id: record.id,
@@ -51,7 +51,7 @@ class ExerciseRecordsController < ApplicationController
         time: record.exercise_time,
         date: record.recorded_date,
         comment: record.content,
-        likes_count: record.likes.count
+        likes_count: record.user_likes.count
       }
     end
     render json: records_with_details
