@@ -19,7 +19,7 @@ Rails.application.routes.draw do
 
   # 運動記録機能
   get "users/:user_id/exercises", to: "exercise_records#user_exercises"
-  resources :exercises, only: [:create, :index]
+  resources :exercises, only: [:create, :index], controller: 'exercise_records'
 
   # いいね機能
   post "likes", to: "likes#create"
