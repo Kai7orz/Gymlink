@@ -26,6 +26,10 @@
     const signInUser = async () => {
         isLoading.value = true
         const minLoadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
+        const toSignUp = () => {
+            navigateTo('/signup')
+        }
+
         try{
 
             firebaseData.value = await signIn(email.value,password.value)
@@ -67,6 +71,7 @@
                     ></v-progress-circular>
                 </v-overlay>
             </v-btn>
+            <v-btn class="bg-black text-blue"  @click="toSignUp"> サインアップ </v-btn>
         </v-card>
     </ClientOnly>
     </div>

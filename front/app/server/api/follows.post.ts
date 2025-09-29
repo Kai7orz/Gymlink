@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event)=> {
-    const  idToken  = getRequestHeaders(event,'authorization')
+    const  idToken  = getRequestHeader(event,'authorization')
     const body = await readBody(event)
     const data = await $fetch(`http://swagger-api:4010/follows`,
                                 {
