@@ -10,7 +10,6 @@ export default defineEventHandler(async (event)=> {
                                     }
                                 }
     )
-    console.log("user info:::",data)
     return data
 
 })

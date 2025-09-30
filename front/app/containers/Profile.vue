@@ -8,9 +8,9 @@
     const user = useUserStore()
     const auth = useAuthStore()
     const TOKEN = auth.idToken
-    console.log("testtest",user.userId)
+    const uid = Number(props.userId)
     const data = await $fetch(
-        `/api/user_profiles/${Number(props.userId)}`,{
+        `/api/user_profiles/${uid}`,{
           headers: {
                         'Authorization': 'Bearer ' + TOKEN,
                         'Content-Type': 'application/json'

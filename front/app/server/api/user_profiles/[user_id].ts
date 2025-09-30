@@ -8,6 +8,5 @@ export default defineEventHandler(async (event) => {
                                     },
                                 }
     )
-    console.log("dataadata:::",data)
     return data
 })

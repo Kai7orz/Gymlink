@@ -1,7 +1,6 @@
 export default defineEventHandler(async (event)=> {
     const  idToken  = getRequestHeader(event,'authorization')
     const body = await readBody(event)
-    console.log("body-->",body.image_url,body.time,body.date,body.comment)
     const data = await $fetch(`http://host.docker.internal:3001/exercises`,
                                 {
                                     method: 'POST',

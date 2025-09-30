@@ -21,7 +21,6 @@
         })
 
     watch(userData,val=>{
-        console.log("logint===>",userData.value)
         user.setUser(val.id,val.name)
     })
 

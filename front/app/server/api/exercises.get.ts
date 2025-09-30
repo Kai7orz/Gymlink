@@ -9,6 +9,5 @@ export default defineEventHandler(async (event)=> {
                 }
             }
     )
-    console.log("testtest",data)
     return data
 })

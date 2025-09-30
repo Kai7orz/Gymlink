@@ -51,7 +51,7 @@
                 </v-row>
             </v-container>           
             <v-spacer></v-spacer>
-            <v-btn @click="recordAndClose">記録</v-btn>
+            <v-btn class="bg-black" @click="recordAndClose">記録</v-btn>
         </v-card>
     </v-dialog>
 </template>

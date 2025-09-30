@@ -15,8 +15,7 @@ import { illustrations } from '~/data/illustrations';
 
 
     const addCard = async ()=>{
-        console.log("add card")
-
+        console.log(imageUrl.value)
         const TOKEN = auth.idToken
         await $fetch('/api/userExercise',{
             method: 'POST',
