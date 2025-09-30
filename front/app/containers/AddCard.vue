@@ -13,7 +13,6 @@ import { illustrations } from '~/data/illustrations';
     // イラスト一覧を読み込んで propsとして渡して表示する
     const illustrationsObjs = illustrations
 
-
     const addCard = async ()=>{
         console.log(imageUrl.value)
         const TOKEN = auth.idToken
