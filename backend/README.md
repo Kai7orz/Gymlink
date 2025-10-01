@@ -4,8 +4,9 @@
 https://zenn.dev/ajapa/articles/443c396a2c5dd1
 を参考に環境を構築.
 
-### golang-migrate の導入
+## 開発の流れ
 
+### golang-migrate の導入
 1. ホストマシン側にgolang-migrate を導入（マイグレーション用ファイル作成のため）
 ```
 go install -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
@@ -76,6 +77,26 @@ DELETE FROM schema_migrations WHERE version=x;
 
 もし中途半端に table できていたら DROP する必要があるのも注意
 
+### テーブルを設計・作成
+
+今回は以下のことを意識
+
+- いつも一緒に読むか・たまにしか読み込まないならテーブル分ける
+- 更新時の影響を考えてテーブル分離
+- 多対多なら中間テーブル作成
+- 役割が異なるかどうか（users と profile テーブル分けるなど）
+
+![alt text](gymlink_table2.png)
+profile->profiles (table)
+UNIQUE -> PRIMARY (follows)
+
+### Go でテーブルを実装
+golang-migrate で 上記設計したテーブルをマイグレーションファイルで実装．
+down に関しては依存関係見て DROP 順序気を付ける．
+※create TABLE ... は1つのマイグレーションファイルにつき1つにしないとエラーとなる
+
+### Seed データ作成
+
 ### Tip・学び
 ```
 services:
@@ -91,5 +112,6 @@ services:
 によって， MYSQLにMYSQL_DATABASE で指定した DB へのスーパーユーザー権限が付与される（https://zenn.dev/dotq/articles/54ac397b217f5f）
 したがって，開発者がDB 権限をいじらなくても Go -> DB の権限周りで詰まることはない
 
+create TABLE ... は1つのマイグレーションファイルにつき1つにしないとエラーとなる
 
 ※ imageキャッシュの意図しないものが利用されるのを防ぐために序盤は docker compose up --build を実行したほうがいい
