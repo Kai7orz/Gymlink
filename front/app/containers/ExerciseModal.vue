@@ -10,7 +10,7 @@
     const isShownMenu = defineModel('isShownMenu')
 
     const date = defineModel<string>('date')
-    const exerciseTime = defineModel<number>('exerciseTime')
+    const exerciseTime = defineModel<string>('exerciseTime')
     const comment = defineModel<string>('comment')
     const emits = defineEmits<{
         close: [],

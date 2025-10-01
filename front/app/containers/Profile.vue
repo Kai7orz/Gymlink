@@ -1,14 +1,25 @@
 <script setup lang="ts">
     
     import { useUserStore } from '~/stores/userStore';
+    const props = defineProps<{
+        userId: string,
+    }>();
+
     const user = useUserStore()
-    const TOKEN = user.idToken
-    const {data} = await useFetch(
-        `/api/user_profiles/${user.userId}`
+    const auth = useAuthStore()
+    const TOKEN = auth.idToken
+    const uid = Number(props.userId)
+    const data = await $fetch(
+        `/api/user_profiles/${uid}`,{
+          headers: {
+                        'Authorization': 'Bearer ' + TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+        }
     );
-    console.log("get profile:",data.value.name,data.value.profileImage)
 
     const follow = async (id:number) => {
+        await navigateTo('/following')
         await $fetch("/api/follows", {
                         method: 'POST',
                         headers: {

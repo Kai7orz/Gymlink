@@ -7,9 +7,9 @@
     <v-app>
       <the-header>
       </the-header>
-      <v-main>
-        <NuxtPage />
-      </v-main>
+<v-main class="min-h-screen" style="background: linear-gradient(135deg, #0044ff, #ff5e5e);">
+  <NuxtPage />
+</v-main>
     </v-app>
   </NuxtLayout>
 </template>
@@ -17,7 +17,7 @@
 <style>
 main {
   background: linear-gradient(135deg, #0044ff, #ff5e5e);
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
 }
 

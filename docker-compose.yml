@@ -3,11 +3,9 @@ services:
     build:
       context: .
       dockerfile: docker/nuxt/Dockerfile
-    container_name: nuxt 
+    container_name: nuxt
     ports:
       - 3000:3000
-    # env_file:
-    #   - .env
     tty: true
     environment:
       - CHOKIDAR_USEPOLLING=true
@@ -17,6 +15,41 @@ services:
     command: sh -c '(npm ci || npm install) && npm run dev'
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  go:
+    container_name: go
+    build:
+      context: .
+      dockerfile: docker/golang/Dockerfile
+    tty: true
+    ports:
+      - 8080:8080
+    env_file:
+      - ./mysql/.env
+    depends_on:
+      - db
+    volumes:
+      - type: bind
+        source: ./backend/golang/src
+        target: /go/src
+
+  db:
+    container_name: db
+    build:
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+    tty: true
+    ports:
+      - 3307:3306
+    env_file:
+      - ./mysql/.env
+    volumes:
+      - type: volume
+        source: mysql_test_volume
+        target: /var/lib/mysql
+      - type: bind 
+        source: ./mysql/init
+        target: /docker-entrypoint-initdb.d
 
   swagger-editor:
     image: swaggerapi/swagger-editor
@@ -45,3 +78,5 @@ services:
 
 volumes:
   nuxt_node_modules:
+  mysql_test_volume:
+    name: mysql_test_volume

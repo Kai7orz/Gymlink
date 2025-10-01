@@ -16,7 +16,7 @@
     const exerciseTimeLabel = "運動時間（min）"
     const exerciseCommentLabel = "コメント"
     const isShownMenu = defineModel<boolean>('isShownMenu')
-    const exerciseTime = defineModel<number>('exerciseTime')
+    const exerciseTime = defineModel<string>('exerciseTime')
     const comment = defineModel<string>('comment')
     const selectedDate = ref(null)
 
@@ -51,7 +51,7 @@
                 </v-row>
             </v-container>           
             <v-spacer></v-spacer>
-            <v-btn @click="recordAndClose">記録</v-btn>
+            <v-btn class="bg-black" @click="recordAndClose">記録</v-btn>
         </v-card>
     </v-dialog>
 </template>
