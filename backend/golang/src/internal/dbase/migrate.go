@@ -1,7 +1,6 @@
 package dbase
 
 import (
-	"database/sql"
 	"fmt"
 	"gymlink/internal/utils"
 	"log"
@@ -11,10 +10,13 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jmoiron/sqlx"
 )
 
-func Migrate(db *sql.DB, isUp bool) error {
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
+func Migrate(db *sqlx.DB, isUp bool) error {
+
+	var rawMigrationFilesPath = ""
+	driver, err := mysql.WithInstance(db.DB, &mysql.Config{})
 	if err != nil {
 		fmt.Println("error mysql.WithInstance()")
 		return err
@@ -23,9 +25,14 @@ func Migrate(db *sql.DB, isUp bool) error {
 	if err != nil {
 		fmt.Println(err)
 	}
-	rawMigrationFilesPath := filepath.Join(rootPath, "internal", "dbase", "migration")
-	migrationFilesPath := filepath.Join("file://", rawMigrationFilesPath)
 
+	if os.Getenv("APP_ENV") == "development" {
+		rawMigrationFilesPath = filepath.Join(rootPath, "internal", "dbase", "migration", "dev")
+	} else {
+		rawMigrationFilesPath = filepath.Join(rootPath, "internal", "dbase", "migration")
+	}
+
+	migrationFilesPath := filepath.Join("file://", rawMigrationFilesPath)
 	m, err := migrate.NewWithDatabaseInstance(migrationFilesPath, "mysql", driver)
 	if err != nil {
 		fmt.Println("migration file path:", migrationFilesPath)
@@ -46,10 +53,10 @@ func Migrate(db *sql.DB, isUp bool) error {
 	return nil
 }
 
-func MigrateUp(db *sql.DB) error {
+func MigrateUp(db *sqlx.DB) error {
 	return Migrate(db, true)
 }
 
-func MigrateDown(db *sql.DB) error {
+func MigrateDown(db *sqlx.DB) error {
 	return Migrate(db, false)
 }

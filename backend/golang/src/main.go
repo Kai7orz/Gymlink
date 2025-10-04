@@ -13,4 +13,10 @@ func main() {
 	if err != nil {
 		log.Fatal("migrate up failed")
 	}
+
+	err = dbase.SeedingDB(db)
+	if err != nil {
+		log.Fatal("seeding error")
+	}
+
 }

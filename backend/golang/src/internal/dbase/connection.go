@@ -1,15 +1,16 @@
 package dbase
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
 	"time"
+
+	"github.com/jmoiron/sqlx"
 )
 
-func open(path string, count uint) *sql.DB {
-	db, err := sql.Open("mysql", path)
+func open(path string, count uint) *sqlx.DB {
+	db, err := sqlx.Open("mysql", path)
 	if err != nil {
 		log.Fatal("open error: ", err)
 	}
@@ -24,7 +25,7 @@ func open(path string, count uint) *sql.DB {
 	return db
 }
 
-func ConnectDB() *sql.DB {
+func ConnectDB() *sqlx.DB {
 	if os.Getenv("APP_ENV") == "development" {
 		fmt.Println("development is set")
 		var path string = fmt.Sprintf("%s:%s@tcp(dev_db:3306)/%s?charset=utf8&parseTime=true",
