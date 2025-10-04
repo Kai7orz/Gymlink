@@ -48,6 +48,19 @@ func SeedingDB(db *sqlx.DB) error {
 		UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
 	}
 
+	type UserLike struct {
+		UserId           int64     `json:"user_id" db:"user_id"`
+		ExerciseRecordId int64     `json:"exercise_record_id" db:"exercise_record_id"`
+		CreatedAt        time.Time `json:"created_at" db:"created_at"`
+		UpdatedAt        time.Time `json:"updated_at" db:"updated_at"`
+	}
+	type Follow struct {
+		FollowerId int64     `json:"follower_id" db:"follower_id"`
+		FollowedId int64     `json:"followed_id" db:"followed_id"`
+		CreatedAt  time.Time `json:"created_at" db:"created_at"`
+		UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
+	}
+
 	testCharacter := Character{
 		int64(1),
 		"Aomaru",
@@ -65,6 +78,16 @@ func SeedingDB(db *sqlx.DB) error {
 		"firebase_test_id",
 		"test_user_name",
 		"test@example.com",
+		time.Now(),
+		time.Now(),
+	}
+
+	testUser2 := User{
+		int64(2),
+		int64(1),
+		"firebase_test_id2",
+		"test_user_name2",
+		"test2@example.com",
 		time.Now(),
 		time.Now(),
 	}
@@ -87,6 +110,20 @@ func SeedingDB(db *sqlx.DB) error {
 		time.Now(),
 	}
 
+	testExerciseLike := UserLike{
+		int64(1),
+		int64(1),
+		time.Now(),
+		time.Now(),
+	}
+
+	testFollow := Follow{
+		int64(1),
+		int64(2),
+		time.Now(),
+		time.Now(),
+	}
+
 	// 重複データ防止対策は応急処置でしかないので本番環境では他ロジックで対応する
 	sql := `INSERT INTO characters (id,name,image_url,level,current_point,limit_point,created_at,updated_at) 
 	VALUES (:id,:name,:image_url,:level,:current_point,:limit_point,:created_at,:updated_at) ON DUPLICATE KEY UPDATE name = VALUES(name),updated_at = VALUES(updated_at);`
@@ -104,6 +141,12 @@ func SeedingDB(db *sqlx.DB) error {
 		return err
 	}
 
+	_, err = db.NamedExec(sql, testUser2)
+	if err != nil {
+		log.Println("NamedExec Error::", err)
+		return err
+	}
+
 	sql = `INSERT INTO profiles (id,user_id,profile_image,created_at,updated_at) VALUES (:id,:user_id,:profile_image,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at);`
 	_, err = db.NamedExec(sql, testProfile)
 	if err != nil {
@@ -113,6 +156,20 @@ func SeedingDB(db *sqlx.DB) error {
 
 	sql = `INSERT INTO exercise_records (id,user_id,exercise_time,exercise_date,comment,created_at,updated_at) VALUES (:id,:user_id,:exercise_time,:exercise_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
 	_, err = db.NamedExec(sql, testExerciseRecord)
+	if err != nil {
+		log.Println("NamedExec Error::", err)
+		return err
+	}
+
+	sql = `INSERT INTO user_likes (user_id,exercise_record_id,created_at,updated_at) VALUES (:user_id,:exercise_record_id,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
+	_, err = db.NamedExec(sql, testExerciseLike)
+	if err != nil {
+		log.Println("NamedExec Error::", err)
+		return err
+	}
+
+	sql = `INSERT INTO follows (follower_id,followed_id,created_at,updated_at) VALUES (:follower_id,:followed_id,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
+	_, err = db.NamedExec(sql, testFollow)
 	if err != nil {
 		log.Println("NamedExec Error::", err)
 		return err
