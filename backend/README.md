@@ -96,6 +96,61 @@ down に関しては依存関係見て DROP 順序気を付ける．
 ※create TABLE ... は1つのマイグレーションファイルにつき1つにしないとエラーとなる
 
 ### Seed データ作成
+モックデータを作成
+自動作成の選択肢もあるが今回は直でデータ入れる
+参考： https://qiita.com/shion0625/items/e09fe9c008ac6409e57c
+
+DB を開発用と本番用で分ける
+1. 新たに開発用の DB を構築
+  - 
+  ```
+    MYSQL_DATABASE=...
+    MYSQL_USER=...
+    MYSQL_PASSWORD=...
+    MYSQL_ROOT_PASSWORD=...
+
+    MYSQL_DEV_DATABASE=gymlink_dev_database
+    MYSQL_DEV_USER=gymlink_dev_user
+    MYSQL_DEV_PASSWORD=...
+  ```
+  MySQL の.env に　DEV 用の設定を追加
+
+  コンテナも dev 開発用に建てる．（docker-compose.yml）
+```
+  dev_db:
+    container_name: dev_db
+    build:
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+    tty: true
+    ports:
+      - 3308:3306
+    env_file:
+      - ./mysql/.env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DEV_DATABASE}
+      MYSQL_USER: ${MYSQL_DEV_USER}
+      MYSQL_DEV_PASSWORD: ${MYSQL_DEV_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DEV_ROOT_PASSWORD}
+
+    volumes:
+      - type: volume
+        source: mysql_test_volume
+        target: /var/lib/mysql
+      - type: bind 
+        source: ./mysql/init
+        target: /docker-entrypoint-initdb.d
+```
+
+2. Go（アプリ側）の DB 接続先を dev 用に変更[ .env に APP_ENV を用意し，その文字列から環境を指定 APP_ENV=development なら dev用DB, APP_ENV=product なら 本番用 DB に接続するロジックに]
+3. Go（アプリ側）migration ファイルの指定先の変更[2と同様]
+4. INSERT していく
+
+※ docker-compose.yml で　開発環境では利用する .env を.dev.env に変更し，本番環境では， .env に
+
+
+### swagger の整備
+- API 設計
 
 ### Tip・学び
 ```
@@ -115,3 +170,8 @@ services:
 create TABLE ... は1つのマイグレーションファイルにつき1つにしないとエラーとなる
 
 ※ imageキャッシュの意図しないものが利用されるのを防ぐために序盤は docker compose up --build を実行したほうがいい
+
+#### MySQL Error
+2025-10-02T14:30:31.171182Z 1 [ERROR] [MY-012596] [InnoDB] Error number 11 means 'Resource temporarily unavailable'
+dev_db          | 2025-10-02T14:30:31.171317Z 1 [ERROR] [MY-012215] [InnoDB] Cannot open datafile './ibdata1'
+

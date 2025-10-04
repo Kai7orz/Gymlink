@@ -25,13 +25,32 @@ services:
     ports:
       - 8080:8080
     env_file:
-      - ./mysql/.env
+      - ./mysql/.dev.env
     depends_on:
       - db
     volumes:
       - type: bind
         source: ./backend/golang/src
         target: /go/src
+
+  dev_db:
+    container_name: dev_db
+    build:
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+    tty: true
+    ports:
+      - 3308:3306
+    env_file:
+      - ./mysql/.dev.env
+
+    volumes:
+      - type: volume
+        source: mysql_dev_volume
+        target: /var/lib/mysql
+      - type: bind 
+        source: ./mysql/init
+        target: /docker-entrypoint-initdb.d
 
   db:
     container_name: db
@@ -78,5 +97,7 @@ services:
 
 volumes:
   nuxt_node_modules:
+  mysql_dev_volume:
+    name: mysql_dev_volume
   mysql_test_volume:
     name: mysql_test_volume

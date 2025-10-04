@@ -1,3 +1,2 @@
-
-# ignore dev sqlite
-back/db/*.sqlite3
+./mysql/.dev.env
+./mysql/.env
