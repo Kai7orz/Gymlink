@@ -41,17 +41,19 @@ func SeedingDB(db *sqlx.DB) error {
 		time.Now(),
 	}
 
-	// testUser := User{
-	// 	int64(1),
-	// 	int64(1),
-	// 	"firebase_test_id",
-	// 	"test_user_name",
-	// 	"test@example.com",
-	// 	time.Now(),
-	// 	time.Now(),
-	// }
+	testUser := User{
+		int64(1),
+		int64(1),
+		"firebase_test_id",
+		"test_user_name",
+		"test@example.com",
+		time.Now(),
+		time.Now(),
+	}
 
-	sql := `INSERT INTO characters (id,name,image_url,level,current_point,limit_point,created_at,updated_at) VALUES (:id,:name,:image_url,:level,:current_point,:limit_point,:created_at,:updated_at);`
+	// 重複データ防止対策は応急処置でしかないので本番環境では他ロジックで対応する
+	sql := `INSERT INTO characters (id,name,image_url,level,current_point,limit_point,created_at,updated_at) 
+	VALUES (:id,:name,:image_url,:level,:current_point,:limit_point,:created_at,:updated_at) ON DUPLICATE KEY UPDATE name = VALUES(name),updated_at = VALUES(updated_at);`
 	bound, err := db.NamedExec(sql, testCharacter)
 	log.Println("bound-->", bound)
 	if err != nil {
@@ -59,12 +61,12 @@ func SeedingDB(db *sqlx.DB) error {
 		return err
 	}
 
-	// sql = `INSERT INTO users (id,character_id,firebase_uid,name,email,created_at,updated_at) VALUES (:id,:character_id,:firebase_uid,:name,:email,:created_at,:updated_at);`
-	// bound, err := db.NamedExec(sql, testUser)
-	// log.Println("bound-->", bound)
-	// if err != nil {
-	// 	log.Println("NamedExec Error::", err)
-	// 	return err
-	// }
+	sql = `INSERT INTO users (id,character_id,firebase_uid,name,email,created_at,updated_at) VALUES (:id,:character_id,:firebase_uid,:name,:email,:created_at,:updated_at);`
+	_, err = db.NamedExec(sql, testUser)
+	if err != nil {
+		log.Println("NamedExec Error::", err)
+		return err
+	}
+
 	return nil
 }
