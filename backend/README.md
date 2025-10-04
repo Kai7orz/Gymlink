@@ -33,6 +33,11 @@ migrate create -ext sql -dir db/migrations -seq create_users_table
 migrate create -ext sql -dir ./backend/golang/src/internal/db/migration -seq create_initial_tables　
 ```
 を実行
+※ 開発環境の場合は -dir の指定策を以下のように dev に変更することに注意
+```
+migrate create -ext sql -dir ./backend/golang/src/internal/db/migration/dev -seq create_initial_tables　
+```
+
 
 マイグレーションファイルが作成されるので up down 両方のファイルを記述
 参考： https://qiita.com/tuken24/items/70a3dd8ce0dc3c5a5cce
@@ -144,10 +149,26 @@ DB を開発用と本番用で分ける
 
 2. Go（アプリ側）の DB 接続先を dev 用に変更[ .env に APP_ENV を用意し，その文字列から環境を指定 APP_ENV=development なら dev用DB, APP_ENV=product なら 本番用 DB に接続するロジックに]
 3. Go（アプリ側）migration ファイルの指定先の変更[2と同様]
-4. INSERT していく
+4. INSERT していく 今回は seed ディレクトリに init.go ヲ作成して，アプリ側から初期データを挿入していく方式を採る
 
 ※ docker-compose.yml で　開発環境では利用する .env を.dev.env に変更し，本番環境では， .env に
 
+### seed データ挿入にあたって sqlx の導入
+```
+go get github.com/jmoiron/sqlx
+```
+
+*sql.DB を *sqlx.DB に置き換え . また，*sqlx.DB の中に *sql.DB が埋め込まれているので *sqlx.DB の変数に .DB でアクセスして書き換え可能
+
+- データ作成時の createdAt などは time　パッケージの now() などを利用する．
+
+- 依存関係に注意しながらデータ作成（今回はキャラクターが外部依存ないのでキャラクタ―テーブルデータから先に作る必要がある．）
+
+
+参考：https://github.com/jmoiron/sqlx
+
+
+db 関連リセットしたいときは docker compose down -v でボリュームごとデータを消去してしまうといい（開発環境においては！！）
 
 ### swagger の整備
 - API 設計
