@@ -170,6 +170,10 @@ go get github.com/jmoiron/sqlx
 
 db 関連リセットしたいときは docker compose down -v でボリュームごとデータを消去してしまうといい（開発環境においては！！）
 
+### 重複データ
+開発環境では同じデータを何回も流すことがあるので，重複時はINSERT しないといった分岐処理が必要になる．
+WHERE NOT EXISTS で対処
+
 ### swagger の整備
 - API 設計
 
