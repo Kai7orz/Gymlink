@@ -172,7 +172,7 @@ db 関連リセットしたいときは docker compose down -v でボリュー�
 
 ### 重複データ
 開発環境では同じデータを何回も流すことがあるので，重複時はINSERT しないといった分岐処理が必要になる．
-WHERE NOT EXISTS で対処
+ON DUPLICATE KEY UPDATE で対処
 
 ### swagger の整備
 - API 設計
