@@ -38,6 +38,16 @@ func SeedingDB(db *sqlx.DB) error {
 		UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
 	}
 
+	type ExerciseRecord struct {
+		Id           int64     `json:"id" db:"id"`
+		UserId       int64     `json:"user_id" db:"user_id"`
+		ExerciseTime int64     `json:"exercise_time" db:"exercise_time"`
+		ExerciseDate time.Time `json:"exercise_date" db:"exercise_date"`
+		Comment      string    `json:"comment" db:"comment"`
+		CreatedAt    time.Time `json:"created_at" db:"created_at"`
+		UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
+	}
+
 	testCharacter := Character{
 		int64(1),
 		"Aomaru",
@@ -67,6 +77,16 @@ func SeedingDB(db *sqlx.DB) error {
 		time.Now(),
 	}
 
+	testExerciseRecord := ExerciseRecord{
+		int64(1),
+		int64(1),
+		int64(30),
+		time.Now(),
+		"楽しいけど疲れた!",
+		time.Now(),
+		time.Now(),
+	}
+
 	// 重複データ防止対策は応急処置でしかないので本番環境では他ロジックで対応する
 	sql := `INSERT INTO characters (id,name,image_url,level,current_point,limit_point,created_at,updated_at) 
 	VALUES (:id,:name,:image_url,:level,:current_point,:limit_point,:created_at,:updated_at) ON DUPLICATE KEY UPDATE name = VALUES(name),updated_at = VALUES(updated_at);`
@@ -90,5 +110,13 @@ func SeedingDB(db *sqlx.DB) error {
 		log.Println("NamedExec Error::", err)
 		return err
 	}
+
+	sql = `INSERT INTO exercise_records (id,user_id,exercise_time,exercise_date,comment,created_at,updated_at) VALUES (:id,:user_id,:exercise_time,:exercise_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
+	_, err = db.NamedExec(sql, testExerciseRecord)
+	if err != nil {
+		log.Println("NamedExec Error::", err)
+		return err
+	}
+
 	return nil
 }
