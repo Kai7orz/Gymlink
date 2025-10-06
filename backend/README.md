@@ -170,6 +170,50 @@ go get github.com/jmoiron/sqlx
 
 db 関連リセットしたいときは docker compose down -v でボリュームごとデータを消去してしまうといい（開発環境においては！！）
 
+### エンドポイントの設置
+
+gin or echo で　お試しでエンドポイントを設置する
+
+今回は学習リソースが豊富な gin を利用する．
+
+エンドポイントの設置にあたって，構成を示しておく．
+
+- transport（handler）
+- service（application）
+- repository（infra）
+- adapter（外部依存）
+
+handler -> service -> repo interface <- repository,adapter
+repo interface は service 層に置く．
+※ repo interface おいて DB アクセスの内部を知らずにservice はデータ取れるのがメリット
+DI によって service の getUser が内部的に変更を加えなくても，service の取得の
+する内容（DBからとるのかキャッシュからとるのかモックか）をservice の呼び出し時の
+引数（依存性注入部分）の変更だけで切り替えれる．
+```
+// 本番
+svc := service.NewUserService(&dbase.UserDBRepo{db})
+
+// テスト or 開発
+svc := service.NewUserService(&MockUserRepo{})
+
+// キャッシュ層を使いたいとき
+svc := service.NewUserService(&UserCacheRepo{cache})
+```
+※はじめはdbaseディレクトリ(=repository)　として実装を進める
+※service が外部サービスとDB　をインターフェースで扱うように定める
+### Go で firebase idToken を検証する
+
+- service に auth（外部サービス）用のインターフェス定義
+- main.go で注入
+- auth の具体を実装
+
+参考：https://zenn.dev/minguu42/articles/20220501-go-firebase-auth
+
+
+参考：
+
+### エンドポイント CRUD の実装
+
 ### 重複データ
 開発環境では同じデータを何回も流すことがあるので，重複時はINSERT しないといった分岐処理が必要になる．
 ON DUPLICATE KEY UPDATE で対処

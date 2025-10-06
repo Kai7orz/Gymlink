@@ -1,2 +1,4 @@
-./mysql/.dev.env
-./mysql/.env
+mysql/.dev.env
+mysql/.env
+backend/golang/src/.env
+backend/golang/src/internal/rizap-hackathon-firebase-adminsdk-fbsvc-162f53a89e.json
