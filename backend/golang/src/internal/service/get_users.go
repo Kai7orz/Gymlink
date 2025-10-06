@@ -3,24 +3,35 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"gymlink/internal/entity"
 )
 
-type UserService struct{ q UserQueryRepo }
-
-// UserQueryRepo
-func NewUserService(q UserQueryRepo) (*UserService, error) {
-	if q == nil {
-		return nil, errors.New("nil UserQueryRepo")
-	}
-	return &UserService{q: q}, nil
+// service の依存
+type userService struct {
+	q UserQueryRepo
+	a AuthClient
 }
 
-func (s *UserService) GetUser(ctx context.Context, userId int64) (*entity.UserType, error) {
-	if userId <= 0 {
-		return nil, errors.New("invalid userId")
+// UserQueryRepo
+func NewUserService(q UserQueryRepo, a AuthClient) (UserService, error) {
+	if q == nil || a == nil {
+		return nil, errors.New("nil UserQueryRepo or AuthClient")
 	}
-	v, err := s.q.FindById(ctx, userId)
+	return &userService{q: q, a: a}, nil
+}
+
+func (s *userService) GetUser(ctx context.Context, idToken string) (*entity.UserType, error) {
+	//verify user
+	_, err := s.a.VerifyUser(ctx, idToken)
+	if err != nil {
+		return nil, errors.New("failed to verify user")
+	}
+
+	fmt.Println("Verify User ✅")
+	// DB に userId=1 と token 対応したデータをseed しておく
+	// 1を idToken からuserId を取り出す処理加えて userId に置き換える
+	v, err := s.q.FindById(ctx, 1)
 	if v == nil {
 		return nil, errors.New("user not found")
 	}

@@ -178,13 +178,12 @@ gin or echo で　お試しでエンドポイントを設置する
 
 エンドポイントの設置にあたって，構成を示しておく．
 
-3層
-
 - transport（handler）
 - service（application）
 - repository（infra）
+- adapter（外部依存）
 
-handler -> service -> repo interface <- repository
+handler -> service -> repo interface <- repository,adapter
 repo interface は service 層に置く．
 ※ repo interface おいて DB アクセスの内部を知らずにservice はデータ取れるのがメリット
 DI によって service の getUser が内部的に変更を加えなくても，service の取得の
@@ -201,8 +200,13 @@ svc := service.NewUserService(&MockUserRepo{})
 svc := service.NewUserService(&UserCacheRepo{cache})
 ```
 ※はじめはdbaseディレクトリ(=repository)　として実装を進める
-
+※service が外部サービスとDB　をインターフェースで扱うように定める
 ### Go で firebase idToken を検証する
+
+- service に auth（外部サービス）用のインターフェス定義
+- main.go で注入
+- auth の具体を実装
+
 参考：https://zenn.dev/minguu42/articles/20220501-go-firebase-auth
 
 
