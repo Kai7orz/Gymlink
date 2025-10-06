@@ -63,7 +63,7 @@
             <v-card-title class="d-flex justify-center">サインイン</v-card-title>
             <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
             <v-text-field v-model="password" class="w-1/2 mx-auto m-5" label="パスワード" type="password" />
-            <v-btn class="d-flex justify-center" @click="signInUser" color="primary">
+            <v-btn class="d-flex justify-center m-5" @click="signInUser" color="primary">
                 サインイン
                 <v-overlay v-model="isLoading"
                     activator="parent"
@@ -77,7 +77,7 @@
                     ></v-progress-circular>
                 </v-overlay>
             </v-btn>
-            <v-btn class="bg-black text-blue"  @click="toSignUp"> サインアップ </v-btn>
+            <v-btn class="bg-black text-blue m-5"  @click="toSignUp">未登録の方 サインアップ </v-btn>
         </v-card>
     </ClientOnly>
     </div>
