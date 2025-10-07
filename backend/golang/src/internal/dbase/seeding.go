@@ -25,7 +25,6 @@ func SeedingDB(db *sqlx.DB) error {
 		CharacterId int64     `json:"caharacter_id" db:"character_id"`
 		FirebaseUid string    `json:"firebase_uid" db:"firebase_uid"`
 		Name        string    `json:"name" db:"name"`
-		Email       string    `json:"email" db:"email"`
 		CreatedAt   time.Time `json:"created_at" db:"created_at"`
 		UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
 	}
@@ -77,7 +76,6 @@ func SeedingDB(db *sqlx.DB) error {
 		int64(1),
 		"firebase_test_id",
 		"test_user_name",
-		"test@example.com",
 		time.Now(),
 		time.Now(),
 	}
@@ -87,7 +85,6 @@ func SeedingDB(db *sqlx.DB) error {
 		int64(1),
 		"firebase_test_id2",
 		"test_user_name2",
-		"test2@example.com",
 		time.Now(),
 		time.Now(),
 	}
@@ -134,7 +131,7 @@ func SeedingDB(db *sqlx.DB) error {
 		return err
 	}
 
-	sql = `INSERT INTO users (id,character_id,firebase_uid,name,email,created_at,updated_at) VALUES (:id,:character_id,:firebase_uid,:name,:email,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at);`
+	sql = `INSERT INTO users (id,character_id,firebase_uid,name,created_at,updated_at) VALUES (:id,:character_id,:firebase_uid,:name,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at);`
 	_, err = db.NamedExec(sql, testUser)
 	if err != nil {
 		log.Println("NamedExec Error::", err)

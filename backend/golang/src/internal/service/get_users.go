@@ -3,42 +3,40 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
-	"gymlink/internal/entity"
+	"log"
 )
 
 // service の依存
 type userService struct {
-	q UserQueryRepo
-	a AuthClient
+	q  UserQueryRepo
+	cm UserCreateRepo
+	a  AuthClient
 }
 
 // UserQueryRepo
-func NewUserService(q UserQueryRepo, a AuthClient) (UserService, error) {
-	if q == nil || a == nil {
-		return nil, errors.New("nil UserQueryRepo or AuthClient")
+func NewUserService(q UserQueryRepo, cm UserCreateRepo, a AuthClient) (UserService, error) {
+	if q == nil || cm == nil || a == nil {
+		return nil, errors.New("nil error: UserQueryRepo or UserCreateRepo or AuthClient")
 	}
-	return &userService{q: q, a: a}, nil
+	return &userService{q: q, cm: cm, a: a}, nil
 }
 
-func (s *userService) GetUser(ctx context.Context, idToken string) (*entity.UserType, error) {
+// func (s *userService) GetUser(ctx context.Context, idToken string) (*entity.UserType, error) {
+func (s *userService) SignUpUser(ctx context.Context, name string, avatarUrl string, idToken string) error {
 	//verify user
-	_, err := s.a.VerifyUser(ctx, idToken)
+	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return nil, errors.New("failed to verify user")
+		return errors.New("failed to verify user")
 	}
+	log.Println("UID : ", token.UID)
+	log.Println("Verify User ✅")
+	// token.UID と CharaceterId(デフォルト1) と FirebaseUID と Name と Email を保持
 
-	fmt.Println("Verify User ✅")
-	// DB に userId=1 と token 対応したデータをseed しておく
-	// 1を idToken からuserId を取り出す処理加えて userId に置き換える
-	v, err := s.q.FindById(ctx, 1)
-	if v == nil {
-		return nil, errors.New("user not found")
-	}
-
+	// v, err := s.q.SignUpById(ctx, 1)
+	err = s.cm.CreateUserById(ctx, name, avatarUrl, token.UID)
 	if err != nil {
-		return nil, err
+		return errors.New("failed to create user")
 	}
 
-	return v, nil
+	return nil
 }
