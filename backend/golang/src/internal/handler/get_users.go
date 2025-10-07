@@ -51,5 +51,23 @@ func (h *UserHandler) SignUpUserById(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "User Created Successfully✅"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Finish Setting Endpoints Successfully✅"})
+}
+
+func (h *UserHandler) LoginUser(ctx *gin.Context) {
+	// ヘッダー取り出し
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	token := strings.TrimPrefix(authz, "Bearer ")
+
+	user, err := h.svc.LoginUser(ctx.Request.Context(), token)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+	log.Println("Get user successfully ✅：", user)
+	ctx.JSON(http.StatusOK, user)
 }

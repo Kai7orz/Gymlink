@@ -18,10 +18,10 @@ func NewUserQueryRepo(db *sqlx.DB) *userQueryRepo {
 	return &userQueryRepo{db: db}
 }
 
-func (r *userQueryRepo) FindById(ctx context.Context, id int64) (*entity.UserType, error) {
-	sql := `SELECT id,name FROM users WHERE id=?`
+func (r *userQueryRepo) FindByToken(ctx context.Context, uid string) (*entity.UserType, error) {
+	sql := `SELECT id,name FROM users WHERE firebase_uid=?`
 	var user entity.UserType
-	if err := r.db.GetContext(ctx, &user, sql, id); err != nil {
+	if err := r.db.GetContext(ctx, &user, sql, uid); err != nil {
 		return nil, fmt.Errorf("select: %w", err)
 	}
 	return &user, nil

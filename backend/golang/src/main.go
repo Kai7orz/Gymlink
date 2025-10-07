@@ -66,6 +66,7 @@ func main() {
 	h := handler.NewUserHandler(userSvc)
 	r := gin.Default()
 	r.POST("/users", h.SignUpUserById)
+	r.POST("/login", h.LoginUser)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)

@@ -10,7 +10,7 @@ import (
 // repository の interface を記述
 // 読み取り専用のリポジトリを定義する
 type UserQueryRepo interface {
-	FindById(ctx context.Context, id int64) (*entity.UserType, error)
+	FindByToken(ctx context.Context, uid string) (*entity.UserType, error)
 }
 
 type UserCreateRepo interface {
@@ -25,4 +25,5 @@ type AuthClient interface {
 // handler レイヤーが利用するインターフェース
 type UserService interface {
 	SignUpUser(ctx context.Context, name string, string, idToken string) error
+	LoginUser(ctx context.Context, idToken string) (*entity.UserType, error)
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"gymlink/internal/entity"
 	"log"
 )
 
@@ -39,4 +40,20 @@ func (s *userService) SignUpUser(ctx context.Context, name string, avatarUrl str
 	}
 
 	return nil
+}
+
+func (s *userService) LoginUser(ctx context.Context, idToken string) (*entity.UserType, error) {
+	//verify user
+	token, err := s.a.VerifyUser(ctx, idToken)
+	if err != nil {
+		return nil, errors.New("failed to verify user")
+	}
+	log.Println("Verify User ✅")
+
+	user, err := s.q.FindByToken(ctx, token.UID)
+	if err != nil {
+		log.Println("failed to find user by token")
+		return nil, err
+	}
+	return user, nil
 }
