@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event)=>{
     const  idToken  = getRequestHeader(event,'authorization')
     const body = await readBody(event)
-    const data = await $fetch(`http://host.docker.internal:3001/users`,
+    const data = await $fetch(`http://go:8080/users`,
         {
             method: 'POST',
             headers: {

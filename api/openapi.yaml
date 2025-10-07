@@ -22,8 +22,6 @@ paths:
               properties:
                 name:
                   type: string
-                email:
-                  type: string
                 avatar_url:
                   type: string
       responses:

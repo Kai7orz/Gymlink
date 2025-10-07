@@ -55,15 +55,17 @@ func main() {
 	}
 	authC := adapter.NewAuthClient(authCli)
 
-	userRepo := dbase.NewUserQueryRepo(db)
+	userQueryRepo := dbase.NewUserQueryRepo(db)
 
-	userSvc, err := service.NewUserService(userRepo, authC)
+	userCreateRepo := dbase.NewUserCreateRepo(db)
+
+	userSvc, err := service.NewUserService(userQueryRepo, userCreateRepo, authC)
 	if err != nil {
 		log.Fatal("user service error")
 	}
 	h := handler.NewUserHandler(userSvc)
 	r := gin.Default()
-	r.POST("/users", h.GetUserByParam)
+	r.POST("/users", h.SignUpUserById)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
