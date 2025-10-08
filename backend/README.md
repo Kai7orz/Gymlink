@@ -214,12 +214,43 @@ svc := service.NewUserService(&UserCacheRepo{cache})
 
 ### エンドポイント CRUD の実装
 
+JOIN 使ってデータ取得：
+
 ### 重複データ
 開発環境では同じデータを何回も流すことがあるので，重複時はINSERT しないといった分岐処理が必要になる．
 ON DUPLICATE KEY UPDATE で対処
 
+### DB からのデータ取得
+https://qiita.com/k-motoyan/items/f37d1348efd3f40e9096
+
+### テーブル結合の基礎・SQL
+フォロー・フォロワー数取得 SQL など
+https://hit.hateblo.jp/entry/2016/05/09/131806
+
+参考：https://note.shiftinc.jp/n/nd2a2915211f8
+
+
+### curl で firebase の idToken 取得して，authorization つけた状態でリクエスト
+参考：https://zenn.dev/purratto/articles/94693409a8c62b
+```
+curl -X POST -H "Content-Type: application/json" -d '{
+  "email": "<EMAIL>",
+  "password": "<PASSWORD>",
+  "returnSecureToken": true
+}' "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDLENAgDartCqlupd9YZTVAylQ6XQ8Ivw4"
+```
+で idToken を取得し
+```
+ curl -H GET 'http://localhost:8080/user_profiles/1' -H 'Content-Type:application/json;charset=utf-8' -H 'Authorization: Bearer 取得したidToken
+```
+でリクエストを送信．
+
 ### swagger の整備
 - API 設計
+
+### エラー集
+- /user_profiles/:user_id で 多分 follower_id に登録されていないid を user_id に指定するとエラーになる．本来 follower_id に登録されていなくても
+followed_id に登録されていたら正常にレスポンスしたいのにできていない
 
 ### Tip・学び
 ```

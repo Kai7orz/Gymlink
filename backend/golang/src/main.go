@@ -59,7 +59,9 @@ func main() {
 
 	userCreateRepo := dbase.NewUserCreateRepo(db)
 
-	userSvc, err := service.NewUserService(userQueryRepo, userCreateRepo, authC)
+	profileRepo := dbase.NewProfileRepo(db)
+
+	userSvc, err := service.NewUserService(userQueryRepo, userCreateRepo, profileRepo, authC)
 	if err != nil {
 		log.Fatal("user service error")
 	}
@@ -67,6 +69,7 @@ func main() {
 	r := gin.Default()
 	r.POST("/users", h.SignUpUserById)
 	r.POST("/login", h.LoginUser)
+	r.GET("/user_profiles/:user_id", h.GetProfilebyId)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
