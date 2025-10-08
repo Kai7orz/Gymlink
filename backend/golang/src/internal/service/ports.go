@@ -17,6 +17,10 @@ type UserCreateRepo interface {
 	CreateUserById(ctx context.Context, name string, avatarUrl string, uid string) error
 }
 
+type ProfileRepo interface {
+	GetProfileById(ctx context.Context, id int64) (*entity.ProfileType, error)
+}
+
 // Firebase とやりとりするためのインターフェース
 type AuthClient interface {
 	VerifyUser(ctx context.Context, idToken string) (*auth.Token, error)
@@ -26,4 +30,5 @@ type AuthClient interface {
 type UserService interface {
 	SignUpUser(ctx context.Context, name string, string, idToken string) error
 	LoginUser(ctx context.Context, idToken string) (*entity.UserType, error)
+	GetProfile(ctx context.Context, id int64) (*entity.ProfileType, error)
 }
