@@ -22,7 +22,8 @@ type ProfileRepo interface {
 }
 
 type ExerciseQueryRepo interface {
-	GetExerciseById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error)
+	GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error)
+	GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error)
 }
 
 type ExerciseCreateRepo interface {
@@ -43,4 +44,5 @@ type UserService interface {
 
 type ExerciseService interface {
 	GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error)
+	GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error)
 }
