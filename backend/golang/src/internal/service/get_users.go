@@ -23,7 +23,6 @@ func NewUserService(q UserQueryRepo, cm UserCreateRepo, p ProfileRepo, a AuthCli
 	return &userService{q: q, cm: cm, p: p, a: a}, nil
 }
 
-// func (s *userService) GetUser(ctx context.Context, idToken string) (*entity.UserType, error) {
 func (s *userService) SignUpUser(ctx context.Context, name string, avatarUrl string, idToken string) error {
 	//verify user
 	token, err := s.a.VerifyUser(ctx, idToken)

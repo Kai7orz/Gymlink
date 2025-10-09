@@ -61,15 +61,26 @@ func main() {
 
 	profileRepo := dbase.NewProfileRepo(db)
 
+	exerciseQueryRepo := dbase.NewExerciseQueryRepo(db)
+
 	userSvc, err := service.NewUserService(userQueryRepo, userCreateRepo, profileRepo, authC)
 	if err != nil {
 		log.Fatal("user service error")
 	}
-	h := handler.NewUserHandler(userSvc)
+
+	exerciseSvc, err := service.NewExerciseService(exerciseQueryRepo)
+	if err != nil {
+		log.Fatal("exercise service error")
+	}
+
+	userHandler := handler.NewUserHandler(userSvc)
+	exerciseHandler := handler.NewExerciseHandler(exerciseSvc)
+
 	r := gin.Default()
-	r.POST("/users", h.SignUpUserById)
-	r.POST("/login", h.LoginUser)
-	r.GET("/user_profiles/:user_id", h.GetProfilebyId)
+	r.POST("/users", userHandler.SignUpUserById)
+	r.POST("/login", userHandler.LoginUser)
+	r.GET("/user_profiles/:user_id", userHandler.GetProfilebyId)
+	r.GET("/users/:user_id/exercises", exerciseHandler.GetExercisesById)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)

@@ -167,8 +167,8 @@ go get github.com/jmoiron/sqlx
 
 参考：https://github.com/jmoiron/sqlx
 
-
 db 関連リセットしたいときは docker compose down -v でボリュームごとデータを消去してしまうといい（開発環境においては！！）
+そしてその後は docker compose up --build でキャッシュ無視してビルドする
 
 ### エンドポイントの設置
 
@@ -223,6 +223,15 @@ ON DUPLICATE KEY UPDATE で対処
 ### DB からのデータ取得
 https://qiita.com/k-motoyan/items/f37d1348efd3f40e9096
 
+API 実装の手順
+例）
+exercise 実装流れ
+1. entity Exercise を定義
+2. handler に Exercise 取得のためのハンドラーを実装
+3. service に repo interface を利用して，Exercise 情報を取得
+4. repo interface で Exercise 情報取得する関数を定義
+5. repository で実際の取得処理を実装
+
 ### テーブル結合の基礎・SQL
 フォロー・フォロワー数取得 SQL など
 https://hit.hateblo.jp/entry/2016/05/09/131806
@@ -244,7 +253,13 @@ curl -X POST -H "Content-Type: application/json" -d '{
  curl -H GET 'http://localhost:8080/user_profiles/1' -H 'Content-Type:application/json;charset=utf-8' -H 'Authorization: Bearer 取得したidToken
 ```
 でリクエストを送信．
-
+### テーブル変更（DB リセットできる開発環境時の方法）
+- exercise のカラムに exercise_image を追加
+  - exercise テーブルをCreate する table create 用のマイグレーションファイルを変更
+  - データをINSERT するマイグレーションファイルの変更
+  - exercise テーブルのデータを取得する repository の変更
+  - exercise テーブルの struct 変更
+  
 ### swagger の整備
 - API 設計
 
