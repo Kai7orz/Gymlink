@@ -120,6 +120,17 @@ func SeedingDB(db *sqlx.DB) error {
 		time.Now(),
 	}
 
+	testExerciseRecord3 := ExerciseRecord{
+		int64(3),
+		int64(2),
+		"test.png",
+		int64(10),
+		time.Now(),
+		"楽しい!",
+		time.Now(),
+		time.Now(),
+	}
+
 	testExerciseLike := UserLike{
 		int64(1),
 		int64(1),
@@ -173,6 +184,13 @@ func SeedingDB(db *sqlx.DB) error {
 
 	sql = `INSERT INTO exercise_records (id,user_id,exercise_image,exercise_time,exercise_date,comment,created_at,updated_at) VALUES (:id,:user_id,:exercise_image,:exercise_time,:exercise_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
 	_, err = db.NamedExec(sql, testExerciseRecord2)
+	if err != nil {
+		log.Println("NamedExec Error::", err)
+		return err
+	}
+
+	sql = `INSERT INTO exercise_records (id,user_id,exercise_image,exercise_time,exercise_date,comment,created_at,updated_at) VALUES (:id,:user_id,:exercise_image,:exercise_time,:exercise_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
+	_, err = db.NamedExec(sql, testExerciseRecord3)
 	if err != nil {
 		log.Println("NamedExec Error::", err)
 		return err

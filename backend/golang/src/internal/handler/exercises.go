@@ -39,3 +39,17 @@ func (h *ExerciseHandler) GetExercisesById(ctx *gin.Context) {
 	log.Println("Get Exercise User ", id, " exercises: ", exercises)
 	ctx.JSON(http.StatusOK, exercises)
 }
+
+func (h *ExerciseHandler) GetExercises(ctx *gin.Context) {
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	exercises, err := h.svc.GetExercises(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	ctx.JSON(http.StatusOK, exercises)
+}
