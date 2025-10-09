@@ -40,7 +40,7 @@ func (r *profileRepo) GetProfileById(ctx context.Context, id int64) (*entity.Pro
 	}
 	var followInfo followRawTypeDTO
 	if err := r.db.Get(&followInfo, query, params...); err != nil {
-		log.Println("err")
+		log.Println("err :", err)
 		return nil, err
 	}
 

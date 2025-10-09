@@ -1,6 +1,7 @@
 CREATE TABLE exercise_records (
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
+    `exercise_image` VARCHAR(255),
     `exercise_time` INT NOT NULL,
     `exercise_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `comment` VARCHAR(1000),

@@ -381,11 +381,11 @@ components:
         image_url:
           type: "string" 
           example:  '/images/sportImage.png'
-        time:
+        exercise_time:
           type: "integer"
           format: "int64" 
           example: 45
-        date:
+        exercise_date:
           type: "string"
           format: "date-time"
           example: "2024-01-01T10:00:00Z"
