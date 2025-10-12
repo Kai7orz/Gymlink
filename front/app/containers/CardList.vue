@@ -23,8 +23,6 @@
             }
         }
     );
-
-
     const toAccount = (uid:number) => {
          navigateTo({name: 'Account-id', params: {id:uid}})
     }
@@ -36,7 +34,7 @@
         // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
         const detailRecord = exerciseMocksList[id-1]; //mockのlist は id=0 からスタートしているが，mockオブジェクト自体のidは1からスタートしているため，-1している　バックエンドから受け取るexerciseList のid=1からスタートすればid-1 は不要
         if(!detailRecord) return;
-        detailStore.setDetail(detailRecord.id,detailRecord.user_id,detailRecord.user_name,detailRecord.image_url,detailRecord.time,detailRecord.date,detailRecord.comment,detailRecord.likes_count)
+        detailStore.setDetail(detailRecord.id,detailRecord.user_id,detailRecord.user_name,detailRecord.exercise_image,detailRecord.exercise_time,detailRecord.exercise_date,detailRecord.comment,detailRecord.likes_count)
         navigateTo({name: 'Detail-id', params: {id: id }})
     }
 
@@ -65,8 +63,6 @@
             }
         }
     }
-
-
 
 </script>
 

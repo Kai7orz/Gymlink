@@ -42,12 +42,14 @@ func (h *UserHandler) SignUpUserById(ctx *gin.Context) {
 	var userCreate userCreateTypeDTO
 	if err := ctx.ShouldBindJSON(&userCreate); err != nil {
 		log.Println("error: user create")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
 
 	// service に依存
 	err := h.svc.SignUpUser(ctx.Request.Context(), userCreate.Name, userCreate.AvatarUrl, token)
 	if err != nil {
+		log.Println("error: ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
@@ -64,10 +66,15 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
 
-	user, err := h.svc.LoginUser(ctx.Request.Context(), token)
+	userRaw, err := h.svc.LoginUser(ctx.Request.Context(), token)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
+	}
+
+	user := userTypeDTO{
+		Id:   userRaw.Id,
+		Name: userRaw.Name,
 	}
 	log.Println("Get user successfully ✅：", user)
 	ctx.JSON(http.StatusOK, user)

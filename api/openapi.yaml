@@ -99,25 +99,25 @@ paths:
                     - id: 1
                       user_id: 2
                       user_name: "taro"
-                      image_url: "/images/sportImage.png"
-                      time: 45
-                      date: "2024-01-01T10:00:00Z"
+                      exercise_image: "/images/sportImage.png"
+                      exercise_time: 45
+                      exercise_date: "2024-01-01T10:00:00Z"
                       comment: "いい感じに動けた"
                       likes_count: 3
                     - id: 2
                       user_name: "yumi"
                       user_id: 22
-                      image_url: "/images/sportImage.png"
-                      time: 30
-                      date: "2024-01-02T10:00:00Z"
+                      exercise_image: "/images/sportImage.png"
+                      exercise_time: 30
+                      exercise_date: "2024-01-02T10:00:00Z"
                       comment: "疲れた"
                       likes_count: 0
                     - id: 3
                       user_id: 10
                       user_name: "satoshi"
-                      image_url: "/images/sportImage.png"
-                      time: 60
-                      date: "2024-01-03T10:00:00Z"
+                      exercise_image: "/images/sportImage.png"
+                      exercise_time: 60
+                      exercise_date: "2024-01-03T10:00:00Z"
                       comment: "最高の気分"
                       likes_count: 1
 
@@ -182,31 +182,6 @@ paths:
         "200":
           description: いいね解除成功
 
-    
-  /teams:
-    get:
-      summary: 所属チームのプロフィール
-      responses:
-        "200":
-          description: チーム情報
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Team'
-              example:
-                teamName: "DAKAI"
-                teamTarget: 10
-                member:
-                  - name: "taro"
-                    profileImage: "/images/test.png"
-                    exerciseCount: 5
-                  - name: "yumi"
-                    profileImage: "/images/yumi.png"
-                    exerciseCount: 2
-                  - name: "satoshi"
-                    profileImage: "/images/satoshi.png"
-                    exerciseCount: 7
-            
   /follows:
       post:
         summary: フォローする
@@ -234,8 +209,8 @@ paths:
           
             
     # 他人のプロフィール画面 & フォロー画面 & フォロワー画面
-  /unfollows:
-    post:
+  /users/{user_id}/follow:
+    delete:
       summary: フォロー解除
       requestBody:
         required: true
@@ -291,38 +266,38 @@ paths:
                   example:
                     - id: 1
                       imageUrl:  '/images/sportImage.png'
-                      time: 45
-                      date: "2024-01-01T10:00:00Z"
+                      exercise_time: 45
+                      exercise_date: "2024-01-01T10:00:00Z"
                       comment: "いい感じに動けた"
                       likesCount: 3
                     - id: 2
                       imageUrl:  '/images/sportImage.png'
-                      time: 30
-                      date: "2024-01-02T10:00:00Z"
+                      exercise_time: 30
+                      exercise_date: "2024-01-02T10:00:00Z"
                       comment: "疲れた"
                       likes_count: 0
                     - id: 3
                       imageUrl:  '/images/sportImage.png'
-                      time: 60
-                      date: "2024-01-03T10:00:00Z"
+                      exercise_time: 60
+                      exercise_date: "2024-01-03T10:00:00Z"
                       comment: "最高の気分"
                       likesCount: 1
                     - id: 4
                       imageUrl:  '/images/sportImage.png'
-                      time: 20
-                      date: "2024-01-04T10:00:00Z"
+                      exercise_time: 20
+                      exercise_date: "2024-01-04T10:00:00Z"
                       comment: "もう少し頑張れたかも"
                       likesCount: 2
                     - id: 5
                       imageUrl:  '/images/sportImage.png'
-                      time: 50
-                      date: "2024-01-05T10:00:00Z"
+                      exercise_time: 50
+                      exercise_date: "2024-01-05T10:00:00Z"
                       comment: "楽しかった"
                       likesCount: 2
                     - id: 6
                       imageUrl:  '/images/sportImage.png'
-                      time: 40
-                      date: "2024-01-06T10:00:00Z"
+                      exercise_time: 40
+                      exercise_date: "2024-01-06T10:00:00Z"
                       comment: "次はもっと頑張る"
                       likesCount: 1
 
@@ -365,8 +340,8 @@ components:
       type: "object"
       required:
         - "id" 
-        - "image_url" 
-        - "time" 
+        - "exercise_image" 
+        - "exercise_time" 
       properties:
         id:
           type: "integer"
@@ -378,7 +353,7 @@ components:
         user_name:
           type: "string"
           example: "ABC"
-        image_url:
+        exercise_image:
           type: "string" 
           example:  '/images/sportImage.png'
         exercise_time:
@@ -399,17 +374,17 @@ components:
     RawExercise:
       type: "object" 
       required:
-        - "image_url" 
-        - "time" 
+        - "exercise_image" 
+        - "exercise_time" 
       properties:
-        image_url:
+        exercise_image:
           type: "string"  
           example: "/images/test.png"
-        time: 
+        exercise_time: 
           type: "integer"
           format: "int64"
           example: 20 
-        date:
+        exercise_date:
           type: "string"
           example: "2024-01-01T10:00:00Z"
         comment:

@@ -20,10 +20,6 @@
             }, 3000)
         })
 
-    watch(userData,val=>{
-        user.setUser(val.id,val.name)
-    })
-
     const signInUser = async () => {
         isLoading.value = true
         const minLoadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
@@ -46,6 +42,7 @@
                     },
                 }
             )
+            user.setUser(userData.value.id,userData.value.name)
             
             await navigateTo('/home')
         } catch (error) {
