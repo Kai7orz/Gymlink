@@ -17,6 +17,7 @@ type UserQueryRepo interface {
 type UserCreateRepo interface {
 	CreateUserById(ctx context.Context, name string, avatarUrl string, uid string) error
 	FollowUserById(ctx context.Context, followerId int64, followedId int64) error
+	DeleteFollowUserById(ctx context.Context, followerId int64, followedId int64) error
 }
 
 type ProfileRepo interface {
@@ -44,7 +45,8 @@ type UserService interface {
 	SignUpUser(ctx context.Context, name string, string, idToken string) error
 	LoginUser(ctx context.Context, idToken string) (*entity.UserType, error)
 	GetProfile(ctx context.Context, id int64) (*entity.ProfileType, error)
-	FollowUser(ctx context.Context, followerId int64, followdId int64) error
+	FollowUser(ctx context.Context, followerId int64, followedId int64) error
+	DeleteFollowUser(ctx context.Context, followerId int64, followedId int64) error
 }
 
 type ExerciseService interface {

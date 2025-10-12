@@ -76,3 +76,14 @@ func (s *userService) FollowUser(ctx context.Context, followerId int64, followed
 
 	return nil
 }
+
+func (s *userService) DeleteFollowUser(ctx context.Context, followerId int64, followedId int64) error {
+	err := s.cm.DeleteFollowUserById(ctx, followerId, followedId)
+	if err != nil {
+		log.Println("failed to delete follow by user id", err)
+		return err
+	}
+
+	return nil
+
+}

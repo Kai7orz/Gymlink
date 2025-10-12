@@ -7,6 +7,17 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+type followTypeDTO struct {
+	FollowerId int64 `json:"follower_id" db:"follower_id"`
+	FollowedId int64 `json:"followed_id" db:"followed_id"`
+}
+
+type userCreateTypeDTO struct {
+	CharacterId int64  `json:"character_id" db:"character_id"`
+	FirebaseUId string `json:"firebase_uid" db:"firebase_uid"`
+	Name        string `json:"name" db:"name"`
+}
+
 type userCreateRepo struct {
 	db *sqlx.DB
 }
@@ -18,11 +29,6 @@ func NewUserCreateRepo(db *sqlx.DB) *userCreateRepo {
 //一通り機能完成後 Create Repo -> Command Repo に変更（作成だけでなく削除の際の機能もこちらに実装するため）
 
 func (r *userCreateRepo) CreateUserById(ctx context.Context, name string, avatarUrl string, uid string) error {
-	type userCreateTypeDTO struct {
-		CharacterId int64  `json:"character_id" db:"character_id"`
-		FirebaseUId string `json:"firebase_uid" db:"firebase_uid"`
-		Name        string `json:"name" db:"name"`
-	}
 
 	userCreate := userCreateTypeDTO{
 		CharacterId: 1,
@@ -40,10 +46,6 @@ func (r *userCreateRepo) CreateUserById(ctx context.Context, name string, avatar
 }
 
 func (r *userCreateRepo) FollowUserById(ctx context.Context, follower_id int64, followed_id int64) error {
-	type followTypeDTO struct {
-		FollowerId int64 `json:"follower_id" db:"follower_id"`
-		FollowedId int64 `json:"followed_id" db:"followed_id"`
-	}
 
 	userFollow := followTypeDTO{
 		FollowerId: follower_id,
@@ -54,6 +56,20 @@ func (r *userCreateRepo) FollowUserById(ctx context.Context, follower_id int64, 
 	if err != nil {
 		log.Println("follower_id:", userFollow.FollowerId, " followed_id:", userFollow.FollowedId)
 		log.Println("INSERT follow error: ", err)
+		return err
+	}
+	return nil
+}
+
+func (r *userCreateRepo) DeleteFollowUserById(ctx context.Context, follower_id int64, followed_id int64) error {
+	userDeleteFollow := followTypeDTO{
+		FollowerId: follower_id,
+		FollowedId: followed_id,
+	}
+	sql := `DELETE FROM follows WHERE follower_id = :follower_id and followed_id = :followed_id;`
+	_, err := r.db.NamedExec(sql, userDeleteFollow)
+	if err != nil {
+		log.Println("DELETE follow error: ", err)
 		return err
 	}
 	return nil
