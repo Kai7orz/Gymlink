@@ -22,22 +22,30 @@ import type { ExerciseRecordType } from '~/type';
         emits('account',uid)
     }
 </script>
-
 <template>
-    <v-container class="d-flex flex-wrap justify-center gap-5">
-        <ui-card v-for="(exerciseMock, index) in props.exerciseMocksList" 
-                                                                         :key="index" 
-                                                                         :id="exerciseMock.id" 
-                                                                         :userId="Number(exerciseMock.user_id)"
-                                                                         :userName="exerciseMock.user_name"
-                                                                         :image="exerciseMock.exercise_image" 
-                                                                         :time="exerciseMock.exercise_time"
-                                                                         :date="exerciseMock.exercise_date" 
-                                                                         :comment="exerciseMock.comment" 
-                                                                         :likesCount="exerciseMock.likes_count" 
-                                                                         @detail="toDetail"
-                                                                         @like="like"
-                                                                         @account="toAccount"
-                                                                         />
-    </v-container>
+  <v-container>
+    <v-row>
+      <v-col
+        v-for="(exerciseMock, index) in props.exerciseMocksList"
+        :key="index"
+        cols="12"
+        md="6"      
+      >
+        <ui-card
+          class="w-100"
+          :id="exerciseMock.id"
+          :userId="Number(exerciseMock.user_id)"
+          :userName="exerciseMock.user_name"
+          :image="exerciseMock.exercise_image"
+          :time="exerciseMock.exercise_time"
+          :date="exerciseMock.exercise_date"
+          :comment="exerciseMock.comment"
+          :likesCount="exerciseMock.likes_count"
+          @detail="toDetail"
+          @like="like"
+          @account="toAccount"
+        />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
