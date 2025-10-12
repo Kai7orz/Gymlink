@@ -1,9 +1,9 @@
 export default defineEventHandler(async (event)=> {
     const  idToken  = getRequestHeader(event,'authorization')
     const body = await readBody(event)
-    const data = await $fetch(`http://swagger-api:4010/unfollows`,
+    const data = await $fetch(`http://go:8080/users/unfollows`,
                                 {
-                                    method: 'POST',
+                                    method: 'DELETE',
                                     headers: {
                                         'Authorization': idToken,
                                         'Content-Type': 'application/json'

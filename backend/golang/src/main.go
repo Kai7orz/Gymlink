@@ -88,6 +88,7 @@ func main() {
 	r.POST("/likes", exerciseHandler.CreateLike)
 	r.DELETE("/likes/:exercise_record_id", exerciseHandler.DeleteLike)
 	r.POST("/follows", userHandler.FollowUser)
+	r.DELETE("/users/unfollows", userHandler.DeleteFollowUser)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
