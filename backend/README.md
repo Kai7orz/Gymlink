@@ -257,6 +257,9 @@ curl -X POST -H "Content-Type: application/json" -d '{
   - exercise テーブルのデータを取得する repository の変更
   - exercise テーブルの struct 変更
   
+### like 機能の実装
+- like 機能は現状exercise の記録にしかつけない予定で、コメントへのいいね機能など拡張の予定ないため，ロジックを like 専用に切り出しはしない．exercise ファイルに同居させる（exercise のCreate 側のロジックに組み込む）.
+
 ### swagger の整備
 - API 設計
 

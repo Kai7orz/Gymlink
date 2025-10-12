@@ -29,6 +29,7 @@ type ExerciseQueryRepo interface {
 
 type ExerciseCreateRepo interface {
 	CreateExerciseById(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, uid string) error
+	CreateLike(ctx context.Context, exerciseRecordId int64, uid string) error
 }
 
 // Firebase とやりとりするためのインターフェース
@@ -47,4 +48,5 @@ type ExerciseService interface {
 	GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error)
 	GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error)
 	CreateExercise(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, idToken string) error
+	CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error
 }
