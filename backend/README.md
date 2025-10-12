@@ -184,6 +184,7 @@ gin or echo で　お試しでエンドポイントを設置する
 - adapter（外部依存）
 
 handler -> service -> repo interface <- repository,adapter
+
 repo interface は service 層に置く．
 ※ repo interface おいて DB アクセスの内部を知らずにservice はデータ取れるのがメリット
 DI によって service の getUser が内部的に変更を加えなくても，service の取得の
@@ -260,6 +261,12 @@ curl -X POST -H "Content-Type: application/json" -d '{
 ### like 機能の実装
 - like 機能は現状exercise の記録にしかつけない予定で、コメントへのいいね機能など拡張の予定ないため，ロジックを like 専用に切り出しはしない．exercise ファイルに同居させる（exercise のCreate 側のロジックに組み込む）.
 
+### follow 機能の実装
+- like 機能のロジックを転用
+  - handler に /follows を設置
+  - handler で request Body から follower_id , followed_id を読み込む
+  - service で follower_id , followed_id をインターフェース通じて Repo に渡す
+  - Repo で follows　テーブルに INSERT
 ### swagger の整備
 - API 設計
 

@@ -72,3 +72,22 @@ func (s *exerciseService) CreateLike(ctx context.Context, exerciseRecordId int64
 	}
 	return nil
 }
+
+func (s *exerciseService) DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error {
+	if s.a == nil {
+		return errors.New("error auth nil")
+	}
+	token, err := s.a.VerifyUser(ctx, idToken)
+	if err != nil {
+		log.Println("failed to verify user ")
+		return err
+	}
+	err = s.ec.DeleteLike(ctx, exerciseRecordId, token.UID)
+	if err != nil {
+		log.Println("error delete like ")
+		return err
+	}
+
+	return nil
+
+}

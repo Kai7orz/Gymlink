@@ -15,6 +15,8 @@ func NewUserCreateRepo(db *sqlx.DB) *userCreateRepo {
 	return &userCreateRepo{db: db}
 }
 
+//一通り機能完成後 Create Repo -> Command Repo に変更（作成だけでなく削除の際の機能もこちらに実装するため）
+
 func (r *userCreateRepo) CreateUserById(ctx context.Context, name string, avatarUrl string, uid string) error {
 	type userCreateTypeDTO struct {
 		CharacterId int64  `json:"character_id" db:"character_id"`
@@ -35,4 +37,8 @@ func (r *userCreateRepo) CreateUserById(ctx context.Context, name string, avatar
 	}
 
 	return nil
+}
+
+func (r *userCreateRepo) FollowUserById(ctx context.Context, follower_id int64, followed_id int64) error {
+
 }

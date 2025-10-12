@@ -66,3 +66,13 @@ func (s *userService) GetProfile(ctx context.Context, id int64) (*entity.Profile
 	}
 	return profile, nil
 }
+
+func (s *userService) FollowUser(ctx context.Context, followerId int64, followedId int64) error {
+	err := s.cm.FollowUserById(ctx, followerId, followedId)
+	if err != nil {
+		log.Println("failed to follow user by user id ", err)
+		return err
+	}
+
+	return nil
+}
