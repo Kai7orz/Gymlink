@@ -11,6 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type exerciseLikeTypeDTO struct {
+	ExerciseRecordId int64 `json:"exercise_record_id" db:"exercise_record_id"`
+}
+
 type exerciseCreateTypeDTO struct {
 	Image        string    `json:"exercise_image" db:"exercise_image"`
 	ExerciseTime int64     `json:"exercise_time" db:"exercise_time"`
@@ -86,4 +90,29 @@ func (h *ExerciseHandler) CreateExercise(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "exercise record created successfully"})
+}
+
+func (h *ExerciseHandler) CreateLike(ctx *gin.Context) {
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	token := strings.TrimPrefix(authz, "Bearer ")
+
+	var exerciseLike exerciseLikeTypeDTO
+	if err := ctx.ShouldBindJSON(&exerciseLike); err != nil {
+		log.Println("error: exercise like ", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	err := h.svc.CreateLike(ctx.Request.Context(), exerciseLike.ExerciseRecordId, token)
+	if err != nil {
+		log.Println("error: exercise like ", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "exercise like created successfully"})
 }

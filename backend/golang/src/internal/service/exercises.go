@@ -41,8 +41,7 @@ func (s *exerciseService) GetExercises(ctx context.Context) ([]entity.ExerciseRe
 
 func (s *exerciseService) CreateExercise(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, idToken string) error {
 	if s.a == nil {
-		log.Println("auth :nil ✅")
-		return errors.New("eror auth nil")
+		return errors.New("error auth nil")
 	}
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
@@ -52,6 +51,23 @@ func (s *exerciseService) CreateExercise(ctx context.Context, image string, exer
 	err = s.ec.CreateExerciseById(ctx, image, exerciseTime, date, comment, token.UID)
 	if err != nil {
 		log.Println("error: ", err)
+		return err
+	}
+	return nil
+}
+
+func (s *exerciseService) CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error {
+	if s.a == nil {
+		return errors.New("error auth nil")
+	}
+	token, err := s.a.VerifyUser(ctx, idToken)
+	if err != nil {
+		log.Println("error: ", err)
+		return errors.New("failed to verify user ")
+	}
+	err = s.ec.CreateLike(ctx, exerciseRecordId, token.UID)
+	if err != nil {
+		log.Println("error create like: ", err)
 		return err
 	}
 	return nil
