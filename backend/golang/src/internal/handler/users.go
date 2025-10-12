@@ -85,12 +85,21 @@ func (h *UserHandler) GetProfilebyId(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
-	profile, err := h.svc.GetProfile(ctx.Request.Context(), id)
+	profileRaw, err := h.svc.GetProfile(ctx.Request.Context(), id)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
-	log.Println("Get profile successfully ✅：", profile)
+	log.Println("Get profile successfully ✅：", profileRaw)
+
+	profile := dto.ProfileType{
+		Id:            profileRaw.Id,
+		Name:          profileRaw.Name,
+		ProfileImage:  profileRaw.ProfileImage,
+		FollowCount:   profileRaw.FollowCount,
+		FollowerCount: profileRaw.FollowerCount,
+	}
+
 	ctx.JSON(http.StatusOK, profile)
 }
 
