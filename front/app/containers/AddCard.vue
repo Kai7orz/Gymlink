@@ -23,9 +23,9 @@ import { illustrations } from '~/data/illustrations';
                 'Content-Type': 'application/json'
             },
             body: {
-                "image_url": imageUrl.value,
-                "time": Number(time.value),
-                "date": date.value,
+                "exercise_image": imageUrl.value,
+                "exercise_time": Number(time.value),
+                "exercise_date": date.value,
                 "comment": comment.value,
             }
         }

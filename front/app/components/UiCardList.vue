@@ -21,7 +21,6 @@ import type { ExerciseRecordType } from '~/type';
     const toAccount = (uid:number) => {
         emits('account',uid)
     }
-
 </script>
 
 <template>
@@ -31,9 +30,9 @@ import type { ExerciseRecordType } from '~/type';
                                                                          :id="exerciseMock.id" 
                                                                          :userId="Number(exerciseMock.user_id)"
                                                                          :userName="exerciseMock.user_name"
-                                                                         :image="exerciseMock.image_url" 
-                                                                         :time="exerciseMock.time"
-                                                                         :date="exerciseMock.date" 
+                                                                         :image="exerciseMock.exercise_image" 
+                                                                         :time="exerciseMock.exercise_time"
+                                                                         :date="exerciseMock.exercise_date" 
                                                                          :comment="exerciseMock.comment" 
                                                                          :likesCount="exerciseMock.likes_count" 
                                                                          @detail="toDetail"

@@ -209,9 +209,6 @@ svc := service.NewUserService(&UserCacheRepo{cache})
 
 参考：https://zenn.dev/minguu42/articles/20220501-go-firebase-auth
 
-
-参考：
-
 ### エンドポイント CRUD の実装
 
 JOIN 使ってデータ取得：
@@ -264,8 +261,93 @@ curl -X POST -H "Content-Type: application/json" -d '{
 - API 設計
 
 ### エラー集
+- FireBase のエラー
+  - ユーザー・パスワード登録直後はユーザー認証通るが，一定時間経過後にログインしようとすると invalid credential が発生する．リフレッシュの影響？？
+  ```
+  go              | 2025/10/11 21:53:23 error:  failed to verify token signature
+  ```
+  - curl で試していたが，アプリ側に実装して試す
+  これでもし アプリ側に問題がなければ，curl で取得する idToken が間違っている可能性あり
+    - アプリ側で post したら問題なく通ったが， curl で上記手順でidToken 取得して POST したら failed to verify user error なので curl で取得してきた idToken の渡し方間違っている可能性ある．本来のユースケースであるアプリ側からの動作は問題ないのでこのまま開発をすすめて，完成後に修正する（issue 化済み）
+
 - /user_profiles/:user_id で 多分 follower_id に登録されていないid を user_id に指定するとエラーになる．本来 follower_id に登録されていなくても
 followed_id に登録されていたら正常にレスポンスしたいのにできていない
+
+- main の DI で
+```
+	exerciseSvc, err := service.NewExerciseService(exerciseQueryRepo, exerciseCreateRepo, authC)
+	if err != nil {
+		log.Fatal("exercise service error")
+	}
+```
+をしているのに， authC が nil error で詰まった．
+原因は service のコンストラクタで func NewExerciseService(e ExerciseQueryRepo, ec ExerciseCreateRepo, a AuthClient) (ExerciseService, error) までは定義していたが，
+return &exerciseService{e: e}, nil で実態を exerciseCreateRepoo, authC 返すの忘れていたためエラーが出ていた．
+
+```
+package service
+
+// エラー原因となったコード
+
+import (
+	"context"
+	"errors"
+	"gymlink/internal/entity"
+	"log"
+	"time"
+)
+
+type exerciseService struct {
+	e  ExerciseQueryRepo
+	ec ExerciseCreateRepo
+	a  AuthClient
+}
+
+func NewExerciseService(e ExerciseQueryRepo, ec ExerciseCreateRepo, a AuthClient) (ExerciseService, error) {
+	if e == nil {
+		return nil, errors.New("nil error: ExerciseQueryRepo or ExerciseCreateRepo")
+	}
+	return &exerciseService{e: e}, nil
+}
+
+func (s *exerciseService) GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error) {
+	exercises, err := s.e.GetExercisesById(ctx, id)
+	if err != nil {
+		log.Println("error: ", err)
+		return nil, err
+	}
+	return exercises, nil
+}
+
+func (s *exerciseService) GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error) {
+	exercises, err := s.e.GetExercises(ctx)
+	if err != nil {
+		log.Println("error: ", err)
+		return nil, err
+	}
+	return exercises, nil
+}
+
+func (s *exerciseService) CreateExercise(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, idToken string) error {
+	if s.a == nil {
+		log.Println("auth :nil ✅")
+		return errors.New("eror auth nil")
+	}
+	token, err := s.a.VerifyUser(ctx, idToken)
+	if err != nil {
+		return errors.New("failed to verify user")
+	}
+	err = s.ec.CreateExerciseById(ctx, image, exerciseTime, date, comment, token.UID)
+	if err != nil {
+		log.Println("error: ", err)
+		return err
+	}
+	return nil
+}
+
+```
+
+authorization が verify してくれない　泣
 
 ### Tip・学び
 ```
