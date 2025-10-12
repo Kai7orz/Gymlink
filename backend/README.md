@@ -184,6 +184,7 @@ gin or echo で　お試しでエンドポイントを設置する
 - adapter（外部依存）
 
 handler -> service -> repo interface <- repository,adapter
+
 repo interface は service 層に置く．
 ※ repo interface おいて DB アクセスの内部を知らずにservice はデータ取れるのがメリット
 DI によって service の getUser が内部的に変更を加えなくても，service の取得の
@@ -260,10 +261,108 @@ curl -X POST -H "Content-Type: application/json" -d '{
 ### like 機能の実装
 - like 機能は現状exercise の記録にしかつけない予定で、コメントへのいいね機能など拡張の予定ないため，ロジックを like 専用に切り出しはしない．exercise ファイルに同居させる（exercise のCreate 側のロジックに組み込む）.
 
+### follow 機能の実装
+- like 機能のロジックを転用
+  - handler に /follows を設置
+  - handler で request Body から follower_id , followed_id を読み込む
+  - service で follower_id , followed_id をインターフェース通じて Repo に渡す
+  - Repo で follows　テーブルに INSERT
+
+### DTO 
+- handler で必要な DTO は dto ディレクトリにまとめる
+- repository では，各関数または同一ファイル内に DTO を直接宣言しておく．（database に直接触れる部分ではチェックを厳しくしたい　＆　構造をすぐに把握できるようにしたい　ただコード肥大化するので将来的には dto ディレクトリに全部まとめるかも）
 ### swagger の整備
 - API 設計
 
 ### エラー集
+- follow 機能で存在しないユーザーへのフォロー
+```
+go              | 2025/10/12 08:15:39 follower_id: 4  followed_id: 0
+go              | 2025/10/12 08:15:39 INSERT follow error:  Error 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`gymlink_dev_database`.`follows`, CONSTRAINT `follows_ibfk_2` FOREIGN KEY (`followed_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+go              | 2025/10/12 08:15:39 failed to follow user by user id  Error 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`gymlink_dev_database`.`follows`, CONSTRAINT `follows_ibfk_2` FOREIGN KEY (`followed_id`) REFERENCES `users` (`id`) ON DELETE CASCADE)
+go              | 2025/10/12 08:15:39 error: user follow
+go              | [GIN] 2025/10/12 - 08:15:39 | 400 |    3.9
+```
+```
+mysql> select * from users;
++----+--------------+------------------------------+-----------------+---------------------+---------------------+
+| id | character_id | firebase_uid                 | name            | created_at          | updated_at          |
++----+--------------+------------------------------+-----------------+---------------------+---------------------+
+|  1 |            1 | firebase_test_id             | test_user_name  | 2025-10-09 13:16:21 | 2025-10-12 08:14:09 |
+|  2 |            1 | firebase_test_id2            | test_user_name2 | 2025-10-09 13:16:21 | 2025-10-12 08:14:09 |
+|  4 |            1 | BnarbqOmmoOHbCGcn09ernBalCt2 | kai7orz         | 2025-10-11 21:26:02 | 2025-10-11 21:26:02 |
++----+--------------+------------------------------+-----------------+---------------------+---------------------+
+3 rows in set (0.00 sec)
+
+mysql>
+```
+
+- まずは DB 内に id がいくつのユーザーがいるかをチェック
+- DB user 内にいないのに exercise の user_id で使われてしまっているid がいれば user を seeding のときに追加する
+- followed_id = 0　となる原因の追究
+- user_id = 2の user はinsert しているが，profile テーブルに user_id = 2 profile を設定していないため，カードリストからプロフィール画面に飛べず，フォローできない問題がある．
+  - seeding すれば解決（実運用の際には問題発生しなさそう）
+
+```
+mysql> select * from exercise_records ;
++----+---------+------------------------+---------------+---------------------+---------------------------+---------------------+---------------------+
+| id | user_id | exercise_image         | exercise_time | exercise_date       | comment                   | created_at          | updated_at          |
++----+---------+------------------------+---------------+---------------------+---------------------------+---------------------+---------------------+
+|  1 |       1 | test.png               |            30 | 2025-10-09 13:16:21 | 楽しいけど疲れた!         | 2025-10-09 13:16:21 | 2025-10-12 08:14:09 |
+|  2 |       1 | test.png               |            10 | 2025-10-09 13:22:07 | 楽しいけど疲れた!         | 2025-10-09 13:22:07 | 2025-10-12 08:14:09 |
+|  3 |       2 | test.png               |            10 | 2025-10-09 14:02:58 | 楽しい!                   | 2025-10-09 14:02:58 | 2025-10-12 08:14:09 |
+|  4 |       4 |                        |             0 | 2025-09-26 15:00:00 |                           | 2025-10-11 22:14:09 | 2025-10-11 22:14:09 |
+|  5 |       4 | /images/sportImage.png |            30 | 2025-09-26 15:00:00 | nice                      | 2025-10-12 04:33:22 | 2025-10-12 04:33:22 |
++----+---------+------------------------+---------------+---------------------+---------------------------+---------------------+---------------------+
+5 rows in set (0.00 sec)
+
+mysql>
+```
+
+followed_id = 0 となる問題は，追及する必要がありそう（DB 内に user_id = 0 のレコードがないのにもかかわらず，フロントから followed_id = 0 のデータが流れてきているのはバグ）
+  - フロント側でどのように user_id を指定して post してきているかをチェックする．
+  - follow post 時のuser_id は cardlist の user_id を参照していたはずなので， follow + cardlist あたりのコードを調査していく．
+    - Profile.vue から流れてきた id を followd_id としてpost している．
+    - Profile の id は
+    ```
+        const data = await $fetch(
+        `/api/user_profiles/${uid}`,{
+          headers: {
+                        'Authorization': 'Bearer ' + TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+        }
+    );
+
+    ```
+    の data からとってきていて，
+    ```
+        const follow = async (id:number) => {
+        await navigateTo('/following')
+        console.log("follower_id:",user.userId)
+        console.log("followed_id:",data.id)
+        await $fetch("/api/follows", {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + TOKEN,
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            follower_id: user.userId,
+                            followed_id: id
+                        },
+                    })
+    }
+  ```
+  として follow に post しているが， 
+  解決： backend では json タグ付けていなくて data　の id を Id として返していたが， フロント側は id を期待してコード書いていた．
+  backend に json タグ付けて対応
+
+
+  - 応急処置として seeding.go で profile 増やす．
+
+
+
 - FireBase のエラー
   - ユーザー・パスワード登録直後はユーザー認証通るが，一定時間経過後にログインしようとすると invalid credential が発生する．リフレッシュの影響？？
   ```

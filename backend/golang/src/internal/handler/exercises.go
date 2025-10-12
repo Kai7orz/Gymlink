@@ -1,26 +1,15 @@
 package handler
 
 import (
+	"gymlink/internal/dto"
 	"gymlink/internal/service"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
-
-type exerciseLikeTypeDTO struct {
-	ExerciseRecordId int64 `json:"exercise_record_id" db:"exercise_record_id"`
-}
-
-type exerciseCreateTypeDTO struct {
-	Image        string    `json:"exercise_image" db:"exercise_image"`
-	ExerciseTime int64     `json:"exercise_time" db:"exercise_time"`
-	Date         time.Time `json:"exercise_date" db:"exercise_date"`
-	Comment      string    `json:"comment" db:"comment"`
-}
 
 type ExerciseHandler struct {
 	svc service.ExerciseService
@@ -76,7 +65,7 @@ func (h *ExerciseHandler) CreateExercise(ctx *gin.Context) {
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
 
-	var exerciseCreate exerciseCreateTypeDTO
+	var exerciseCreate dto.ExerciseCreateType
 	if err := ctx.ShouldBindJSON(&exerciseCreate); err != nil {
 		log.Println("error: exercise read body ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
@@ -100,7 +89,7 @@ func (h *ExerciseHandler) CreateLike(ctx *gin.Context) {
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
 
-	var exerciseLike exerciseLikeTypeDTO
+	var exerciseLike dto.ExerciseLikeType
 	if err := ctx.ShouldBindJSON(&exerciseLike); err != nil {
 		log.Println("error: exercise like ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
@@ -115,4 +104,30 @@ func (h *ExerciseHandler) CreateLike(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "exercise like created successfully"})
+}
+
+func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	token := strings.TrimPrefix(authz, "Bearer ")
+
+	exerciseRecordIdStr := ctx.Param("exercise_record_id")
+	exerciseRecordId, err := strconv.ParseInt(exerciseRecordIdStr, 10, 64)
+	if err != nil {
+		log.Println("failed to parse exercise_record_id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+	}
+
+	err = h.svc.DeleteLikeById(ctx.Request.Context(), exerciseRecordId, token)
+	if err != nil {
+		log.Println("error delete like ", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "exercise like deleted successfully"})
+
 }

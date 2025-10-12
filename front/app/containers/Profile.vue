@@ -18,8 +18,12 @@
         }
     );
 
+    console.log("profile id and data ",data.id," data->",data)
+
     const follow = async (id:number) => {
         await navigateTo('/following')
+        console.log("follower_id:",user.userId)
+        console.log("followed_id:",data.id)
         await $fetch("/api/follows", {
                         method: 'POST',
                         headers: {

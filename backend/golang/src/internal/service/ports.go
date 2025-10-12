@@ -16,6 +16,7 @@ type UserQueryRepo interface {
 
 type UserCreateRepo interface {
 	CreateUserById(ctx context.Context, name string, avatarUrl string, uid string) error
+	FollowUserById(ctx context.Context, followerId int64, followedId int64) error
 }
 
 type ProfileRepo interface {
@@ -30,6 +31,7 @@ type ExerciseQueryRepo interface {
 type ExerciseCreateRepo interface {
 	CreateExerciseById(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, uid string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, uid string) error
+	DeleteLike(ctx context.Context, exerciseRecordId int64, uid string) error
 }
 
 // Firebase とやりとりするためのインターフェース
@@ -42,6 +44,7 @@ type UserService interface {
 	SignUpUser(ctx context.Context, name string, string, idToken string) error
 	LoginUser(ctx context.Context, idToken string) (*entity.UserType, error)
 	GetProfile(ctx context.Context, id int64) (*entity.ProfileType, error)
+	FollowUser(ctx context.Context, followerId int64, followdId int64) error
 }
 
 type ExerciseService interface {
@@ -49,4 +52,5 @@ type ExerciseService interface {
 	GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error)
 	CreateExercise(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, idToken string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error
+	DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error
 }
