@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { onIdTokenChanged,getAuth,setPersistence,browserLocalPersistence } from "firebase/auth";
+import { onIdTokenChanged,getAuth,setPersistence,browserSessionPersistence,browserLocalPersistence } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,7 +19,7 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-setPersistence(auth,browserLocalPersistence)
+setPersistence(auth,browserSessionPersistence)
 const store = useAuthStore()
 
 onIdTokenChanged(auth,async(user)=>{

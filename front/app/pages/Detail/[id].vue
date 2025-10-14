@@ -4,6 +4,6 @@
 
 <template>
         <div>
-                <ui-card-detail />
+          <ui-card-detail />
         </div>
 </template>

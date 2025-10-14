@@ -7,7 +7,7 @@
     <v-app>
       <the-header>
       </the-header>
-<v-main class="min-h-screen" style="background: linear-gradient(135deg, #0044ff, #ff5e5e);">
+<v-main class="min-h-screen custom-bg" >
   <NuxtPage />
 </v-main>
     </v-app>
@@ -16,7 +16,6 @@
 
 <style>
 main {
-  background: linear-gradient(135deg, #0044ff, #ff5e5e);
   min-height: 100vh;
   margin: 0;
 }
@@ -25,6 +24,10 @@ main {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+.custom-bg{
+  background: linear-gradient(135deg, #85a1f0, #e6e6e6);
 }
 
 .page-enter-active,

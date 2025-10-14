@@ -71,6 +71,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+    post:
+      description: >
+        Return user profile
+      responses:
+        '200':
+          description: user profile response
+          content:
+            application/json:
+              schema:  
+                type: object
+                properties:
+                  id: 
+                    type: integer
+                  name:
+                    type: string
+                  profile_image:
+                    type: string
+
   /users/{user_id}/exercises:
     get:
       summary: Get exercises records for a user by ID)
@@ -84,7 +102,18 @@ paths:
                 type: array
                 items: 
                   $ref: '#/components/schemas/Exercise'
-  
+  /upload:
+    post:
+      summary: s3 の presignedURL（アップロード用）を取得
+      responses:
+       '200':
+         content:
+           application/json:
+             schema:
+               example:
+                 - presignedURL: "xxx.xxxxxx"
+
+
   /exercises:
     get:
       summary: Get latest 20 exercises records
@@ -245,61 +274,7 @@ paths:
                 $ref: "#/components/schemas/UserCharacter"
 
     
-## 複数レスポンスの例を分離したかっただけなので このエンドポイントは本番環境では利用しないです．
-  /users/{userId}/exercises-example:
-    get:
-      summary: Get exercises records for a user by ID)
-      parameters:
-        - in: path
-          name: userId 
-          schema:
-            type: integer
-            format: "int64"
-          required: true
-          description: Numeric ID of the user to get exercises
-      responses:
-        '200':
-          description: A list of exercises
-          content:
-            application/json:
-              schema:
-                  example:
-                    - id: 1
-                      imageUrl:  '/images/sportImage.png'
-                      exercise_time: 45
-                      exercise_date: "2024-01-01T10:00:00Z"
-                      comment: "いい感じに動けた"
-                      likesCount: 3
-                    - id: 2
-                      imageUrl:  '/images/sportImage.png'
-                      exercise_time: 30
-                      exercise_date: "2024-01-02T10:00:00Z"
-                      comment: "疲れた"
-                      likes_count: 0
-                    - id: 3
-                      imageUrl:  '/images/sportImage.png'
-                      exercise_time: 60
-                      exercise_date: "2024-01-03T10:00:00Z"
-                      comment: "最高の気分"
-                      likesCount: 1
-                    - id: 4
-                      imageUrl:  '/images/sportImage.png'
-                      exercise_time: 20
-                      exercise_date: "2024-01-04T10:00:00Z"
-                      comment: "もう少し頑張れたかも"
-                      likesCount: 2
-                    - id: 5
-                      imageUrl:  '/images/sportImage.png'
-                      exercise_time: 50
-                      exercise_date: "2024-01-05T10:00:00Z"
-                      comment: "楽しかった"
-                      likesCount: 2
-                    - id: 6
-                      imageUrl:  '/images/sportImage.png'
-                      exercise_time: 40
-                      exercise_date: "2024-01-06T10:00:00Z"
-                      comment: "次はもっと頑張る"
-                      likesCount: 1
+
 
 components:
   schemas:
