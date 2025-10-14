@@ -20,12 +20,12 @@
             }, 3000)
         })
 
+    const toSignUp = () => {
+            navigateTo('/signup')
+    }
     const signInUser = async () => {
         isLoading.value = true
         const minLoadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
-        const toSignUp = () => {
-            navigateTo('/signup')
-        }
 
         try{
 
@@ -56,7 +56,7 @@
 <template>
     <div>
     <ClientOnly>
-        <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg bg-grey-darken-3 rounded-lg">
+        <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg bg-grey-darken-1 rounded-lg">
             <v-card-title class="d-flex justify-center">サインイン</v-card-title>
             <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
             <v-text-field v-model="password" class="w-1/2 mx-auto m-5" label="パスワード" type="password" />

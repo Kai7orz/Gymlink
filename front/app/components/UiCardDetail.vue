@@ -12,11 +12,9 @@ const toBack = () => {
 </script>
 
 <template>
-  <!-- フル画面グラデ背景 -->
-  <div class="min-h-screen bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-500 pt-6 pb-16">
+  <div>
     <v-container class="max-w-4xl">
-      <!-- 戻るボタン -->
-      <div class="flex items-center gap-3 mb-4 text-white/90">
+      <div class="flex items-center gap-3 m-4 text-white/90">
         <v-btn
           density="comfortable"
           variant="text"
@@ -29,10 +27,9 @@ const toBack = () => {
 
       <!-- ガラスカード -->
       <v-card
-        class="backdrop-blur-md bg-white/10 border border-white/20 text-white rounded-3xl shadow-xl overflow-hidden"
+        class="backdrop-blur-md shadow-xl bg-black overflow-hidden"
         elevation="10"
       >
-        <!-- 画像ヘッダー：日付チップをオーバーレイ -->
         <div class="relative">
           <v-img
             :src="detailStore.detailImage"
@@ -41,7 +38,7 @@ const toBack = () => {
             class="opacity-95"
           />
           <v-chip
-            class="absolute left-4 bottom-4 bg-black/60 text-white"
+            class="absolute left-4 bottom-4 m-10 bg-black/60 text-white"
             size="small"
             prepend-icon="mdi-calendar-month"
           >
@@ -49,14 +46,11 @@ const toBack = () => {
           </v-chip>
         </div>
 
-        <!-- タイトル -->
         <v-card-title class="text-2xl md:text-3xl font-semibold tracking-wide py-4">
           {{ detailStore.detailName }}
         </v-card-title>
 
         <v-divider class="opacity-30" />
-
-        <!-- 情報グリッド -->
         <v-card-text class="py-6">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <v-sheet class="bg-white/5 rounded-2xl p-4 border border-white/10">
@@ -79,9 +73,7 @@ const toBack = () => {
 
         <v-divider class="opacity-30" />
 
-        <!-- アクション（必要ならイベント紐づけ） -->
         <v-card-actions class="justify-end gap-2 py-4">
-          <v-btn variant="tonal" class="bg-white/10" prepend-icon="mdi-share-variant">シェア</v-btn>
           <v-btn variant="elevated" color="amber-accent-3" class="text-black font-medium" prepend-icon="mdi-heart-outline">
             いいね
           </v-btn>
@@ -91,5 +83,3 @@ const toBack = () => {
   </div>
 </template>
 
-<style scoped>
-</style>

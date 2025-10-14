@@ -271,6 +271,14 @@ curl -X POST -H "Content-Type: application/json" -d '{
 ### DTO 
 - handler で必要な DTO は dto ディレクトリにまとめる
 - repository では，各関数または同一ファイル内に DTO を直接宣言しておく．（database に直接触れる部分ではチェックを厳しくしたい　＆　構造をすぐに把握できるようにしたい　ただコード肥大化するので将来的には dto ディレクトリに全部まとめるかも）
+
+### フロントエンド・バックエンド間での画像のやり取り
+  https://tech.every.tv/entry/2024/06/25/110115
+  
+  1.  const fileInput = ref<HTMLInputElement | null >(null) を定義し，.value?.files?.[0] で一つ目のinput タグ（今回は画像データ入力input）のFile オブジェクトを取得
+
+  2. 1で取得したデータを FormData でラップしてやることで multipart/form-data 形式で扱える．
+
 ### swagger の整備
 - API 設計
 

@@ -51,7 +51,7 @@ const onAccount = async (uid: number) => {
 <template>
     <v-hover v-slot="{ isHovering, props: hoverProps }">
         <v-card class="d-flex flex-column w-1/2 h-45 mx-auto gap-2 p-10 px-7 pb-15  my-auto bg-grey-darken-4 rounded-xl card" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
-            <img :src="props.image" class="w-60 h-50 rounded-xl" />
+            <!-- <img :src="props.image" alt="image not found" class="w-60 h-50 rounded-xl" /> -->
             <v-card-title >{{ props.date }}</v-card-title>
             <v-card-subtitle class="pb-0">運動時間: {{ props.time }}分</v-card-subtitle>
             <div class="d-flex mt-10 gap-5">

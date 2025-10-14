@@ -9,7 +9,6 @@
     }
 
     const toAccount = async () => {
-        console.log("userid::",user.userId)
         navigateTo({name: 'Account-id', params: {id: user.userId }})
     }
 
