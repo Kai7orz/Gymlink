@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"gymlink/internal/entity"
+	"mime/multipart"
 	"time"
 
 	"firebase.google.com/go/auth"
@@ -40,6 +41,10 @@ type AuthClient interface {
 	VerifyUser(ctx context.Context, idToken string) (*auth.Token, error)
 }
 
+type GptClient interface {
+	CreateIllustration(ctx context.Context, image *multipart.FileHeader) error
+}
+
 // handler レイヤーが利用するインターフェース
 type UserService interface {
 	SignUpUser(ctx context.Context, name string, string, idToken string) error
@@ -55,4 +60,5 @@ type ExerciseService interface {
 	CreateExercise(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, idToken string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error
 	DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error
+	GenerateImg(ctx context.Context, image *multipart.FileHeader) error
 }

@@ -273,11 +273,44 @@ curl -X POST -H "Content-Type: application/json" -d '{
 - repository では，各関数または同一ファイル内に DTO を直接宣言しておく．（database に直接触れる部分ではチェックを厳しくしたい　＆　構造をすぐに把握できるようにしたい　ただコード肥大化するので将来的には dto ディレクトリに全部まとめるかも）
 
 ### フロントエンド・バックエンド間での画像のやり取り
+  今回は　resize GTP API へのイラスト変換処理を挟むので 
+  Frontend -> Backend -> S3  
+                |
+               GPT API 
+
+  の構成でイラストを S3 へアップロードする．
+
   https://tech.every.tv/entry/2024/06/25/110115
   
   1.  const fileInput = ref<HTMLInputElement | null >(null) を定義し，.value?.files?.[0] で一つ目のinput タグ（今回は画像データ入力input）のFile オブジェクトを取得
 
   2. 1で取得したデータを FormData でラップしてやることで multipart/form-data 形式で扱える．
+
+  3. とりあえず handler に /upload を設置し， front -> backend に向けて画像を送信できるかを検証する．
+  
+  html にFile オブジェクトを扱う構造がある．そのオブジェクトをref で宣言して， v-file-input タグに v-model で指定すると，その input されたファイルを 指定したref 変数で扱える（File オブジェクトとして）
+
+  学び： v-file-input　タグ はデフォルトで <input type="file"> を内包しているため，わざわざ HTMLInputElement での取得が不要で，v-modelを v-file-input に仕込むことで，ファイルオブジェクトをその変数に入れることが可能である． 
+
+  error : front から backend へ画像データ送信時に backend で保存成功のログが出たのに，ホストマシンのvscode からそのデータを確認できなかった．ディレクトリはあるのに画像がない状態になっていた．原因としては，docekr container と ホストマシンで volume がかみ合っていなかった ＋ 権限がなかったので
+  ```
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal$ sudo chown -R "$USER":"$USER" images
+  [sudo] password for kai7orz:
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal$ chmod -R u+rwX,go+rX images
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal$ ls
+  adapter  dto     handler  rizap-hackathon-firebase-adminsdk-fbsvc-162f53a89e.json  testapi
+  dbase    entity  images   service                                                  utils
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal$ cd images
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal/images$ ls
+  ```
+を実行することで解決した．所有者を自身にして，読み書き込み実行権限を与えた．
+  
+  ※ error 
+  formData はブラウザが自動で Content-Type を付与してくれるにも関わらず，自身で Fetch 時に指定してしまい，その自動化が破損してエラーを発生させてしまっていた．
+  
+### go -> gpt-image-1 
+  - 公式では sdk ないので　curl でたたくのと類似した形式で実装？
+
 
 ### swagger の整備
 - API 設計
@@ -458,6 +491,11 @@ func (s *exerciseService) CreateExercise(ctx context.Context, image string, exer
 ```
 
 authorization が verify してくれない　泣
+
+
+
+
+
 
 ### Tip・学び
 ```

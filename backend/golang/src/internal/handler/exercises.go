@@ -131,3 +131,26 @@ func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "exercise like deleted successfully"})
 
 }
+
+func (h *ExerciseHandler) GenerateIllustration(ctx *gin.Context) {
+
+	image, err := ctx.FormFile("file")
+	if err != nil {
+		log.Println("error", err)
+	}
+
+	if err != nil {
+		log.Println("failed to get root path")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	err = h.svc.GenerateImg(ctx.Request.Context(), image)
+	if err != nil {
+		log.Println("image dir error", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	ctx.JSON(201, gin.H{"message": "OK"})
+}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"gymlink/internal/entity"
 	"log"
+	"mime/multipart"
 	"time"
 )
 
@@ -12,13 +13,14 @@ type exerciseService struct {
 	e  ExerciseQueryRepo
 	ec ExerciseCreateRepo
 	a  AuthClient
+	gc GptClient
 }
 
-func NewExerciseService(e ExerciseQueryRepo, ec ExerciseCreateRepo, a AuthClient) (ExerciseService, error) {
+func NewExerciseService(e ExerciseQueryRepo, ec ExerciseCreateRepo, a AuthClient, gc GptClient) (ExerciseService, error) {
 	if e == nil {
 		return nil, errors.New("nil error: ExerciseQueryRepo or ExerciseCreateRepo")
 	}
-	return &exerciseService{e: e, ec: ec, a: a}, nil
+	return &exerciseService{e: e, ec: ec, a: a, gc: gc}, nil
 }
 
 func (s *exerciseService) GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error) {
@@ -90,4 +92,16 @@ func (s *exerciseService) DeleteLikeById(ctx context.Context, exerciseRecordId i
 
 	return nil
 
+}
+
+func (s *exerciseService) GenerateImg(ctx context.Context, image *multipart.FileHeader) error {
+	// 画像を読み込み
+	// GPT API interface　の　アップロード関数を呼び出す
+	// レスポンスの画像を記録する．
+	err := s.gc.CreateIllustration(ctx, image)
+	if err != nil {
+		log.Println("error create illustration")
+		return err
+	}
+	return nil
 }
