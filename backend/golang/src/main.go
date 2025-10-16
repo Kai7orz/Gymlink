@@ -7,6 +7,7 @@ import (
 	"gymlink/internal/handler"
 	"gymlink/internal/service"
 	"log"
+	"net/http"
 	"os"
 
 	firebase "firebase.google.com/go"
@@ -16,6 +17,10 @@ import (
 )
 
 func main() {
+
+	var (
+		client = &http.Client{}
+	)
 	// db へ接続関連
 	db := dbase.ConnectDB()
 
@@ -55,6 +60,19 @@ func main() {
 	}
 	authC := adapter.NewAuthClient(authCli)
 
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("error: ", err)
+	}
+
+	apiKey := os.Getenv("GPT_API_KEY")
+	baseUrl := os.Getenv("GPT_URL")
+	if apiKey == "" || baseUrl == "" {
+		log.Fatal("error api setting ", err)
+	}
+
+	gptCli := adapter.NewGptClient(client, apiKey, baseUrl)
+
 	userQueryRepo := dbase.NewUserQueryRepo(db)
 
 	userCreateRepo := dbase.NewUserCreateRepo(db)
@@ -70,7 +88,7 @@ func main() {
 		log.Fatal("user service error")
 	}
 
-	exerciseSvc, err := service.NewExerciseService(exerciseQueryRepo, exerciseCreateRepo, authC)
+	exerciseSvc, err := service.NewExerciseService(exerciseQueryRepo, exerciseCreateRepo, authC, gptCli)
 	if err != nil {
 		log.Fatal("exercise service error")
 	}
@@ -89,6 +107,7 @@ func main() {
 	r.DELETE("/likes/:exercise_record_id", exerciseHandler.DeleteLike)
 	r.POST("/follows", userHandler.FollowUser)
 	r.DELETE("/users/unfollows", userHandler.DeleteFollowUser)
+	r.POST("/upload", exerciseHandler.GenerateIllustration)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)

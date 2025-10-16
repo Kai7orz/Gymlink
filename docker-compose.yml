@@ -29,9 +29,10 @@ services:
     depends_on:
       - db
     volumes:
-      - type: bind
-        source: ./backend/golang/src
-        target: /go/src
+      - ./backend/golang/src:/go/src
+      - ./backend/golang/src/internal/images:/go/src/internal/images
+
+
 
   dev_db:
     container_name: dev_db

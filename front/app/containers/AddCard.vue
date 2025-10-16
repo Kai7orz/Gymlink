@@ -41,8 +41,8 @@ import { illustrations } from '~/data/illustrations';
     }
 
     const openMenu = ()=>{
-        isShownMenu.value = true;
-        console.log("open menu")
+
+        navigateTo("/upload")
     }
 
     const select = (imageId:string) => {

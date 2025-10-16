@@ -273,11 +273,366 @@ curl -X POST -H "Content-Type: application/json" -d '{
 - repository では，各関数または同一ファイル内に DTO を直接宣言しておく．（database に直接触れる部分ではチェックを厳しくしたい　＆　構造をすぐに把握できるようにしたい　ただコード肥大化するので将来的には dto ディレクトリに全部まとめるかも）
 
 ### フロントエンド・バックエンド間での画像のやり取り
+  今回は　resize GTP API へのイラスト変換処理を挟むので 
+  Frontend -> Backend -> S3  
+                |
+               GPT API 
+
+  の構成でイラストを S3 へアップロードする．
+
   https://tech.every.tv/entry/2024/06/25/110115
   
   1.  const fileInput = ref<HTMLInputElement | null >(null) を定義し，.value?.files?.[0] で一つ目のinput タグ（今回は画像データ入力input）のFile オブジェクトを取得
 
   2. 1で取得したデータを FormData でラップしてやることで multipart/form-data 形式で扱える．
+
+  3. とりあえず handler に /upload を設置し， front -> backend に向けて画像を送信できるかを検証する．
+  
+  html にFile オブジェクトを扱う構造がある．そのオブジェクトをref で宣言して， v-file-input タグに v-model で指定すると，その input されたファイルを 指定したref 変数で扱える（File オブジェクトとして）
+
+  学び： v-file-input　タグ はデフォルトで <input type="file"> を内包しているため，わざわざ HTMLInputElement での取得が不要で，v-modelを v-file-input に仕込むことで，ファイルオブジェクトをその変数に入れることが可能である． 
+
+  error : front から backend へ画像データ送信時に backend で保存成功のログが出たのに，ホストマシンのvscode からそのデータを確認できなかった．ディレクトリはあるのに画像がない状態になっていた．原因としては，docekr container と ホストマシンで volume がかみ合っていなかった ＋ 権限がなかったので
+  ```
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal$ sudo chown -R "$USER":"$USER" images
+  [sudo] password for kai7orz:
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal$ chmod -R u+rwX,go+rX images
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal$ ls
+  adapter  dto     handler  rizap-hackathon-firebase-adminsdk-fbsvc-162f53a89e.json  testapi
+  dbase    entity  images   service                                                  utils
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal$ cd images
+  kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src/internal/images$ ls
+  ```
+を実行することで解決した．所有者を自身にして，読み書き込み実行権限を与えた．
+  
+  ※ error 
+  formData はブラウザが自動で Content-Type を付与してくれるにも関わらず，自身で Fetch 時に指定してしまい，その自動化が破損してエラーを発生させてしまっていた．
+  
+### go -> gpt-image-1 
+  - 公式では sdk ないので　curl でたたくのと類似した形式で実装？
+
+### curl -F 
+curl の -F オプションは，Content-Type: multipart/form-data を自動で設定して， -F "キー=値" によって，フォームの各フィールドの値を埋めて送信で可能
+
+
+### multipart/form-data　実装（gpt_client.go）
+writer.Close() がやっていること
+
+GPT 解説
+-----------------------
+writer.Close() は、内部的に次のようなことをします：
+
+まだ書き込まれていない境界線の終端 (--boundary--) を追加する
+
+multipart.Writer を「もう書けませんよ」という状態にする（バッファ閉鎖）
+
+そのため、writer.Close() を呼ばないとボディが 「未完」 の状態です。
+API側ではこれを受け取ると「途中で切れたリクエスト」として扱われ、
+リクエストがハングしたり 400 Bad Request になったりします。
+
+🧠 なぜ NewRequest の前に呼ぶの？
+
+http.NewRequest に渡す引数 body（ここでは &buf）は、
+すでに最終形のボディである必要があります。
+
+writer.Close() 前 → ボディの中身がまだ途中。boundary が閉じていない。
+
+writer.Close() 後 → 完成したボディ（Content-Length も正しく計算できる）。
+
+もし writer.Close() しないまま渡したら、Go はリクエスト本文を最後まで送らないまま Do() を実行してしまいます。
+--------------------------
+
+```
+package adapter
+
+import (
+	"bytes"
+	"context"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"gymlink/internal/dto"
+	"io"
+	"log"
+	"mime/multipart"
+	"net/http"
+	"os"
+)
+
+// config をコンストラクタで設定するが，接続はしない点に留意する
+type gptClient struct {
+	client  *http.Client
+	apiKey  string
+	baseUrl string
+}
+
+func NewGptClient(client *http.Client, apiKey string, baseUrl string) *gptClient {
+	return &gptClient{client: client, apiKey: apiKey, baseUrl: baseUrl}
+}
+
+func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.FileHeader) error {
+
+	// httpリクエストを生成
+	// ヘッダーなどの設定
+	// http.Client の Do でリクエストを実行
+	// multipart/form-data の作成
+
+	/// httpRequest 生成のためのbuffer
+	var buf bytes.Buffer
+	writer := multipart.NewWriter(&buf)
+
+	err := writer.WriteField("model", "gpt-image-1")
+	if err != nil {
+		log.Println("error write field")
+		return err
+	}
+	err = writer.WriteField("prompt", "Create a illustration based on submitted image")
+	if err != nil {
+		log.Println("error write field")
+		return err
+	}
+
+	fw, err := writer.CreateFormFile("image", image.Filename)
+	if err != nil {
+		return err
+	}
+	f, err := image.Open()
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	if _, err := io.Copy(fw, f); err != nil {
+		return err
+	}
+
+	if err := writer.Close(); err != nil {
+		log.Println("error: writer cannot close!")
+		return err
+	}
+	req, err := http.NewRequest("POST", gc.baseUrl, &buf)
+	if err != nil {
+		log.Println("error:", err)
+		return err
+	}
+
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+	log.Println("apikey-->", gc.apiKey)
+	req.Header.Set("Authorization", "Bearer "+gc.apiKey)
+	log.Println("log header:", req.Header)
+	res, err := gc.client.Do(req)
+	if err != nil {
+		log.Println("error at response")
+		return err
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Println("failed to read resopnse body ", err)
+		return err
+	}
+
+	log.Println("response body:", res.Body)
+
+	var response dto.ImageResponseType
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		log.Println("failed to unmarshal")
+		return err
+	}
+	// response data の中の b_64を取得し，image として保存する処理を記述
+
+	if len(response.Data) == 0 || response.Data[0].B64Json == "" {
+		return fmt.Errorf("unmarshal json: response is nothing")
+	}
+	dec, err := base64.StdEncoding.DecodeString(response.Data[0].B64Json)
+	if err != nil {
+		log.Println("failed to decode base64_image")
+		return err
+	}
+
+	outFile, err := os.CreateTemp("", "gpt-image-*.png")
+	if err != nil {
+		return fmt.Errorf("create tmp file : %w", err)
+	}
+	defer outFile.Close()
+
+	if _, err := outFile.Write(dec); err != nil {
+		return err
+	}
+
+	return nil
+}
+```
+このコードで GPT への image 化ができない  
+```
+go              | 2025/10/16 06:24:46 response body: {0xc000158180}
+go              | 2025/10/16 06:24:46 error create illustration
+go              | 2025/10/16 06:24:46 image dir error unmarshal json: response is nothing
+go              | [GIN] 2025/10/16 - 06:24:46 | 400 |  5.779147298s | ::ffff:192.168.112.1 | POST     "/upload"
+```
+
+動かない原因候補：
+- url,apikey 変えてもエラー内容変わらない時点でそもそも gpt api たたく前にエラーが起きていそう．
+- マスク，リクエスト形式の不整合など考えられそう
+
+```
+123 10 32 32 34 101 114 114 111 114 34 58 32 123 10 32 32 32 32 34 109 101 115 115 97 103 101 34 58 32 34 73 110 118 97 108 105 100 32 102 105 108 101 32 39 105 109 97 103 101 39 58 32 117 110 115 117 112 112 111 114 116 101 100 32 109 105 109 101 116 121 112 101 32 40 39 97 112 112 108 105 99 97 116 105 111 110 47 111 99 116 101 116 45 115 116 114 101 97 109 39 41 46 32 83 117 112 112 111 114 116 101 100 32 102 105 108 101 32 102 111 114 109 97 116 115 32 97 114 101 32 39 105 109 97 103 101 47 106 112 101 103 39 44 32 39 105 109 97 103 101 47 112 110 103 39 44 32 97 110 100 32 39 105 109 97 103 101 47 119 101 98 112 39 46 34 44 10 32 32 32 32 34 116 121 112 101 34 58 32 34 105 110 118 97 108 105 100 95 114 101 113 117 101 115 116 95 101 114 114 111 114 34 44 10 32 32 32 32 34 112 97 114 97 109 34 58 32 34 105 109 97 103 101 34 44 10 32 32 32 32 34 99 111 100 101 34 58 32 34 117 110 115 117 112 112 111 114 116 101 100 95 102 105 108 101 95 109 105 109 101 116 121 112 101 34 10 32 32 125 10 125
+```
+これが log の response で帰ってきたので 10進数 -> テキスト変換ツール用いたら，
+```
+{
+  "error": {
+    "message": "Invalid file 'image': unsupported mimetype ('application/octet-stream'). Supported file formats are 'image/jpeg', 'image/png', and 'image/webp'.",
+    "type": "invalid_request_error",
+    "param": "image",
+    "code": "unsupported_file_mimetype"
+  }
+}
+```
+このことからcontent-type を明示することを考えるが，クライアントからはpngが流れてくる想定なのでその情報を抽出してバックエンド側でもそれを利用する方針
+
+クライアントが name="file"とつけた状態で, png 画像を送る（フロントエンド側の処理う
+
+image を フロントエンドからバックエンド投げる際はimage/png タイプで投げれているので，その情報を取り出す．
+その取り出した情報をバリデーションして， ok であればtype を明示して gpt api にリクエストを送る．
+
+
+https://qiita.com/ijufumi/items/c2d9f53262bb1f931d4e
+
+この記事を参考に実装を進める
+
+```
+curl -s -D >(grep -i x-request-id >&2) \
+  -o >(jq -r '.data[0].b64_json' | base64 --decode > gift-basket.png) \
+  -X POST "https://api.openai.com/v1/images/edits" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F "model=gpt-image-1" \
+  -F "image[]=@body-lotion.png" \
+  -F "image[]=@bath-bomb.png" \
+  -F "image[]=@incense-kit.png" \
+  -F "image[]=@soap.png" \
+  -F 'prompt=Create a lovely gift basket with these four items in it'
+
+```
+GPT API 例　的に form name が image のものを受け取ろうとしている
+
+
+http のリクエスト形式について理想形を勉強する必要がある.
+
+
+### httpリクエストについて
+- 上記の画像アップロード処理で苦労した．その原因は，http リクエストで
+multipart/form-data の構造がどのようになっているかの理解が浅いことに起因していると感じた．したがって，http リクエストを再度学習：
+
+#### リクエストヘッダー
+```
+GET /home.html HTTP/1.1
+Host: developer.mozilla.org
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:50.0) Gecko/20100101 Firefox/50.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: https://developer.mozilla.org/testpage.html
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+If-Modified-Since: Mon, 18 Jul 2016 02:36:04 GMT
+If-None-Match: "c561c68d0ba92bbeb8b0fff2a9199f722e3a621a"
+Cache-Control: max-age=0
+```
+ヘッダーから
+- host 
+- ユーザーが利用しているブラウザー　
+- 対応アプリ形式
+- 言語設定
+- コネクト設定
+- コンテントの長さ
+などが理解できる．
+
+https://qiita.com/T_unity/items/8e604909aec10b8074e5
+https://developer.mozilla.org/ja/docs/Glossary/Request_header
+
+#### MIME タイプ
+何ができるか：
+どのようになっているか： タイプ/サブタイプ    text/plain や text/htmlのような形
+
+**タイプ**: １．個別タイプ 2. マルチパートタイプ
+個別タイプはファイルまたはメディアを表すタイプ
+マルチパートはそれぞれの部分がMIME タイプを持つ特徴がある．
+
+他タイプに明確に宛はmらない場合は，application タイプを利用する
+
+https://developer.mozilla.org/ja/docs/Web/HTTP/Guides/MIME_types
+
+**multipart/form-data**
+```
+Content-Type: multipart/form-data; boundary=aBoundaryString
+（マルチパート文書全体に関連付けられる、他のヘッダー）
+
+--aBoundaryString
+Content-Disposition: form-data; name="myFile"; filename="img.jpg"
+Content-Type: image/jpeg
+
+(データ)
+--aBoundaryString
+Content-Disposition: form-data; name="myField"
+
+(データ)
+--aBoundaryString
+(サブパート)
+--aBoundaryString--
+```
+
+**このような形式で multipart/form-data は扱われている．**
+**今回は gpt_client.go において，Content-Disposition を設定していなかったためエラーにはまった**
+
+
+### png 
+画像のエンコード・デコード
+go において base64 デコード後に byte 列にしたデータをどのようにpng ファイルとして保存するかのやり方について記録する．
+
+```
+	dec, err := base64.StdEncoding.DecodeString(response.Data[0].B64Json)
+	if err != nil {
+		log.Println("failed to decode base64_image")
+		return err
+	}
+
+	outFile, err := os.CreateTemp("", "gpt-image-*.png")
+	if err != nil {
+		return fmt.Errorf("create tmp file : %w", err)
+	}
+	defer outFile.Close()
+
+	err = os.WriteFile("test_image.png", dec, 0660)
+	if err != nil {
+		log.Println("error: write image", err)
+		return err
+	}
+
+```
+
+WriteFile を用いて，デコード後のバイト列を読み込めば OK 
+
+ただ上記プログラム実行時は、
+```
+kai7orz@Kai7orz:~/hackathon/DAKAI/backend/golang/src$ ll
+total 2180
+drwxr-xr-x  3 kai7orz kai7orz    4096 Oct 16 18:51 ./
+drwxr-xr-x  3 kai7orz kai7orz    4096 Oct  6 23:41 ../
+-rw-r--r--  1 kai7orz kai7orz     319 Oct 16 15:38 .env
+-rw-r--r--  1 kai7orz kai7orz    4598 Oct  6 23:42 go.mod
+-rw-r--r--  1 kai7orz kai7orz   25901 Oct  6 21:44 go.sum
+drwxr-xr-x 11 kai7orz kai7orz    4096 Oct 15 00:54 internal/
+-rw-r--r--  1 kai7orz kai7orz    2960 Oct 16 00:40 main.go
+-rw-r-----  1 root    root    2172355 Oct 16 18:51 test_image.png
+```
+このような形で権限エラーで生成したイラスト png をアクセスエラーで見ることができなかった．
+
+chown でプログラムを実行したユーザーに権限を譲渡して対応する
+
+
+
 
 ### swagger の整備
 - API 設計
@@ -458,6 +813,11 @@ func (s *exerciseService) CreateExercise(ctx context.Context, image string, exer
 ```
 
 authorization が verify してくれない　泣
+
+
+
+
+
 
 ### Tip・学び
 ```
