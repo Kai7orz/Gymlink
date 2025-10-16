@@ -25,6 +25,7 @@ const getIllustration = async (event: Event) => {
 
   const formData = new FormData()
   formData.append('file', selectedFile.value, selectedFile.value.name)
+  formData.append('key',"this is a test key")
 
   await useFetch("/api/upload", {
     method: 'POST',
@@ -53,10 +54,10 @@ const createNewRecord = async () => {
 <template>
   <v-container>
     <v-container class="flex flex-row justify-center m-10 p-2">
-      <form>
+      <form class="w-1/3">
         <v-file-input
           v-model="selectedFile"
-          class="max-w-xs m-5 p-3"
+          class="w-100 m-5 p-3"
           label="Select Image to Illustrate"
           @change="getPreview"
           :show-size="true"
