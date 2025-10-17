@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"gymlink/internal/adapter"
 	"gymlink/internal/dbase"
 	"gymlink/internal/handler"
@@ -11,6 +12,7 @@ import (
 	"os"
 
 	firebase "firebase.google.com/go"
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"google.golang.org/api/option"
@@ -18,16 +20,20 @@ import (
 
 func main() {
 
-	var (
-		client = &http.Client{}
-	)
+	var client = &http.Client{}
+
+	awsCfg, err := config.LoadDefaultConfig(context.TODO())
+	fmt.Println("region:", awsCfg.Region)
+	if err != nil {
+		log.Fatal("aws configuration error:", err)
+	}
 	// db へ接続関連
 	db := dbase.ConnectDB()
 
 	defer db.Close()
 
 	//マイグレーション
-	err := dbase.MigrateUp(db)
+	err = dbase.MigrateUp(db)
 	if err != nil {
 		log.Fatal("migrate up failed")
 	}
@@ -64,6 +70,9 @@ func main() {
 	if err != nil {
 		log.Fatal("error: ", err)
 	}
+	awsCli := adapter.NewAwsClient(awsCfg, "katazuke")
+	// awsCli.CheckBucket("katazuke")
+	// awsCli.UploadImage(ctx, "katazuke", "myKey.png")
 
 	apiKey := os.Getenv("GPT_API_KEY")
 	baseUrl := os.Getenv("GPT_URL")
@@ -88,7 +97,7 @@ func main() {
 		log.Fatal("user service error")
 	}
 
-	exerciseSvc, err := service.NewExerciseService(exerciseQueryRepo, exerciseCreateRepo, authC, gptCli)
+	exerciseSvc, err := service.NewExerciseService(exerciseQueryRepo, exerciseCreateRepo, authC, gptCli, awsCli)
 	if err != nil {
 		log.Fatal("exercise service error")
 	}
@@ -102,7 +111,7 @@ func main() {
 	r.GET("/user_profiles/:user_id", userHandler.GetProfilebyId)
 	r.GET("/users/:user_id/exercises", exerciseHandler.GetExercisesById)
 	r.GET("/exercises", exerciseHandler.GetExercises)
-	r.POST("/exercises", exerciseHandler.CreateExercise)
+	r.POST("/exercises", exerciseHandler.CreateRecord)
 	r.POST("/likes", exerciseHandler.CreateLike)
 	r.DELETE("/likes/:exercise_record_id", exerciseHandler.DeleteLike)
 	r.POST("/follows", userHandler.FollowUser)

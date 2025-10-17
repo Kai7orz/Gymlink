@@ -586,6 +586,9 @@ Content-Disposition: form-data; name="myField"
 **このような形式で multipart/form-data は扱われている．**
 **今回は gpt_client.go において，Content-Disposition を設定していなかったためエラーにはまった**
 
+また FormData をフロントから投げる際に 文字列をデータとして投げて、バックエンド側で context の FormFile メソッドから取り出そうとしてもnil になるので注意．あくまで，File のやり取りをするための形式であることに留意、もし文字列を取り出したいならフロントはそのままでいいが，バックエンドは FormValue メソッドなどを利用する必要がある．
+
+
 
 ### png 
 画像のエンコード・デコード
@@ -636,6 +639,10 @@ chown でプログラムを実行したユーザーに権限を譲渡して対�
 
 ### swagger の整備
 - API 設計
+
+### aws 設定
+- https://docs.aws.amazon.com/ja_jp/sdk-for-go/v2/developer-guide/getting-started.html
+
 
 ### エラー集
 - follow 機能で存在しないユーザーへのフォロー

@@ -25,8 +25,9 @@ const getIllustration = async (event: Event) => {
 
   const formData = new FormData()
   formData.append('file', selectedFile.value, selectedFile.value.name)
-  formData.append('key',"this is a test key")
+  formData.append('s3_key',"raw_image")
 
+  console.log("formdata.get:",formData.get('s3_key'))
   await useFetch("/api/upload", {
     method: 'POST',
     headers: {
@@ -49,6 +50,10 @@ const createNewRecord = async () => {
   }
   await useFetch(url, { method: 'POST', body: postData })
 }
+
+onMounted(()=>{
+  responsedUrl.value = "https://katazuke.s3.ap-northeast-1.amazonaws.com/katazuke.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA2CUNLZ5LROQUFMZJ%2F20251017%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251017T042100Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=404a1ff2fa9ef4e8ce1415a2949125f7ec36c9920980cd35d294165bbd2db4b6"
+})
 </script>
 
 <template>
@@ -74,15 +79,12 @@ const createNewRecord = async () => {
         画像の保存
       </v-btn>
     </v-sheet>
-
     <v-container class="flex flex-row justify-center">
       <div v-if='previewUrl!=""' class="w-1/3 flex flex-col md:flex-row md:justify-center m-10">
         <ui-image-card :image_url="previewUrl"><template #title/></ui-image-card>
       </div>
       <div v-if='responsedUrl!=""' class="w-1/3 flex flex-col md:flex-row md:justify-center m-10">
-        <ui-image-card :image_url="responsedUrl">
-          <template #title><h1>カード名</h1></template>
-        </ui-image-card>
+          <img :src="responsedUrl" />
       </div>
     </v-container>
   </v-container>

@@ -1,9 +1,9 @@
-CREATE TABLE exercise_records (
+CREATE TABLE records (
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL,
-    `exercise_image` VARCHAR(255),
-    `exercise_time` INT NOT NULL,
-    `exercise_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `object_key` VARCHAR(255),
+    `clean_up_time` INT NOT NULL,
+    `clean_up_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `comment` VARCHAR(1000),
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

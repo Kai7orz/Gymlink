@@ -28,7 +28,6 @@ func NewGptClient(client *http.Client, apiKey string, baseUrl string) *gptClient
 
 func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.FileHeader) error {
 	// content-type としてアップロードされたimage は png 形式でないとはじく処理
-	log.Println("image type:", image.Header.Get("Content-Type"))
 	if image.Header.Get("Content-Type") != "image/png" {
 		log.Println("type error : image is not png format")
 		return fmt.Errorf("image must be png format")
@@ -59,8 +58,6 @@ func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.Fi
 		return err
 	}
 	defer f.Close()
-
-	log.Println("image.FIlename->", image.Filename)
 
 	part := make(textproto.MIMEHeader)
 	part.Set("Content-Type", "image/png")

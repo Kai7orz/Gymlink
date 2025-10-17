@@ -56,7 +56,7 @@ func (h *ExerciseHandler) GetExercises(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, exercises)
 }
 
-func (h *ExerciseHandler) CreateExercise(ctx *gin.Context) {
+func (h *ExerciseHandler) CreateRecord(ctx *gin.Context) {
 	// ヘッダー取り出し
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
@@ -72,7 +72,7 @@ func (h *ExerciseHandler) CreateExercise(ctx *gin.Context) {
 		return
 	}
 
-	err := h.svc.CreateExercise(ctx.Request.Context(), exerciseCreate.Image, exerciseCreate.ExerciseTime, exerciseCreate.Date, exerciseCreate.Comment, token)
+	err := h.svc.CreateRecord(ctx.Request.Context(), exerciseCreate.Image, exerciseCreate.ExerciseTime, exerciseCreate.Date, exerciseCreate.Comment, token)
 	if err != nil {
 		log.Println("error: exercise create ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
@@ -134,18 +134,21 @@ func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
 
 func (h *ExerciseHandler) GenerateIllustration(ctx *gin.Context) {
 
-	image, err := ctx.FormFile("file")
-	if err != nil {
-		log.Println("error", err)
-	}
-
-	if err != nil {
-		log.Println("failed to get root path")
+	s3Key := ctx.PostForm("s3_key")
+	if s3Key == "" {
+		log.Println("error")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
 
-	err = h.svc.GenerateImg(ctx.Request.Context(), image)
+	image, err := ctx.FormFile("file")
+	if err != nil {
+		log.Println("error", err)
+		return
+	}
+	log.Println("file:", image)
+
+	err = h.svc.GenerateImg(ctx.Request.Context(), image, s3Key)
 	if err != nil {
 		log.Println("image dir error", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})

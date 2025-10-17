@@ -37,15 +37,15 @@ func SeedingDB(db *sqlx.DB) error {
 		UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
 	}
 
-	type ExerciseRecord struct {
-		Id            int64     `json:"id" db:"id"`
-		UserId        int64     `json:"user_id" db:"user_id"`
-		ExerciseImage string    `json:"exercise_image" db:"exercise_image"`
-		ExerciseTime  int64     `json:"exercise_time" db:"exercise_time"`
-		ExerciseDate  time.Time `json:"exercise_date" db:"exercise_date"`
-		Comment       string    `json:"comment" db:"comment"`
-		CreatedAt     time.Time `json:"created_at" db:"created_at"`
-		UpdatedAt     time.Time `json:"updated_at" db:"updated_at"`
+	type Record struct {
+		Id          int64     `json:"id" db:"id"`
+		UserId      int64     `json:"user_id" db:"user_id"`
+		ObjectKey   string    `json:"object_key" db:"object_key"`
+		CleanUpTime int64     `json:"clean_up_time" db:"clean_up_time"`
+		CleanUpDate time.Time `json:"clean_up_date" db:"clean_up_date"`
+		Comment     string    `json:"comment" db:"comment"`
+		CreatedAt   time.Time `json:"created_at" db:"created_at"`
+		UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
 	}
 
 	type UserLike struct {
@@ -106,7 +106,7 @@ func SeedingDB(db *sqlx.DB) error {
 		time.Now(),
 	}
 
-	testExerciseRecord := ExerciseRecord{
+	testRecord := Record{
 		int64(1),
 		int64(1),
 		"test.png",
@@ -117,7 +117,7 @@ func SeedingDB(db *sqlx.DB) error {
 		time.Now(),
 	}
 
-	testExerciseRecord2 := ExerciseRecord{
+	testRecord2 := Record{
 		int64(2),
 		int64(1),
 		"test.png",
@@ -128,7 +128,7 @@ func SeedingDB(db *sqlx.DB) error {
 		time.Now(),
 	}
 
-	testExerciseRecord3 := ExerciseRecord{
+	testRecord3 := Record{
 		int64(3),
 		int64(2),
 		"test.png",
@@ -190,22 +190,22 @@ func SeedingDB(db *sqlx.DB) error {
 		return err
 	}
 
-	sql = `INSERT INTO exercise_records (id,user_id,exercise_image,exercise_time,exercise_date,comment,created_at,updated_at) VALUES (:id,:user_id,:exercise_image,:exercise_time,:exercise_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
-	_, err = db.NamedExec(sql, testExerciseRecord)
+	sql = `INSERT INTO records (id,user_id,object_key,clean_up_time,clean_up_date,comment,created_at,updated_at) VALUES (:id,:user_id,:object_key,:clean_up_time,:clean_up_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
+	_, err = db.NamedExec(sql, testRecord)
 	if err != nil {
 		log.Println("NamedExec Error::", err)
 		return err
 	}
 
-	sql = `INSERT INTO exercise_records (id,user_id,exercise_image,exercise_time,exercise_date,comment,created_at,updated_at) VALUES (:id,:user_id,:exercise_image,:exercise_time,:exercise_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
-	_, err = db.NamedExec(sql, testExerciseRecord2)
+	sql = `INSERT INTO records (id,user_id,object_key,clean_up_time,clean_up_date,comment,created_at,updated_at) VALUES (:id,:user_id,:object_key,:clean_up_time,:clean_up_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
+	_, err = db.NamedExec(sql, testRecord2)
 	if err != nil {
 		log.Println("NamedExec Error::", err)
 		return err
 	}
 
-	sql = `INSERT INTO exercise_records (id,user_id,exercise_image,exercise_time,exercise_date,comment,created_at,updated_at) VALUES (:id,:user_id,:exercise_image,:exercise_time,:exercise_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
-	_, err = db.NamedExec(sql, testExerciseRecord3)
+	sql = `INSERT INTO records (id,user_id,object_key,clean_up_time,clean_up_date,comment,created_at,updated_at) VALUES (:id,:user_id,:object_key,:clean_up_time,:clean_up_date,:comment,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
+	_, err = db.NamedExec(sql, testRecord3)
 	if err != nil {
 		log.Println("NamedExec Error::", err)
 		return err

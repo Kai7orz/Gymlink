@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"firebase.google.com/go/auth"
+	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 )
 
 // repository の interface を記述
@@ -31,7 +32,7 @@ type ExerciseQueryRepo interface {
 }
 
 type ExerciseCreateRepo interface {
-	CreateExerciseById(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, uid string) error
+	CreateRecordById(ctx context.Context, objectKey string, exerciseTime int64, date time.Time, comment string, uid string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, uid string) error
 	DeleteLike(ctx context.Context, exerciseRecordId int64, uid string) error
 }
@@ -43,6 +44,15 @@ type AuthClient interface {
 
 type GptClient interface {
 	CreateIllustration(ctx context.Context, image *multipart.FileHeader) error
+}
+
+type AwsClient interface {
+	CheckBucket() error
+	UploadImage(ctx context.Context, keyName string) error
+	GetObject(
+		ctx context.Context,
+		objectKey string,
+		lifetimeSecs int64) (*v4.PresignedHTTPRequest, error)
 }
 
 // handler レイヤーが利用するインターフェース
@@ -57,8 +67,8 @@ type UserService interface {
 type ExerciseService interface {
 	GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error)
 	GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error)
-	CreateExercise(ctx context.Context, image string, exerciseTime int64, date time.Time, comment string, idToken string) error
+	CreateRecord(ctx context.Context, objectKey string, exerciseTime int64, date time.Time, comment string, idToken string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error
 	DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error
-	GenerateImg(ctx context.Context, image *multipart.FileHeader) error
+	GenerateImg(ctx context.Context, image *multipart.FileHeader, s3Key string) error
 }
