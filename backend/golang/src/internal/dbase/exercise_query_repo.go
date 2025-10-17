@@ -19,15 +19,15 @@ func NewExerciseQueryRepo(db *sqlx.DB) *exerciseQueryRepo {
 func (r *exerciseQueryRepo) GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error) {
 
 	sql := `SELECT 
-			exercise_records.id,
-			exercise_records.user_id,
+			clean_up_records.id,
+			clean_up_records.user_id,
 			users.name AS user_name,
-			exercise_records.exercise_image,
-			exercise_records.exercise_time,
-			exercise_records.exercise_date,
-			exercise_records.comment,
-			(SELECT COUNT(*) FROM user_likes WHERE exercise_record_id = exercise_records.id) AS likes_count 
-			FROM exercise_records INNER JOIN users ON users.id = exercise_records.user_id WHERE user_id = :id`
+			clean_up_records.object_key,
+			records.clean_up_time,
+		 	records.clean_up_date,
+			records.comment,
+			(SELECT COUNT(*) FROM user_likes WHERE exercise_record_id = records.id) AS likes_count 
+			FROM records INNER JOIN users ON users.id = records.user_id WHERE user_id = :id`
 	bindParams := map[string]any{
 		"id": id,
 	}
@@ -50,15 +50,15 @@ func (r *exerciseQueryRepo) GetExercisesById(ctx context.Context, id int64) ([]e
 func (r *exerciseQueryRepo) GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error) {
 
 	sql := `SELECT 
-			exercise_records.id,
-			exercise_records.user_id,
+			records.id,
+			records.user_id,
 			users.name AS user_name,
-			exercise_records.exercise_image,
-			exercise_records.exercise_time,
-			exercise_records.exercise_date,
-			exercise_records.comment,
-			(SELECT COUNT(*) FROM user_likes WHERE exercise_record_id = exercise_records.id) AS likes_count 
-			FROM exercise_records INNER JOIN users ON users.id = exercise_records.user_id ORDER BY exercise_records.id DESC LIMIT 20`
+			records.object_key,
+			records.clean_up_time,
+			records.clean_up_date,
+			records.comment,
+			(SELECT COUNT(*) FROM user_likes WHERE exercise_record_id = records.id) AS likes_count 
+			FROM records INNER JOIN users ON users.id = records.user_id ORDER BY records.id DESC LIMIT 20`
 	exercises := []entity.ExerciseRecordType{}
 	if err := r.db.Select(&exercises, sql); err != nil {
 		return nil, err

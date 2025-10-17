@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import UiAddCard from '~/components/UiAddCard.vue';
-import { illustrations } from '~/data/illustrations';
+    import { illustrations } from '~/data/illustrations';
     import { useUserStore } from '~/stores/userStore';
 
     const isShownMenu = ref(false);
@@ -16,16 +16,16 @@ import { illustrations } from '~/data/illustrations';
     const addCard = async ()=>{
         console.log(imageUrl.value)
         const TOKEN = auth.idToken
-        await $fetch('/api/userExercise',{
+        await $fetch('/api/userRecord',{
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + TOKEN,
                 'Content-Type': 'application/json'
             },
             body: {
-                "exercise_image": imageUrl.value,
-                "exercise_time": Number(time.value),
-                "exercise_date": date.value,
+                "object_key": imageUrl.value,
+                "clean_up_time": Number(time.value),
+                "clean_up_date": date.value,
                 "comment": comment.value,
             }
         }

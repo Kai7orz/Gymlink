@@ -28,7 +28,6 @@ func NewGptClient(client *http.Client, apiKey string, baseUrl string) *gptClient
 
 func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.FileHeader) error {
 	// content-type としてアップロードされたimage は png 形式でないとはじく処理
-	log.Println("image type:", image.Header.Get("Content-Type"))
 	if image.Header.Get("Content-Type") != "image/png" {
 		log.Println("type error : image is not png format")
 		return fmt.Errorf("image must be png format")
@@ -59,8 +58,6 @@ func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.Fi
 		return err
 	}
 	defer f.Close()
-
-	log.Println("image.FIlename->", image.Filename)
 
 	part := make(textproto.MIMEHeader)
 	part.Set("Content-Type", "image/png")
@@ -102,18 +99,13 @@ func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.Fi
 		return err
 	}
 
-	log.Println("response body:", body)
-
 	var response dto.ImageResponseType
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Println("failed to unmarshal")
 		return err
 	}
-
-	log.Println("LOG::", response)
 	// response data の中の b_64を取得し，image として保存する処理を記述
-
 	if len(response.Data) == 0 || response.Data[0].B64Json == "" {
 		return fmt.Errorf("unmarshal json: response is nothing")
 	}

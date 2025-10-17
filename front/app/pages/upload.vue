@@ -1,7 +1,11 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'navigator' })
+
+import { illustrations } from '~/data/illustrations';
+    
+
 
 const url = "/api/records/record"
+
 
 const selectedFile = ref<File | null>(null)
 
@@ -16,17 +20,38 @@ const postData = reactive({
   imageDescription: "",
 })
 
+    const isLoading = ref(false);
+    const isShownMenu = ref(false);
+    const time = ref("")
+    const date = ref("2025/10/17")
+    const comment = ref('')
+    const imageUrl = ref('')
+    const user = useUserStore()
+    const auth = useAuthStore()
+    const TOKEN = auth.idToken
+    // イラスト一覧を読み込んで propsとして渡して表示する
+    const illustrationsObjs = illustrations
+
+  const formatDate = (d: Date | string) => {
+    const date = new Date(d)
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    return `${yyyy}${mm}${dd}`
+  }
+ 
 const getIllustration = async (event: Event) => {
   event.preventDefault()
   if (!selectedFile.value) return
 
-  const auth = useAuthStore()
-  const TOKEN = auth.idToken
-
   const formData = new FormData()
   formData.append('file', selectedFile.value, selectedFile.value.name)
-  formData.append('key',"this is a test key")
-
+  formData.append('s3_key',"raw_image")
+  formData.append('clean_up_time',time.value)
+  formData.append('clean_up_date',formatDate(date.value))
+  formData.append('comment',comment.value)
+  isLoading.value = true
+  try {
   await useFetch("/api/upload", {
     method: 'POST',
     headers: {
@@ -34,6 +59,13 @@ const getIllustration = async (event: Event) => {
     },
     body: formData,
   })
+
+  await navigateTo("/home")
+  } catch(error){
+    console.log("error: response is invalid",error)
+  } finally{
+    isLoading.value = false
+  }
 }
 
 const getPreview = async (event: Event) => {
@@ -42,18 +74,40 @@ const getPreview = async (event: Event) => {
   previewUrl.value = URL.createObjectURL(selectedFile.value)
 }
 
-const createNewRecord = async () => {
-  if (postData.imageUrl == "") {
-    console.log("Image is Empty")
-    return
-  }
-  await useFetch(url, { method: 'POST', body: postData })
-}
+    const closeMenu = ()=>{
+        isShownMenu.value = false;
+        console.log("close menu")
+    }
+
+    const openMenu = ()=>{
+
+      isShownMenu.value = true
+    }
+
+    const select = (imageId:string) => {
+        console.log("ttest",imageId)
+        imageUrl.value = illustrationsObjs[imageId]?.src
+    }
+
+onMounted(()=>{
+  responsedUrl.value = "https://katazuke.s3.ap-northeast-1.amazonaws.com/katazuke.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA2CUNLZ5LROQUFMZJ%2F20251017%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251017T042100Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=404a1ff2fa9ef4e8ce1415a2949125f7ec36c9920980cd35d294165bbd2db4b6"
+})
 </script>
 
 <template>
   <v-container>
     <v-container class="flex flex-row justify-center m-10 p-2">
+      <ui-add-card 
+                v-model:exerciseTime="time"
+                v-model:date="date"
+                v-model:comment="comment"
+                v-model:is-shown-menu=isShownMenu
+                :imageUrl="imageUrl"
+                :illustObjs="illustrationsObjs"
+                @open="openMenu" 
+                @add="addCard" 
+                @close="closeMenu"
+                @select="select" />
       <form class="w-1/3">
         <v-file-input
           v-model="selectedFile"
@@ -68,21 +122,20 @@ const createNewRecord = async () => {
 
     <v-sheet class="flex m-10 bg-black text-center rounded-lg">
       <v-btn class="m-5" variant="outlined" @click="getIllustration">
-        イラスト生成
+        レコード記録
       </v-btn>
-      <v-btn class="m-5" variant="outlined" @click="createNewRecord">
-        画像の保存
-      </v-btn>
+        <v-overlay v-model="isLoading"
+                location-strategy="connected"
+                class="d-flex justify-center items-center mx-auto my-auto"
+              >
+                <v-card class="d-flex items-center justify-center bg-black text-white mx-auto" min-width="150" min-height="100">
+                    loading...
+                </v-card>
+        </v-overlay>
     </v-sheet>
-
     <v-container class="flex flex-row justify-center">
       <div v-if='previewUrl!=""' class="w-1/3 flex flex-col md:flex-row md:justify-center m-10">
         <ui-image-card :image_url="previewUrl"><template #title/></ui-image-card>
-      </div>
-      <div v-if='responsedUrl!=""' class="w-1/3 flex flex-col md:flex-row md:justify-center m-10">
-        <ui-image-card :image_url="responsedUrl">
-          <template #title><h1>カード名</h1></template>
-        </ui-image-card>
       </div>
     </v-container>
   </v-container>

@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS `exercise_records`;
+DROP TABLE IF EXISTS `records`;

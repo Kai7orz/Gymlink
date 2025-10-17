@@ -26,13 +26,12 @@ services:
       - 8080:8080
     env_file:
       - ./mysql/.dev.env
+      - ./backend/golang/src/.env
     depends_on:
       - db
     volumes:
       - ./backend/golang/src:/go/src
       - ./backend/golang/src/internal/images:/go/src/internal/images
-
-
 
   dev_db:
     container_name: dev_db

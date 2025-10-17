@@ -104,17 +104,26 @@ paths:
                   $ref: '#/components/schemas/Exercise'
   /upload:
     post:
-      summary: s3 の presignedURL（アップロード用）を取得
+      summary: multipart/form-data 形式で 一旦全部 image 以外はstring で送信
+      requestBody:
+        description: record to add to the user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RawRecord'
       responses:
-       '200':
-         content:
-           application/json:
-             schema:
-               example:
-                 - presignedURL: "xxx.xxxxxx"
+        200:
+          description: Successfully created record
+          content:
+              application/json:
+                schema:
+                  example:
+                    code: 200 
+                    message: "ok"
 
 
-  /exercises:
+  /records:
     get:
       summary: Get latest 20 exercises records
       description: /users/exercises とは異なり自身の記録ではなく，投稿された記録の最新20件を取り出すための API 
@@ -150,24 +159,6 @@ paths:
                       comment: "最高の気分"
                       likes_count: 1
 
-    post:
-      summary: Create a new exercise record for a user by ID 
-      requestBody:
-        description: Exercise to add to the user
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RawExercise'
-      responses:
-        200:
-          description: Successfully created exercise
-          content:
-              application/json:
-                schema:
-                  example:
-                    code: 200 
-                    message: "ok"
   
   # ホーム画面 & 投稿共有画面
   /likes:
@@ -346,20 +337,19 @@ components:
           type: "integer"
           example: 3
 
-    RawExercise:
+    RawRecord:
       type: "object" 
       required:
-        - "exercise_image" 
-        - "exercise_time" 
+        - "object_key" 
+        - "clean_up_time" 
       properties:
-        exercise_image:
+        object_key:
           type: "string"  
           example: "/images/test.png"
-        exercise_time: 
-          type: "integer"
-          format: "int64"
-          example: 20 
-        exercise_date:
+        clean_up_time: 
+          type: "string"
+          example: "20" 
+        clean_up_date:
           type: "string"
           example: "2024-01-01T10:00:00Z"
         comment:
