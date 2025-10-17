@@ -137,25 +137,25 @@ paths:
                     - id: 1
                       user_id: 2
                       user_name: "taro"
-                      exercise_image: "/images/sportImage.png"
-                      exercise_time: 45
-                      exercise_date: "2024-01-01T10:00:00Z"
+                      presigned_image: "/images/sportImage.png"
+                      clean_up_time: 45
+                      clean_up_date: "2024-01-01T10:00:00Z"
                       comment: "いい感じに動けた"
                       likes_count: 3
                     - id: 2
                       user_name: "yumi"
                       user_id: 22
-                      exercise_image: "/images/sportImage.png"
-                      exercise_time: 30
-                      exercise_date: "2024-01-02T10:00:00Z"
+                      presigned_image: "/images/sportImage.png"
+                      clean_up_time: 30
+                      clean_up_date: "2024-01-02T10:00:00Z"
                       comment: "疲れた"
                       likes_count: 0
                     - id: 3
                       user_id: 10
                       user_name: "satoshi"
-                      exercise_image: "/images/sportImage.png"
-                      exercise_time: 60
-                      exercise_date: "2024-01-03T10:00:00Z"
+                      presigned_image: "/images/sportImage.png"
+                      clean_up_time: 60
+                      clean_up_date: "2024-01-03T10:00:00Z"
                       comment: "最高の気分"
                       likes_count: 1
 
@@ -163,7 +163,7 @@ paths:
   # ホーム画面 & 投稿共有画面
   /likes:
     post:
-      summary: 運動記録に「いいね」する
+      summary: 記録に「いいね」する
       requestBody:
         required: true
         content:
@@ -171,7 +171,7 @@ paths:
             schema:
               type: object
               properties:
-                exercise_record_id:
+                record_id:
                   type: integer
       responses:
         "201":
@@ -184,7 +184,7 @@ paths:
                   code: { type: integer, example: 201 }
                   message: { type: string, example: "created" }
         
-  /likes/{exercise_record_id}:
+  /likes/{record_id}:
     delete:
       summary: 運動記録のいいねを外す
       parameters:
@@ -194,7 +194,7 @@ paths:
           schema:
             type: integer
         - in: path
-          name: exercise_record_id
+          name: record_id
           required: true
           schema:
             type: integer
@@ -306,8 +306,8 @@ components:
       type: "object"
       required:
         - "id" 
-        - "exercise_image" 
-        - "exercise_time" 
+        - "presigned_image" 
+        - "clean_up_time" 
       properties:
         id:
           type: "integer"
@@ -319,14 +319,14 @@ components:
         user_name:
           type: "string"
           example: "ABC"
-        exercise_image:
+        presigned_image:
           type: "string" 
           example:  '/images/sportImage.png'
-        exercise_time:
+        clean_up_time:
           type: "integer"
           format: "int64" 
           example: 45
-        exercise_date:
+        clean_up_date:
           type: "string"
           format: "date-time"
           example: "2024-01-01T10:00:00Z"

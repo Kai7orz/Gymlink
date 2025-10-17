@@ -12,9 +12,9 @@ type exerciseCreateRepo struct {
 	db *sqlx.DB
 }
 
-type exerciseLikeTypeDTO struct {
-	UId              string `db:"firebase_uid"`
-	ExerciseRecordId int64  `db:"exercise_record_id"`
+type recordLikeTypeDTO struct {
+	UId      string `db:"firebase_uid"`
+	RecordId int64  `db:"record_id"`
 }
 
 func NewExerciseCreateRepo(db *sqlx.DB) *exerciseCreateRepo {
@@ -49,13 +49,13 @@ func (r *exerciseCreateRepo) CreateRecordById(ctx context.Context, objectKey str
 	return nil
 }
 
-func (r *exerciseCreateRepo) CreateLike(ctx context.Context, exerciseRecordId int64, uid string) error {
-	exerciseLike := exerciseLikeTypeDTO{
-		UId:              uid,
-		ExerciseRecordId: exerciseRecordId,
+func (r *exerciseCreateRepo) CreateLike(ctx context.Context, recordId int64, uid string) error {
+	exerciseLike := recordLikeTypeDTO{
+		UId:      uid,
+		RecordId: recordId,
 	}
-	sql := `INSERT INTO user_likes (user_id,exercise_record_id) 
-	VALUES ((SELECT id FROM users WHERE users.firebase_uid = :firebase_uid LIMIT 1),:exercise_record_id) 
+	sql := `INSERT INTO user_likes (user_id,record_id) 
+	VALUES ((SELECT id FROM users WHERE users.firebase_uid = :firebase_uid LIMIT 1),:record_id) 
 	ON DUPLICATE KEY UPDATE updated_at = NOW()`
 	_, err := r.db.NamedExec(sql, exerciseLike)
 	if err != nil {
@@ -65,12 +65,12 @@ func (r *exerciseCreateRepo) CreateLike(ctx context.Context, exerciseRecordId in
 	return nil
 }
 
-func (r *exerciseCreateRepo) DeleteLike(ctx context.Context, exerciseRecordId int64, uid string) error {
-	exerciseDeleteLeike := exerciseLikeTypeDTO{
-		UId:              uid,
-		ExerciseRecordId: exerciseRecordId,
+func (r *exerciseCreateRepo) DeleteLike(ctx context.Context, recordId int64, uid string) error {
+	exerciseDeleteLeike := recordLikeTypeDTO{
+		UId:      uid,
+		RecordId: recordId,
 	}
-	sql := `DELETE FROM user_likes WHERE exercise_record_id = :exercise_record_id and user_id = (SELECT id FROM users WHERE users.firebase_uid = :firebase_uid LIMIT 1)`
+	sql := `DELETE FROM user_likes WHERE record_id = :record_id and user_id = (SELECT id FROM users WHERE users.firebase_uid = :firebase_uid LIMIT 1)`
 	_, err := r.db.NamedExec(sql, exerciseDeleteLeike)
 	if err != nil {
 		log.Println("DELETE like error: ", err)

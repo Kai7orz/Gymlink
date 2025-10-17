@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ExerciseRecordType } from '~/type';
+import type { RecordType } from '~/type';
 
     const props = defineProps<{
-        exerciseMocksList: ExerciseRecordType[]
+        recordList: RecordType[]
     }>();
 
     const emits = defineEmits<{
@@ -21,26 +21,27 @@ import type { ExerciseRecordType } from '~/type';
     const toAccount = (uid:number) => {
         emits('account',uid)
     }
+
 </script>
 <template>
   <v-container>
     <v-row>
       <v-col
-        v-for="(exerciseMock, index) in props.exerciseMocksList"
+        v-for="(record, index) in props.recordList"
         :key="index"
         cols="12"
         md="6"      
       >
         <ui-card
           class="w-100"
-          :id="exerciseMock.id"
-          :userId="Number(exerciseMock.user_id)"
-          :userName="exerciseMock.user_name"
-          :image="exerciseMock.exercise_image"
-          :time="exerciseMock.exercise_time"
-          :date="exerciseMock.exercise_date"
-          :comment="exerciseMock.comment"
-          :likesCount="exerciseMock.likes_count"
+          :id="record.id"
+          :userId="Number(record.user_id)"
+          :userName="record.user_name"
+          :image="record.presigned_image"
+          :time="record.clean_up_time"
+          :date="record.clean_up_date"
+          :comment="record.comment"
+          :likesCount="record.likes_count"
           @detail="toDetail"
           @like="like"
           @account="toAccount"

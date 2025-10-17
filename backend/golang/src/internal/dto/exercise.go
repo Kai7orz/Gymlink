@@ -1,7 +1,7 @@
 package dto
 
-type ExerciseLikeType struct {
-	ExerciseRecordId int64 `json:"exercise_record_id" db:"exercise_record_id"`
+type RecordLikeType struct {
+	RecordId int64 `json:"record_id" db:"record_id"`
 }
 
 type RecordCreateType struct {

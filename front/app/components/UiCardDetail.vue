@@ -55,7 +55,7 @@ const toBack = () => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <v-sheet class="bg-white/5 rounded-2xl p-4 border border-white/10">
               <div class="text-sm opacity-80 mb-1 flex items-center gap-2">
-                <v-icon size="18" icon="mdi-timer-sand" /> 運動時間
+                <v-icon size="18" icon="mdi-timer-sand" /> 片付け時間
               </div>
               <div class="text-xl font-semibold">{{ detailStore.detailTime }} 分</div>
             </v-sheet>

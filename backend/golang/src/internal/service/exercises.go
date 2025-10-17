@@ -27,22 +27,79 @@ func NewExerciseService(e ExerciseQueryRepo, ec ExerciseCreateRepo, a AuthClient
 	return &exerciseService{e: e, ec: ec, a: a, gc: gc, ac: ac}, nil
 }
 
-func (s *exerciseService) GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error) {
-	exercises, err := s.e.GetExercisesById(ctx, id)
+func (s *exerciseService) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error) {
+	recordsRaw, err := s.e.GetRecordsById(ctx, id)
 	if err != nil {
 		log.Println("error: ", err)
 		return nil, err
 	}
-	return exercises, nil
+
+	records := []entity.RecordType{}
+
+	for _, record := range recordsRaw {
+		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 60)
+		if err != nil {
+			log.Println("error presigned get request")
+			return nil, err
+		}
+		// presigned url 取得から実装始める
+		log.Println("URL==>", presignedGetRequest.URL)
+
+		newRecord := entity.RecordType{
+			Id:             record.Id,
+			UserId:         record.UserId,
+			UserName:       record.UserName,
+			PresignedImage: presignedGetRequest.URL,
+			CleanUpTime:    record.CleanUpTime,
+			CleanUpDate:    record.CleanUpDate,
+			Comment:        record.Comment,
+			LikesCount:     record.LikesCount,
+		}
+
+		records = append(records, newRecord)
+	}
+
+	return records, nil
 }
 
-func (s *exerciseService) GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error) {
-	exercises, err := s.e.GetExercises(ctx)
+func (s *exerciseService) GetRecords(ctx context.Context) ([]entity.RecordType, error) {
+	recordsRaw, err := s.e.GetRecords(ctx)
 	if err != nil {
 		log.Println("error: ", err)
 		return nil, err
 	}
-	return exercises, nil
+
+	records := []entity.RecordType{}
+
+	for _, record := range recordsRaw {
+		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 60)
+		if err != nil {
+			log.Println("error presigned get request")
+			return nil, err
+		}
+		// presigned url 取得から実装始める
+		log.Println("URL==>", presignedGetRequest.URL)
+
+		newRecord := entity.RecordType{
+			Id:             record.Id,
+			UserId:         record.UserId,
+			UserName:       record.UserName,
+			PresignedImage: presignedGetRequest.URL,
+			CleanUpTime:    record.CleanUpTime,
+			CleanUpDate:    record.CleanUpDate,
+			Comment:        record.Comment,
+			LikesCount:     record.LikesCount,
+		}
+
+		records = append(records, newRecord)
+	}
+
+	for _, rec := range records {
+		log.Println("record list:", rec.Id)
+		log.Println("record url:", rec.PresignedImage)
+	}
+
+	return records, nil
 }
 
 func (s *exerciseService) CreateRecord(ctx context.Context, objectKey string, cleanUpTimeRaw string, cleanUpDateRaw string, comment string, idToken string) error {

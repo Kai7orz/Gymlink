@@ -16,7 +16,7 @@ func NewExerciseQueryRepo(db *sqlx.DB) *exerciseQueryRepo {
 	return &exerciseQueryRepo{db: db}
 }
 
-func (r *exerciseQueryRepo) GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error) {
+func (r *exerciseQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordRawType, error) {
 
 	sql := `SELECT 
 			clean_up_records.id,
@@ -26,7 +26,7 @@ func (r *exerciseQueryRepo) GetExercisesById(ctx context.Context, id int64) ([]e
 			records.clean_up_time,
 		 	records.clean_up_date,
 			records.comment,
-			(SELECT COUNT(*) FROM user_likes WHERE exercise_record_id = records.id) AS likes_count 
+			(SELECT COUNT(*) FROM user_likes WHERE record_id = records.id) AS likes_count 
 			FROM records INNER JOIN users ON users.id = records.user_id WHERE user_id = :id`
 	bindParams := map[string]any{
 		"id": id,
@@ -37,17 +37,17 @@ func (r *exerciseQueryRepo) GetExercisesById(ctx context.Context, id int64) ([]e
 		log.Println("sql err:", err)
 	}
 	query = r.db.Rebind(query)
-	exercises := []entity.ExerciseRecordType{}
-	if err := r.db.Select(&exercises, query, params...); err != nil {
+	records := []entity.RecordRawType{}
+	if err := r.db.Select(&records, query, params...); err != nil {
 		log.Println("err :", err)
 		return nil, err
 	}
 
-	return exercises, nil
+	return records, nil
 
 }
 
-func (r *exerciseQueryRepo) GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error) {
+func (r *exerciseQueryRepo) GetRecords(ctx context.Context) ([]entity.RecordRawType, error) {
 
 	sql := `SELECT 
 			records.id,
@@ -57,11 +57,11 @@ func (r *exerciseQueryRepo) GetExercises(ctx context.Context) ([]entity.Exercise
 			records.clean_up_time,
 			records.clean_up_date,
 			records.comment,
-			(SELECT COUNT(*) FROM user_likes WHERE exercise_record_id = records.id) AS likes_count 
+			(SELECT COUNT(*) FROM user_likes WHERE record_id = records.id) AS likes_count 
 			FROM records INNER JOIN users ON users.id = records.user_id ORDER BY records.id DESC LIMIT 20`
-	exercises := []entity.ExerciseRecordType{}
-	if err := r.db.Select(&exercises, sql); err != nil {
+	records := []entity.RecordRawType{}
+	if err := r.db.Select(&records, sql); err != nil {
 		return nil, err
 	}
-	return exercises, nil
+	return records, nil
 }
