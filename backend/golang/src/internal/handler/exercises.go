@@ -56,31 +56,6 @@ func (h *ExerciseHandler) GetExercises(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, exercises)
 }
 
-func (h *ExerciseHandler) CreateRecord(ctx *gin.Context) {
-	// ヘッダー取り出し
-	authz := ctx.GetHeader("Authorization")
-	if !strings.HasPrefix(authz, "Bearer ") {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
-		return
-	}
-	token := strings.TrimPrefix(authz, "Bearer ")
-
-	var exerciseCreate dto.ExerciseCreateType
-	if err := ctx.ShouldBindJSON(&exerciseCreate); err != nil {
-		log.Println("error: exercise read body ", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
-	}
-
-	err := h.svc.CreateRecord(ctx.Request.Context(), exerciseCreate.Image, exerciseCreate.ExerciseTime, exerciseCreate.Date, exerciseCreate.Comment, token)
-	if err != nil {
-		log.Println("error: exercise create ", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "exercise record created successfully"})
-}
-
 func (h *ExerciseHandler) CreateLike(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
@@ -133,10 +108,38 @@ func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
 }
 
 func (h *ExerciseHandler) GenerateIllustration(ctx *gin.Context) {
+	// ヘッダー取り出し
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	token := strings.TrimPrefix(authz, "Bearer ")
 
-	s3Key := ctx.PostForm("s3_key")
-	if s3Key == "" {
+	s3KeyRaw := ctx.PostForm("s3_key")
+	if s3KeyRaw == "" {
 		log.Println("error")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	cleanUpTimeRaw := ctx.PostForm("clean_up_time")
+	if cleanUpTimeRaw == "" {
+		log.Println("error clean up time is not set")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	cleanUpDateRaw := ctx.PostForm("clean_up_date")
+	if cleanUpDateRaw == "" {
+		log.Println("error clean date time is not set")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	comment := ctx.PostForm("comment")
+	if comment == "" {
+		log.Println("error comment is not set")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
@@ -146,14 +149,28 @@ func (h *ExerciseHandler) GenerateIllustration(ctx *gin.Context) {
 		log.Println("error", err)
 		return
 	}
-	log.Println("file:", image)
+	recordCreate := dto.RecordCreateType{
+		ObjectKey:      s3KeyRaw,
+		CleanUpTimeRaw: cleanUpTimeRaw,
+		CleanUpDateRaw: cleanUpDateRaw,
+		Comment:        comment,
+	}
 
-	err = h.svc.GenerateImg(ctx.Request.Context(), image, s3Key)
+	s3Key, err := h.svc.GenerateImgAndUpload(ctx.Request.Context(), image, s3KeyRaw)
 	if err != nil {
 		log.Println("image dir error", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
 
-	ctx.JSON(201, gin.H{"message": "OK"})
+	recordCreate.ObjectKey = s3Key
+
+	err = h.svc.CreateRecord(ctx.Request.Context(), recordCreate.ObjectKey, recordCreate.CleanUpTimeRaw, recordCreate.CleanUpDateRaw, recordCreate.Comment, token)
+	if err != nil {
+		log.Println("error: create record", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "record is created successfully"})
+
 }

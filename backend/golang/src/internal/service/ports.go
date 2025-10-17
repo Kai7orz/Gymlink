@@ -67,8 +67,8 @@ type UserService interface {
 type ExerciseService interface {
 	GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error)
 	GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error)
-	CreateRecord(ctx context.Context, objectKey string, exerciseTime int64, date time.Time, comment string, idToken string) error
+	CreateRecord(ctx context.Context, objectKey string, cleanUpTime string, cleanUpdate string, comment string, idToken string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error
 	DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error
-	GenerateImg(ctx context.Context, image *multipart.FileHeader, s3Key string) error
+	GenerateImgAndUpload(ctx context.Context, image *multipart.FileHeader, s3Key string) (string, error)
 }

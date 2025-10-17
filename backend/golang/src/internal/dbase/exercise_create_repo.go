@@ -21,20 +21,20 @@ func NewExerciseCreateRepo(db *sqlx.DB) *exerciseCreateRepo {
 	return &exerciseCreateRepo{db: db}
 }
 
-func (r *exerciseCreateRepo) CreateRecordById(ctx context.Context, objectKey string, exerciseTime int64, date time.Time, comment string, uid string) error {
+func (r *exerciseCreateRepo) CreateRecordById(ctx context.Context, objectKey string, cleanUpTime int64, cleanUpDate time.Time, comment string, uid string) error {
 	type exerciseRawCreateTypeDTO struct {
-		UId          string    `db:"firebase_uid"`
-		ObjectKey    string    `db:"object_key"`
-		ExerciseTime int64     `db:"clean_up_time"`
-		Date         time.Time `db:"clean_up_date"`
-		Comment      string    `db:"comment"`
+		UId         string    `db:"firebase_uid"`
+		ObjectKey   string    `db:"object_key"`
+		CleanUpTime int64     `db:"clean_up_time"`
+		CleanUpDate time.Time `db:"clean_up_date"`
+		Comment     string    `db:"comment"`
 	}
 	exerciseCreate := exerciseRawCreateTypeDTO{
-		UId:          uid,
-		ObjectKey:    objectKey,
-		ExerciseTime: exerciseTime,
-		Date:         date,
-		Comment:      comment,
+		UId:         uid,
+		ObjectKey:   objectKey,
+		CleanUpTime: cleanUpTime,
+		CleanUpDate: cleanUpDate,
+		Comment:     comment,
 	}
 	log.Println("repo create exercise:")
 	sql := `INSERT INTO records (user_id,object_key,clean_up_time,clean_up_date,comment) 

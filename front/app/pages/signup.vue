@@ -65,7 +65,6 @@
         <v-btn class="d-flex justify-center" @click="signUpUser" color="primary">
             サインアップ
             <v-overlay v-model="isLoading"
-                activator="parent"
                 location-strategy="connected"
                 class="d-flex justify-canter mx-auto my-auto"
             >

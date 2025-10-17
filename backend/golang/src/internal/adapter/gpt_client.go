@@ -99,18 +99,13 @@ func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.Fi
 		return err
 	}
 
-	log.Println("response body:", body)
-
 	var response dto.ImageResponseType
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		log.Println("failed to unmarshal")
 		return err
 	}
-
-	log.Println("LOG::", response)
 	// response data の中の b_64を取得し，image として保存する処理を記述
-
 	if len(response.Data) == 0 || response.Data[0].B64Json == "" {
 		return fmt.Errorf("unmarshal json: response is nothing")
 	}
