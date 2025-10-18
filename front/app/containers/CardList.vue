@@ -36,6 +36,7 @@
         // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
         const detailRecord = recordList[ recordList.length - id];
         if(!detailRecord) return;
+        console.log("detailRecord:",detailRecord.presigned_image)
         detailStore.setDetail(detailRecord.id,detailRecord.user_id,detailRecord.user_name,detailRecord.presigned_image,detailRecord.clean_up_time,detailRecord.clean_up_date,detailRecord.comment,detailRecord.likes_count)
         navigateTo({name: 'Detail-id', params: {id: id }})
     }
