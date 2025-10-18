@@ -95,6 +95,7 @@ func (h *ExerciseHandler) CheckLike(ctx *gin.Context) {
 	if err != nil {
 		log.Println("failed to parse record_id")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+		return
 	}
 	liked, err := h.svc.CheckLikeById(ctx.Request.Context(), exerciseRecordId, token)
 	if err != nil {
@@ -114,12 +115,13 @@ func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
 		return
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
-
 	exerciseRecordIdStr := ctx.Param("record_id")
+	log.Println("record str -> ", exerciseRecordIdStr)
 	exerciseRecordId, err := strconv.ParseInt(exerciseRecordIdStr, 10, 64)
 	if err != nil {
 		log.Println("failed to parse record_id")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+		return
 	}
 
 	err = h.svc.DeleteLikeById(ctx.Request.Context(), exerciseRecordId, token)

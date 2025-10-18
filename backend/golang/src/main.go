@@ -114,7 +114,7 @@ func main() {
 	// r.POST("/records", exerciseHandler.GenerateIllustration)
 	r.POST("/likes", exerciseHandler.CreateLike)
 	r.GET("/likes/:record_id", exerciseHandler.CheckLike)
-	r.DELETE("/likes/:exercise_record_id", exerciseHandler.DeleteLike)
+	r.DELETE("/likes/:record_id", exerciseHandler.DeleteLike)
 	r.POST("/follows", userHandler.FollowUser)
 	r.DELETE("/users/unfollows", userHandler.DeleteFollowUser)
 	r.POST("/upload", exerciseHandler.GenerateIllustration)
