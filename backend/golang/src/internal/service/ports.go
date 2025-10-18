@@ -27,8 +27,8 @@ type ProfileRepo interface {
 }
 
 type ExerciseQueryRepo interface {
-	GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error)
-	GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error)
+	GetRecordsById(ctx context.Context, id int64) ([]entity.RecordRawType, error)
+	GetRecords(ctx context.Context) ([]entity.RecordRawType, error)
 }
 
 type ExerciseCreateRepo interface {
@@ -65,8 +65,8 @@ type UserService interface {
 }
 
 type ExerciseService interface {
-	GetExercisesById(ctx context.Context, id int64) ([]entity.ExerciseRecordType, error)
-	GetExercises(ctx context.Context) ([]entity.ExerciseRecordType, error)
+	GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error)
+	GetRecords(ctx context.Context) ([]entity.RecordType, error)
 	CreateRecord(ctx context.Context, objectKey string, cleanUpTime string, cleanUpdate string, comment string, idToken string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error
 	DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error

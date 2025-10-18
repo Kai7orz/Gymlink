@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { useDetailStore } from '~/stores/detailStore';
-    import type { ExerciseRecordType } from '~/type';
+    import type { RecordType } from '~/type';
     import { useAuthStore } from '~/stores/auth';
     import { useUserStore } from '~/stores/userStore';
     //CardList の親は，ユーザー自身のカードリストを呼ぶ場合は isOwner=true, 他の人のカードリスト呼ぶ場合は isOwner=false で呼び出す必要がある
@@ -27,14 +27,17 @@
          navigateTo({name: 'Account-id', params: {id:uid}})
     }
 
-    const exerciseMocksList:ExerciseRecordType[] = data.value
+    const recordList:RecordType[] = data.value
+
+    console.log("record list:",data.value)
 
     const detailStore = useDetailStore();
     const toDetail = (id:number) => {
         // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
-        const detailRecord = exerciseMocksList[id-1]; //mockのlist は id=0 からスタートしているが，mockオブジェクト自体のidは1からスタートしているため，-1している　バックエンドから受け取るexerciseList のid=1からスタートすればid-1 は不要
+        const detailRecord = recordList[ recordList.length - id];
         if(!detailRecord) return;
-        detailStore.setDetail(detailRecord.id,detailRecord.user_id,detailRecord.user_name,detailRecord.exercise_image,detailRecord.exercise_time,detailRecord.exercise_date,detailRecord.comment,detailRecord.likes_count)
+        console.log("detailRecord:",detailRecord.presigned_image)
+        detailStore.setDetail(detailRecord.id,detailRecord.user_id,detailRecord.user_name,detailRecord.presigned_image,detailRecord.clean_up_time,detailRecord.clean_up_date,detailRecord.comment,detailRecord.likes_count)
         navigateTo({name: 'Detail-id', params: {id: id }})
     }
 
@@ -54,7 +57,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: {
-                            exercise_record_id: id
+                            record_id: id
                         },
                     }
                 )
@@ -63,9 +66,8 @@
             }
         }
     }
-
 </script>
 
 <template>
-    <ui-card-list :exerciseMocksList="exerciseMocksList" @detail="toDetail" @like="like" @account="toAccount"/>
+    <ui-card-list :recordList="recordList" @detail="toDetail" @like="like" @account="toAccount"/>
 </template>

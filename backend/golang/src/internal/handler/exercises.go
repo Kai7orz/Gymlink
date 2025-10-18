@@ -32,7 +32,7 @@ func (h *ExerciseHandler) GetExercisesById(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
-	exercises, err := h.svc.GetExercisesById(ctx, id)
+	exercises, err := h.svc.GetRecordsById(ctx, id)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
@@ -42,13 +42,13 @@ func (h *ExerciseHandler) GetExercisesById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, exercises)
 }
 
-func (h *ExerciseHandler) GetExercises(ctx *gin.Context) {
+func (h *ExerciseHandler) GetRecords(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
-	exercises, err := h.svc.GetExercises(ctx)
+	exercises, err := h.svc.GetRecords(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
@@ -64,14 +64,14 @@ func (h *ExerciseHandler) CreateLike(ctx *gin.Context) {
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
 
-	var exerciseLike dto.ExerciseLikeType
-	if err := ctx.ShouldBindJSON(&exerciseLike); err != nil {
+	var recordLike dto.RecordLikeType
+	if err := ctx.ShouldBindJSON(&recordLike); err != nil {
 		log.Println("error: exercise like ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
 
-	err := h.svc.CreateLike(ctx.Request.Context(), exerciseLike.ExerciseRecordId, token)
+	err := h.svc.CreateLike(ctx.Request.Context(), recordLike.RecordId, token)
 	if err != nil {
 		log.Println("error: exercise like ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
@@ -89,10 +89,10 @@ func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
 
-	exerciseRecordIdStr := ctx.Param("exercise_record_id")
+	exerciseRecordIdStr := ctx.Param("record_id")
 	exerciseRecordId, err := strconv.ParseInt(exerciseRecordIdStr, 10, 64)
 	if err != nil {
-		log.Println("failed to parse exercise_record_id")
+		log.Println("failed to parse record_id")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
 	}
 

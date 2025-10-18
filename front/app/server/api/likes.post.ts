@@ -9,7 +9,7 @@ export default defineEventHandler(async (event)=> {
                                         'Content-Type': 'application/json'
                                     },
                                     body: {
-                                        exercise_record_id: Number(body.exercise_record_id)
+                                        record_id: Number(body.record_id)
                                     }
                                 }
     )

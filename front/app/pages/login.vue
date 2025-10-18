@@ -64,7 +64,7 @@
                 サインイン
                 <v-overlay v-model="isLoading"
                     location-strategy="connected"
-                    class="d-flex justify-canter mx-auto my-auto"
+                    class="d-flex justify-center items-center mx-auto my-auto" min-width="150"
                 >
                     <v-progress-circular
                         color="primary"

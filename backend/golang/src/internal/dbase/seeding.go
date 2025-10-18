@@ -49,10 +49,10 @@ func SeedingDB(db *sqlx.DB) error {
 	}
 
 	type UserLike struct {
-		UserId           int64     `json:"user_id" db:"user_id"`
-		ExerciseRecordId int64     `json:"exercise_record_id" db:"exercise_record_id"`
-		CreatedAt        time.Time `json:"created_at" db:"created_at"`
-		UpdatedAt        time.Time `json:"updated_at" db:"updated_at"`
+		UserId    int64     `json:"user_id" db:"user_id"`
+		RecordId  int64     `json:"record_id" db:"record_id"`
+		CreatedAt time.Time `json:"created_at" db:"created_at"`
+		UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 	}
 	type Follow struct {
 		FollowerId int64     `json:"follower_id" db:"follower_id"`
@@ -139,7 +139,7 @@ func SeedingDB(db *sqlx.DB) error {
 		time.Now(),
 	}
 
-	testExerciseLike := UserLike{
+	testLike := UserLike{
 		int64(1),
 		int64(1),
 		time.Now(),
@@ -211,8 +211,8 @@ func SeedingDB(db *sqlx.DB) error {
 		return err
 	}
 
-	sql = `INSERT INTO user_likes (user_id,exercise_record_id,created_at,updated_at) VALUES (:user_id,:exercise_record_id,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
-	_, err = db.NamedExec(sql, testExerciseLike)
+	sql = `INSERT INTO user_likes (user_id,record_id,created_at,updated_at) VALUES (:user_id,:record_id,:created_at,:updated_at) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)`
+	_, err = db.NamedExec(sql, testLike)
 	if err != nil {
 		log.Println("NamedExec Error::", err)
 		return err
