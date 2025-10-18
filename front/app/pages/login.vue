@@ -46,6 +46,9 @@
             )
             user.setUser(userData.value.id,userData.value.name)
             
+            localStorage.setItem("userName",userData.value.name)
+            localStorage.setItem("userId",String(userData.value.id))
+            
             await navigateTo('/home')
         } catch (error) {
             isError.value = true

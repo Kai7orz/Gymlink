@@ -19,10 +19,10 @@ func NewExerciseQueryRepo(db *sqlx.DB) *exerciseQueryRepo {
 func (r *exerciseQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordRawType, error) {
 
 	sql := `SELECT 
-			clean_up_records.id,
-			clean_up_records.user_id,
+			records.id,
+			records.user_id,
 			users.name AS user_name,
-			clean_up_records.object_key,
+			records.object_key,
 			records.clean_up_time,
 		 	records.clean_up_date,
 			records.comment,
