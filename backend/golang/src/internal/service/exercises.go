@@ -133,6 +133,24 @@ func (s *exerciseService) CreateRecord(ctx context.Context, objectKey string, cl
 	return nil
 }
 
+func (s *exerciseService) CheckLikeById(ctx context.Context, exerciseRecordId int64, idToken string) (bool, error) {
+	if s.a == nil {
+		return false, errors.New("error auth nil")
+	}
+	token, err := s.a.VerifyUser(ctx, idToken)
+	if err != nil {
+		log.Println("error: ", err)
+		return false, errors.New("failed to verify user ")
+	}
+	log.Println("exercise record id --> ", exerciseRecordId)
+	liked, err := s.ec.CheckLike(ctx, exerciseRecordId, token.UID)
+	if err != nil {
+		log.Println("error check like: ", err)
+		return false, err
+	}
+	return liked, nil
+}
+
 func (s *exerciseService) CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error {
 	if s.a == nil {
 		return errors.New("error auth nil")

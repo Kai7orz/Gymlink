@@ -14,10 +14,6 @@ import type { RecordType } from '~/type';
         emits('detail',id)
     }
 
-    const like = (id:number) => {
-        emits('like',id)
-    }
-
     const toAccount = (uid:number) => {
         emits('account',uid)
     }
@@ -43,7 +39,6 @@ import type { RecordType } from '~/type';
           :comment="record.comment"
           :likesCount="record.likes_count"
           @detail="toDetail"
-          @like="like"
           @account="toAccount"
         />
       </v-col>

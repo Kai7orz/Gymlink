@@ -81,7 +81,7 @@ func (h *ExerciseHandler) CreateLike(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "exercise like created successfully"})
 }
 
-func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
+func (h *ExerciseHandler) CheckLike(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
@@ -90,10 +90,38 @@ func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
 	token := strings.TrimPrefix(authz, "Bearer ")
 
 	exerciseRecordIdStr := ctx.Param("record_id")
+	log.Println("record ->", exerciseRecordIdStr)
 	exerciseRecordId, err := strconv.ParseInt(exerciseRecordIdStr, 10, 64)
 	if err != nil {
 		log.Println("failed to parse record_id")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+		return
+	}
+	liked, err := h.svc.CheckLikeById(ctx.Request.Context(), exerciseRecordId, token)
+	if err != nil {
+		log.Println("error check like ", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"liked": liked})
+
+}
+
+func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	token := strings.TrimPrefix(authz, "Bearer ")
+	exerciseRecordIdStr := ctx.Param("record_id")
+	log.Println("record str -> ", exerciseRecordIdStr)
+	exerciseRecordId, err := strconv.ParseInt(exerciseRecordIdStr, 10, 64)
+	if err != nil {
+		log.Println("failed to parse record_id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+		return
 	}
 
 	err = h.svc.DeleteLikeById(ctx.Request.Context(), exerciseRecordId, token)

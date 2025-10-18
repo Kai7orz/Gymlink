@@ -18,34 +18,14 @@ const emits = defineEmits<{
     account: [id:number],
 }>();
 
-const isProcessing = ref(false) // 二重でいいねを押せないようにする状態管理フラグ
-
-const sleep = (ms: number) => new Promise<void>( resolve => setTimeout(resolve,ms))
-
 const clicked = (id:number) => {
     emits('detail',id);
-}
-
-const onLike = async (id:number) => {
-    if(isProcessing.value){
-        return 
-    }
-
-    isProcessing.value = true 
-
-    emits('like',id);
-    
-    try{
-        await sleep(3000)
-    } finally {
-        isProcessing.value = false
-    }
 }
 
 const onAccount = async (uid: number) => {
     emits('account',uid)
 } 
-console.log("image:",props.image)
+
 </script>
 
 <template>
@@ -57,7 +37,7 @@ console.log("image:",props.image)
             <div class="d-flex mt-10 gap-5">
                 <v-icon class="mr-20" size="30" icon="mdi-account-file-outline" @click="()=>onAccount(props.userId)" />
                 <div class="d-flex">
-                    <v-icon class="mx-3" icon="mdi-thumb-up" @click.stop="()=>onLike(props.id)"></v-icon>
+                    <v-icon class="mx-3" icon="mdi-thumb-up"></v-icon>
                     <div>{{ props.likesCount }}</div>
                 </div>
             </div>        

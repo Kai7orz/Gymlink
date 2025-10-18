@@ -65,6 +65,31 @@ func (r *exerciseCreateRepo) CreateLike(ctx context.Context, recordId int64, uid
 	return nil
 }
 
+func (r *exerciseCreateRepo) CheckLike(ctx context.Context, recordId int64, uid string) (bool, error) {
+	var liked bool
+
+	exerciseCheckLike := recordLikeTypeDTO{
+		UId:      uid,
+		RecordId: recordId,
+	}
+	sql := `
+        SELECT EXISTS (
+            SELECT 1
+            FROM user_likes 
+            INNER JOIN users ON user_likes.user_id = users.id
+            WHERE user_likes.record_id = ?
+            AND users.firebase_uid = ?
+        ) AS liked;
+    `
+	log.Println("recordid -->", recordId)
+	err := r.db.Get(&liked, sql, exerciseCheckLike.RecordId, exerciseCheckLike.UId)
+	if err != nil {
+		log.Println("SELECT like error: ", err)
+		return false, err
+	}
+	return liked, nil
+}
+
 func (r *exerciseCreateRepo) DeleteLike(ctx context.Context, recordId int64, uid string) error {
 	exerciseDeleteLeike := recordLikeTypeDTO{
 		UId:      uid,

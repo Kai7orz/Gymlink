@@ -18,6 +18,7 @@
     let recordList = ref([])
     // login 時にセットした id,name を localstorage から取得してくる処理
     onMounted(async ()=>{
+        await new Promise(r=> setTimeout(r,80)) // 遅延がないといいね　反転後の1回目の一覧表示でいいねが反映されない（like のPOST,DELETE　よりも先に　カードリスト取得処理が走ってしまっているのでその応急処置）
         const tempUserIdRaw = localStorage.getItem("userId")
         const tempUserNameRaw = localStorage.getItem("userName")
         if(tempUserIdRaw != null && tempUserNameRaw != null){
@@ -27,8 +28,6 @@
         }
 
         const url =   props.isOwner? '/api/users/' + String(user.userId) + '/exercises' : '/api/exercises'
-
-
         const data = await $fetch(url,{
                 method: 'GET',
                 headers: {
@@ -44,6 +43,7 @@
     }
 
     const detailStore = useDetailStore();
+
     const toDetail = (id:number) => {
         // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
     if(props.isOwner){
@@ -64,34 +64,8 @@
     }
         navigateTo({name: 'Detail-id', params: {id: id }})
     }
-
-    const like = async (id:number) => {
-        // cardList が自身のものか否か判定して処理分岐
-        console.log("isOwner:",props.isOwner)
-        if(props.isOwner){
-            await navigateTo({name: 'liked-id', params: {id: id}}) //exercise record id番　にいいねした人一覧ページへの遷移
-        }
-        else{
-            try{
-                await $fetch("/api/likes",
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer ' + TOKEN,
-                            'Content-Type': 'application/json'
-                        },
-                        body: {
-                            record_id: id
-                        },
-                    }
-                )
-            } catch(e){
-                console.log("likes post error: ",e)
-            }
-        }
-    }
 </script>
 
 <template>
-    <ui-card-list :recordList="recordList" @detail="toDetail" @like="like" @account="toAccount"/>
+    <ui-card-list :recordList="recordList" @detail="toDetail"  @account="toAccount"/>
 </template>
