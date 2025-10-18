@@ -27,8 +27,6 @@
         }
 
         const url =   props.isOwner? '/api/users/' + String(user.userId) + '/exercises' : '/api/exercises'
-
-
         const data = await $fetch(url,{
                 method: 'GET',
                 headers: {
@@ -44,6 +42,7 @@
     }
 
     const detailStore = useDetailStore();
+
     const toDetail = (id:number) => {
         // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
     if(props.isOwner){

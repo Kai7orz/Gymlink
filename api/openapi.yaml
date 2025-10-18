@@ -159,8 +159,6 @@ paths:
                       comment: "最高の気分"
                       likes_count: 1
 
-  
-  # ホーム画面 & 投稿共有画面
   /likes:
     post:
       summary: 記録に「いいね」する
@@ -185,6 +183,16 @@ paths:
                   message: { type: string, example: "created" }
         
   /likes/{record_id}:
+    get:
+      summary: 特定の記録にいいねを押したかチェックする
+      responses:
+        '200':
+          description: true or false で返却
+          content:
+            application/json:
+              schema:
+                  example:
+                    liked: true
     delete:
       summary: 運動記録のいいねを外す
       parameters:

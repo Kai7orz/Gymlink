@@ -2,12 +2,30 @@
 import { useDetailStore } from '~/stores/detailStore'
 import { useUserStore } from '~/stores/userStore'
 
+const props = defineProps<{
+  id: number,
+  liked: boolean,
+}>();
+
+const emits = defineEmits<{
+  good: [id: number],
+  delete: [id: number]
+}>();
 const detailStore = useDetailStore()
 const user = useUserStore()
 
 const toBack = () => {
   if (user.userName === detailStore.detailName) navigateTo({ name: 'home' })
   else navigateTo({ name: 'share' })
+}
+
+const GoodOrDelete = (id:number)=>{
+  if(props.liked){
+    emits('good',id)
+  }
+  else{
+    emits('delete',id)
+  }
 }
 
 </script>
@@ -71,7 +89,13 @@ const toBack = () => {
         <v-divider class="opacity-30" />
 
         <v-card-actions class="justify-end gap-2 py-4">
-          <v-btn variant="elevated" color="amber-accent-3" class="text-black font-medium" prepend-icon="mdi-heart-outline">
+          <!--  click 複数回押しても対応できるように，clicke のたびに liked の false ,true 切り替わる処理を入れる　何回もAPI 叩かないようにする -->
+          <v-btn v-if="props.liked" variant="elevated" color="amber-accent-3" class="text-black font-medium" @click ="() => GoodOrDelete(props.id)">
+            <v-icon size="20" class="m-2" icon="mdi-heart" color="red"></v-icon>
+            いいね
+          </v-btn>
+          <v-btn v-if="props.liked==false" variant="elevated" color="amber-accent-3" class="text-black font-medium" @click ="() => GoodOrDelete(props.id)">
+            <v-icon size="20" class="m-2" icon="mdi-heart-outline" color="red"></v-icon>
             いいね
           </v-btn>
         </v-card-actions>

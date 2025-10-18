@@ -113,6 +113,7 @@ func main() {
 	r.GET("/records", exerciseHandler.GetRecords)
 	// r.POST("/records", exerciseHandler.GenerateIllustration)
 	r.POST("/likes", exerciseHandler.CreateLike)
+	r.GET("/likes/:record_id", exerciseHandler.CheckLike)
 	r.DELETE("/likes/:exercise_record_id", exerciseHandler.DeleteLike)
 	r.POST("/follows", userHandler.FollowUser)
 	r.DELETE("/users/unfollows", userHandler.DeleteFollowUser)

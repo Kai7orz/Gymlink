@@ -45,7 +45,7 @@ const onLike = async (id:number) => {
 const onAccount = async (uid: number) => {
     emits('account',uid)
 } 
-console.log("image:",props.image)
+
 </script>
 
 <template>

@@ -34,6 +34,7 @@ type ExerciseQueryRepo interface {
 type ExerciseCreateRepo interface {
 	CreateRecordById(ctx context.Context, objectKey string, exerciseTime int64, date time.Time, comment string, uid string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, uid string) error
+	CheckLike(ctx context.Context, exerciseRecordId int64, uid string) (bool, error)
 	DeleteLike(ctx context.Context, exerciseRecordId int64, uid string) error
 }
 
@@ -69,6 +70,7 @@ type ExerciseService interface {
 	GetRecords(ctx context.Context) ([]entity.RecordType, error)
 	CreateRecord(ctx context.Context, objectKey string, cleanUpTime string, cleanUpdate string, comment string, idToken string) error
 	CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error
+	CheckLikeById(ctx context.Context, exerciseRecordId int64, idToken string) (bool, error)
 	DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error
 	GenerateImgAndUpload(ctx context.Context, image *multipart.FileHeader, s3Key string) (string, error)
 }
