@@ -5,6 +5,7 @@
 
     const email = ref('')
     const password = ref('')
+    const isError = ref(false)
     const isLoading = ref(false)
     const firebaseData = ref({})
     const userData = ref({})
@@ -23,6 +24,7 @@
     const toSignUp = () => {
             navigateTo('/signup')
     }
+
     const signInUser = async () => {
         isLoading.value = true
         const minLoadingPromise = new Promise(resolve => setTimeout(resolve, 1000));
@@ -46,6 +48,7 @@
             
             await navigateTo('/home')
         } catch (error) {
+            isError.value = true
             console.error('SignIn Error:', error);
         } finally {
             isLoading.value = false
@@ -57,6 +60,18 @@
     <div>
     <ClientOnly>
         <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg bg-grey-darken-1 rounded-lg">
+            <v-snackbar class="mb-20" v-model="isError"
+                    multi-line>
+                    Sign in error
+                <template v-slot:actions>
+                    <v-btn
+                        color="red"
+                          variant="text"
+                          @click="isError = false">
+                        Close    
+                    </v-btn>
+                </template>        
+            </v-snackbar>
             <v-card-title class="d-flex justify-center">サインイン</v-card-title>
             <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
             <v-text-field v-model="password" class="w-1/2 mx-auto m-5" label="パスワード" type="password" />

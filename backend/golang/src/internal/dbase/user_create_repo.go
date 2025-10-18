@@ -18,6 +18,12 @@ type userCreateTypeDTO struct {
 	Name        string `json:"name" db:"name"`
 }
 
+type profileCreateTypeDTO struct {
+	FirebaseUId  string `json:"firebase_uid" db:"firebase_uid"`
+	Name         string `json:"name" db:"name"`
+	ProfileImage string `json:"profile_image" db:"profile_image"`
+}
+
 type userCreateRepo struct {
 	db *sqlx.DB
 }
@@ -39,6 +45,21 @@ func (r *userCreateRepo) CreateUserById(ctx context.Context, name string, avatar
 	_, err := r.db.NamedExec(sql, userCreate)
 	if err != nil {
 		log.Println("INSERT user error: ", err)
+		return err
+	}
+
+	profileCreate := profileCreateTypeDTO{
+		FirebaseUId:  uid,
+		Name:         name,
+		ProfileImage: avatarUrl,
+	}
+
+	sql = `INSERT INTO profiles (user_id,profile_image) 
+	VALUES ((SELECT id FROM users WHERE users.firebase_uid = :firebase_uid LIMIT 1),:profile_image) ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at);`
+
+	_, err = r.db.NamedExec(sql, profileCreate)
+	if err != nil {
+		log.Println("INSERT profile error: ", err)
 		return err
 	}
 
