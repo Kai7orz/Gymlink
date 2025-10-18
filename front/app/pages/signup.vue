@@ -66,7 +66,7 @@
             サインアップ
             <v-overlay v-model="isLoading"
                 location-strategy="connected"
-                class="d-flex justify-center mx-auto my-auto"
+                class="d-flex justify-center items-center mx-auto my-auto"
             >
                 <v-card class="d-flex items-center justify-center p-2 bg-black text-white mx-auto" min-width="150" min-height="100">
                     loading...
