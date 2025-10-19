@@ -14,7 +14,6 @@
     const illustrationsObjs = illustrations
 
     const addCard = async ()=>{
-        console.log(imageUrl.value)
         const TOKEN = auth.idToken
         await $fetch('/api/userRecord',{
             method: 'POST',
@@ -37,11 +36,9 @@
 
     const closeMenu = ()=>{
         isShownMenu.value = false;
-        console.log("close menu")
     }
 
     const openMenu = ()=>{
-
         navigateTo("/upload")
     }
 

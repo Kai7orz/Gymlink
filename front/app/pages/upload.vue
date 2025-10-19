@@ -23,8 +23,8 @@ const postData = reactive({
     const isLoading = ref(false);
     const isShownMenu = ref(false);
     const time = ref("")
-    const date = ref("2025/10/17")
-    const comment = ref('')
+    const cleanDate = ref("")
+    const comment = ref("")
     const imageUrl = ref('')
     const user = useUserStore()
     const auth = useAuthStore()
@@ -48,7 +48,7 @@ const getIllustration = async (event: Event) => {
   formData.append('file', selectedFile.value, selectedFile.value.name)
   formData.append('s3_key',"raw_image")
   formData.append('clean_up_time',time.value)
-  formData.append('clean_up_date',formatDate(date.value))
+  formData.append('clean_up_date',formatDate(cleanDate.value))
   formData.append('comment',comment.value)
   isLoading.value = true
   try {
@@ -73,19 +73,16 @@ const getPreview = async (event: Event) => {
   if (!selectedFile.value) return
   previewUrl.value = URL.createObjectURL(selectedFile.value)
 }
-
+    const items = ref([])
     const closeMenu = ()=>{
         isShownMenu.value = false;
-        console.log("close menu")
     }
 
     const openMenu = ()=>{
-
       isShownMenu.value = true
     }
 
     const select = (imageId:string) => {
-        console.log("ttest",imageId)
         imageUrl.value = illustrationsObjs[imageId]?.src
     }
 
@@ -96,10 +93,10 @@ onMounted(()=>{
 
 <template>
   <v-container>
-    <v-container class="flex flex-row justify-center m-10 p-2">
+    <v-container class="flex flex-row justify-center items-center m-10 p-2">
       <ui-add-card 
                 v-model:exerciseTime="time"
-                v-model:date="date"
+                v-model:date="cleanDate"
                 v-model:comment="comment"
                 v-model:is-shown-menu=isShownMenu
                 :imageUrl="imageUrl"
@@ -119,8 +116,17 @@ onMounted(()=>{
         />
       </form>
     </v-container>
-
+    <v-container class="flex flex-row justify-center">
+      <div v-if='previewUrl!=""' class="w-1/3 flex flex-col md:flex-row md:justify-center m-10">
+        <ui-image-card :image_url="previewUrl"><template #title/></ui-image-card>
+      </div>
+    </v-container>
     <v-sheet class="flex m-10 bg-black text-center rounded-lg">
+      <v-container class="bg-black">
+        <v-card class="bg-grey">{{ cleanDate ? cleanDate :"日付：未入力"}}</v-card>
+        <v-card class="bg-grey">{{time ? time : "片付け時間：未入力"}}</v-card>
+        <v-card class="bg-grey">{{comment ? comment : "コメント：未入力"}}</v-card>
+      </v-container>
       <v-btn class="m-5" variant="outlined" @click="getIllustration">
         レコード記録
       </v-btn>
@@ -133,10 +139,5 @@ onMounted(()=>{
                 </v-card>
         </v-overlay>
     </v-sheet>
-    <v-container class="flex flex-row justify-center">
-      <div v-if='previewUrl!=""' class="w-1/3 flex flex-col md:flex-row md:justify-center m-10">
-        <ui-image-card :image_url="previewUrl"><template #title/></ui-image-card>
-      </div>
-    </v-container>
   </v-container>
 </template>
