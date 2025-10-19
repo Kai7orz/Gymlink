@@ -40,7 +40,7 @@ const postData = reactive({
     return `${yyyy}${mm}${dd}`
   }
  
-const getIllustration = async (event: Event) => {
+  const getIllustration = async (event: Event) => {
   event.preventDefault()
   if (!selectedFile.value) return
 
@@ -51,28 +51,32 @@ const getIllustration = async (event: Event) => {
   formData.append('clean_up_date',formatDate(cleanDate.value))
   formData.append('comment',comment.value)
   isLoading.value = true
+
+
+
+
   try {
-  await useFetch("/api/upload", {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${TOKEN}`,
-    },
-    body: formData,
-  })
+    await useFetch("/api/upload", {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${TOKEN}`,
+      },
+      body: formData,
+    })
 
-  await navigateTo("/home")
-  } catch(error){
-    console.log("error: response is invalid",error)
-  } finally{
-    isLoading.value = false
+    await navigateTo("/home")
+    } catch(error){
+      console.log("error: response is invalid",error)
+    } finally{
+      isLoading.value = false
+    }
   }
-}
 
-const getPreview = async (event: Event) => {
-  event.preventDefault()
-  if (!selectedFile.value) return
-  previewUrl.value = URL.createObjectURL(selectedFile.value)
-}
+  const getPreview = async (event: Event) => {
+    event.preventDefault()
+    if (!selectedFile.value) return
+    previewUrl.value = URL.createObjectURL(selectedFile.value)
+  }
     const items = ref([])
     const closeMenu = ()=>{
         isShownMenu.value = false;
@@ -123,9 +127,9 @@ onMounted(()=>{
     </v-container>
     <v-sheet class="flex m-10 bg-black text-center rounded-lg">
       <v-container class="bg-black">
-        <v-card class="bg-grey">{{ cleanDate ? cleanDate :"日付：未入力"}}</v-card>
-        <v-card class="bg-grey">{{time ? time : "片付け時間：未入力"}}</v-card>
-        <v-card class="bg-grey">{{comment ? comment : "コメント：未入力"}}</v-card>
+        <v-card class="m-2 bg-grey">{{ cleanDate ? cleanDate :"日付：未入力"}}</v-card>
+        <v-card class="m-2 bg-grey">{{time ? time : "片付け時間：未入力"}}</v-card>
+        <v-card class="m-2 bg-grey">{{comment ? comment : "コメント：未入力"}}</v-card>
       </v-container>
       <v-btn class="m-5" variant="outlined" @click="getIllustration">
         レコード記録
@@ -134,9 +138,9 @@ onMounted(()=>{
                 location-strategy="connected"
                 class="d-flex justify-center items-center mx-auto my-auto"
               >
-                <v-card class="d-flex items-center justify-center bg-black text-white mx-auto" min-width="150" min-height="100">
-                    loading...
-                </v-card>
+              <v-card class="d-flex items-center justify-center bg-black text-white mx-auto" min-width="150" min-height="100">
+                loading...
+              </v-card>
         </v-overlay>
     </v-sheet>
   </v-container>

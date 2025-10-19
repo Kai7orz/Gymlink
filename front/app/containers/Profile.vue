@@ -18,12 +18,16 @@
         }
     );
 
-    console.log("profile id and data ",data.id," data->",data)
+    const isFollow = await $fetch(
+        `/api/follows/${uid}`,{
+          headers: {
+                        'Authorization': 'Bearer ' + TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+        }   
+    )
 
     const follow = async (id:number) => {
-        await navigateTo('/following')
-        console.log("follower_id:",user.userId)
-        console.log("followed_id:",data.id)
         await $fetch("/api/follows", {
                         method: 'POST',
                         headers: {
@@ -57,6 +61,7 @@
 <template>
     <ui-profile 
                 :id="data.id" 
+                :isFollow="isFollow.followed"
                 :name="data.name" 
                 :profileImage="data.profile_image"
                 :followCount="data.follow_count"

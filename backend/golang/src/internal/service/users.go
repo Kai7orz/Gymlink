@@ -29,10 +29,8 @@ func (s *userService) SignUpUser(ctx context.Context, name string, avatarUrl str
 	if err != nil {
 		return errors.New("failed to verify user")
 	}
-	log.Println("UID : ", token.UID)
-	log.Println("Verify User ✅")
-	// token.UID と CharaceterId(デフォルト1) と FirebaseUID と Name と Email を保持
 
+	// token.UID と CharaceterId(デフォルト1) と FirebaseUID と Name と Email を保持
 	// v, err := s.q.SignUpById(ctx, 1)
 	err = s.cm.CreateUserById(ctx, name, avatarUrl, token.UID)
 	if err != nil {
@@ -75,6 +73,21 @@ func (s *userService) FollowUser(ctx context.Context, followerId int64, followed
 	}
 
 	return nil
+}
+
+func (s *userService) CheckFollowById(ctx context.Context, followId int64, idToken string) (bool, error) {
+	//verify user
+	token, err := s.a.VerifyUser(ctx, idToken)
+	if err != nil {
+		return false, errors.New("failed to verify user")
+	}
+
+	followed, err := s.q.CheckFollowById(ctx, followId, token.UID)
+	if err != nil {
+		log.Println("error: check follow ", err)
+		return false, err
+	}
+	return followed, nil
 }
 
 func (s *userService) DeleteFollowUser(ctx context.Context, followerId int64, followedId int64) error {
