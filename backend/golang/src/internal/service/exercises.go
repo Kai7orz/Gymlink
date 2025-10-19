@@ -42,8 +42,6 @@ func (s *exerciseService) GetRecordsById(ctx context.Context, id int64) ([]entit
 			log.Println("error presigned get request")
 			return nil, err
 		}
-		// presigned url 取得から実装始める
-		log.Println("URL==>", presignedGetRequest.URL)
 
 		newRecord := entity.RecordType{
 			Id:             record.Id,
@@ -77,8 +75,6 @@ func (s *exerciseService) GetRecords(ctx context.Context) ([]entity.RecordType, 
 			log.Println("error presigned get request")
 			return nil, err
 		}
-		// presigned url 取得から実装始める
-		log.Println("URL==>", presignedGetRequest.URL)
 
 		newRecord := entity.RecordType{
 			Id:             record.Id,
@@ -92,11 +88,6 @@ func (s *exerciseService) GetRecords(ctx context.Context) ([]entity.RecordType, 
 		}
 
 		records = append(records, newRecord)
-	}
-
-	for _, rec := range records {
-		log.Println("record list:", rec.Id)
-		log.Println("record url:", rec.PresignedImage)
 	}
 
 	return records, nil
@@ -212,15 +203,5 @@ func (s *exerciseService) GenerateImgAndUpload(ctx context.Context, image *multi
 	if err != nil {
 		log.Println("error upload image to S3 ", err)
 	}
-	// key をもとにS3 からイラストをとってこれるか確認したい
-	presignedGetRequest, err := s.ac.GetObject(ctx, s3Key, 60)
-	if err != nil {
-		log.Println("error presigned get request")
-		return "", err
-	}
-	// presigned url 取得から実装始める
-	log.Println("URL==>", presignedGetRequest.URL)
-	// アップロード後に key と exercise record のデータ、メタ情報を　DB へ INSERT する処理を記述
-	//
 	return s3Key, nil
 }

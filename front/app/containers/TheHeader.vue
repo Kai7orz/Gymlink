@@ -24,6 +24,12 @@
         navigateTo('/share')
     }
 
+    const toSignout = ()=>{
+        navigateTo('/login')
+        localStorage.removeItem("userName")
+        localStorage.removeItem("userId")
+    }
+
 </script>
 
 <template>
@@ -32,5 +38,7 @@
                   @account="toAccount" 
                   @monster="toMonster" 
                   @team="toTeam"
-                  @share="toShare" />
+                  @share="toShare"
+                  @signout="toSignout"
+                  />
 </template>

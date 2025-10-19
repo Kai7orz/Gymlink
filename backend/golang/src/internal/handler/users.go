@@ -128,6 +128,32 @@ func (h *UserHandler) FollowUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "user follow successfully"})
 }
 
+func (h *UserHandler) CheckFollow(ctx *gin.Context) {
+	// ヘッダー取り出し
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	idStr := ctx.Param("user_id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Println("failed to parse user_id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+	token := strings.TrimPrefix(authz, "Bearer ")
+	followed, err := h.svc.CheckFollowById(ctx.Request.Context(), id, token)
+	if err != nil {
+		log.Println("failed to check follows")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"followed": followed})
+
+}
+
 func (h *UserHandler) DeleteFollowUser(ctx *gin.Context) {
 	// ヘッダー取り出し
 	authz := ctx.GetHeader("Authorization")

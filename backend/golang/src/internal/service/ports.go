@@ -14,6 +14,7 @@ import (
 // 読み取り専用のリポジトリを定義する
 type UserQueryRepo interface {
 	FindByToken(ctx context.Context, uid string) (*entity.UserType, error)
+	CheckFollowById(ctx context.Context, followId int64, uid string) (bool, error)
 }
 
 type UserCreateRepo interface {
@@ -62,6 +63,7 @@ type UserService interface {
 	LoginUser(ctx context.Context, idToken string) (*entity.UserType, error)
 	GetProfile(ctx context.Context, id int64) (*entity.ProfileType, error)
 	FollowUser(ctx context.Context, followerId int64, followedId int64) error
+	CheckFollowById(ctx context.Context, followId int64, idToken string) (bool, error)
 	DeleteFollowUser(ctx context.Context, followerId int64, followedId int64) error
 }
 

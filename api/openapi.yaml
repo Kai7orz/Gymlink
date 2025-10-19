@@ -235,7 +235,18 @@ paths:
                     code: { type: integer, example: 201 }
                     message: { type: string, example: "created" }
           
-            
+  /follows/{user_id}:
+    get:
+      summary: user_id をフォローしているか確認する
+      responses:
+        '200':
+          description: true or false で返却
+          content:
+            application/json:
+              schema:
+                  example:
+                    followed: true      
+
     # 他人のプロフィール画面 & フォロー画面 & フォロワー画面
   /users/unfollows:
     delete:
