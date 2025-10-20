@@ -791,7 +791,33 @@ chown でプログラムを実行したユーザーに権限を譲渡して対�
         ```
          aws ec2-instance-connect ssh --instance-id i-04a775b3d0ba68298
          ```
+      この際ec2 はインターネットにつながっていないので，git command などを install できない．したがって，さきに NAT Gateway を整備する
+    - NAT Gateway の構築
+      - NAT Gateway はすぐ作成でき，VPC メニューからルートテーブルを構成することが主な仕事
+        - プライベートサブネットのルートテーブルを NAT Gateway に変更する
+          - ルートタブでルートを編集ボタンをクリックし，ルート追加で0.0.0.0/0 に対して，NAT ゲートウェイのIDをクリック
+    - Web サーバがインターネットを通じてセットアップ可能になる．
+      - https://qiita.com/taedookim/items/57afb631ae353f1977ad, https://zenn.dev/rock_penguin/articles/28875c7b0a5e30 を参考に 
+      Docker, Docker Compose install
     - VPC Endpoint で EC2 への接続
+    ```
+
+
+    ```
+    [ec2-user@ip-10-1-2-93 ~]$ git clone -b prod https://github.com/Kai7orz/Gymlink.git
+    [ec2-user@ip-10-1-2-93 ~]$ sudo dnf -y install git
+    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo dnf update
+    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo dnf install -y docker
+    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo systemctl start docker
+    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo gpasswd -a $(whoami) docker
+    Adding user ec2-user to group docker
+    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo chgrp docker /var/run/docker.sock
+    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo service docker restart
+    Redirecting to /bin/systemctl restart docker.service
+    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo systemctl enable docker
+    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo curl -L "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    [ec2-user@ip-10-1-2-93 Gymlink]$ docker-compose up
+    ```
 
 - RDS の設定
   - RDS 用のサブネット(2az以上含む)を作成
