@@ -25,7 +25,7 @@ services:
     ports:
       - 8080:8080
     env_file:
-      - ./mysql/.dev.env
+      - ./mysql/.env
       - ./backend/golang/src/.env
     depends_on:
       - db
@@ -33,71 +33,5 @@ services:
       - ./backend/golang/src:/go/src
       - ./backend/golang/src/internal/images:/go/src/internal/images
 
-  dev_db:
-    container_name: dev_db
-    build:
-      context: .
-      dockerfile: docker/mysql/Dockerfile
-    tty: true
-    ports:
-      - 3308:3306
-    env_file:
-      - ./mysql/.dev.env
-
-    volumes:
-      - type: volume
-        source: mysql_dev_volume
-        target: /var/lib/mysql
-      - type: bind 
-        source: ./mysql/init
-        target: /docker-entrypoint-initdb.d
-
-  db:
-    container_name: db
-    build:
-      context: .
-      dockerfile: docker/mysql/Dockerfile
-    tty: true
-    ports:
-      - 3307:3306
-    env_file:
-      - ./mysql/.env
-    volumes:
-      - type: volume
-        source: mysql_test_volume
-        target: /var/lib/mysql
-      - type: bind 
-        source: ./mysql/init
-        target: /docker-entrypoint-initdb.d
-
-  swagger-editor:
-    image: swaggerapi/swagger-editor
-    container_name: "swagger-editor"
-    ports: 
-      - "8001:8080"
-
-  swagger-ui:
-    image: swaggerapi/swagger-ui
-    container_name: "swagger-ui"
-    ports:
-      - "8002:8080"
-    volumes:
-      - ./api/openapi.yaml:/openapi.yaml
-    environment:
-      - SWAGGER_JSON=/openapi.yaml
-    
-  swagger-api:
-    image: stoplight/prism:3
-    container_name: "swagger-api"
-    ports:
-      - "8003:4010"
-    command: mock -h 0.0.0.0 /openapi.yaml
-    volumes:
-      - ./api/openapi.yaml:/openapi.yaml
-
 volumes:
   nuxt_node_modules:
-  mysql_dev_volume:
-    name: mysql_dev_volume
-  mysql_test_volume:
-    name: mysql_test_volume

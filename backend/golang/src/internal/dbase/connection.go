@@ -26,16 +26,8 @@ func open(path string, count uint) *sqlx.DB {
 }
 
 func ConnectDB() *sqlx.DB {
-	if os.Getenv("APP_ENV") == "development" {
-		fmt.Println("development is set")
-		var path string = fmt.Sprintf("%s:%s@tcp(dev_db:3306)/%s?charset=utf8&parseTime=true",
-			os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"),
-			os.Getenv("MYSQL_DATABASE"))
-		return open(path, 100)
-	} else {
-		var path string = fmt.Sprintf("%s:%s@tcp(db:3306)/%s?charset=utf8&parseTime=true",
-			os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"),
-			os.Getenv("MYSQL_DATABASE"))
-		return open(path, 100)
-	}
+	var path string = fmt.Sprintf("%s:%s@tcp(db:3306)/%s?charset=utf8&parseTime=true",
+		os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"),
+		os.Getenv("MYSQL_DATABASE"))
+	return open(path, 100)
 }
