@@ -27,8 +27,6 @@ services:
     env_file:
       - ./mysql/.env
       - ./backend/golang/src/.env
-    depends_on:
-      - db
     volumes:
       - ./backend/golang/src:/go/src
       - ./backend/golang/src/internal/images:/go/src/internal/images
