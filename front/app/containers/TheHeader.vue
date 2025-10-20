@@ -16,10 +16,6 @@
         navigateTo('/monster')
     }
 
-    const toTeam = () => {
-        navigateTo('/team')
-    }
-
     const toShare = () => {
         navigateTo('/share')
     }
@@ -36,8 +32,7 @@
     <ui-the-header 
                   @home="toHome" 
                   @account="toAccount" 
-                  @monster="toMonster" 
-                  @team="toTeam"
+                  @monster="toMonster"
                   @share="toShare"
                   @signout="toSignout"
                   />

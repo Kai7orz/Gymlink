@@ -13,10 +13,10 @@
     }>();
 
     const selected = ref('')
-    const exerciseTimeLabel = "片付け時間（min）"
-    const exerciseCommentLabel = "コメント"
+    const cleanTimeLabel = "片付け時間（min）"
+    const cleanCommentLabel = "コメント"
     const isShownMenu = defineModel<boolean>('isShownMenu')
-    const exerciseTime = defineModel<string>('exerciseTime')
+    const cleanTime = defineModel<string>('cleanTime')
     const comment = defineModel<string>('comment')
     const date = defineModel<string>('date')
 
@@ -37,14 +37,8 @@
         <v-card class="bg-grey-darken-3">
             <v-btn color="primary" text @click="emits('close')">Close</v-btn>
             <v-card-title class="text-h5">片付け記録</v-card-title>
-            <!-- <v-select
-                     label="Select"
-                     :items="imageItems"
-                     v-model="selected"
-            ></v-select>
-            <img v-if="selected!==undefined" :src="props.imageUrl" class="w-60 h-50 mx-auto my-5" /> -->
-            <v-text-field v-model="exerciseTime" :label="exerciseTimeLabel"></v-text-field>
-            <v-text-field v-model="comment" :label="exerciseCommentLabel"></v-text-field>
+            <v-text-field v-model="cleanTime" :label="cleanTimeLabel"></v-text-field>
+            <v-text-field v-model="comment" :label="cleanCommentLabel"></v-text-field>
             <v-container>
                 <v-row justify="space-around">
                 <v-date-picker class="bg-black m-3" v-model="date" show-adjacent-months></v-date-picker>                    

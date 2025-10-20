@@ -8,7 +8,6 @@
     const isLoading = ref(false)
     const isError = ref(false)
     const auth = useAuthStore()
-
     const signUpUser = async () => {
         isLoading.value = true
 
@@ -35,13 +34,10 @@
         } finally {
             isLoading.value = false
         }
-
     }
-
     const toLogin = () => {
         navigateTo('/login')
     }
-
 </script>
 
 <template>
@@ -62,17 +58,19 @@
         <v-text-field v-model="name" class="w-1/2 mx-auto m-5 " label="ユーザーネーム" />
         <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
         <v-text-field v-model="password" class="w-1/2 mx-auto m-5" label="パスワード" type="password" />
-        <v-btn class="d-flex justify-center" @click="signUpUser" color="primary">
+        <v-btn class="d-flex justify-center m-5" @click="signUpUser" color="primary">
             サインアップ
-            <v-overlay v-model="isLoading"
-                location-strategy="connected"
-                class="d-flex justify-center items-center mx-auto my-auto"
-            >
-                <v-card class="d-flex items-center justify-center p-2 bg-black text-white mx-auto" min-width="150" min-height="100">
-                    loading...
-                </v-card>
-            </v-overlay>
+                <v-overlay v-model="isLoading"
+                    location-strategy="connected"
+                    class="d-flex justify-center items-center mx-auto my-auto" min-width="150"
+                >
+                    <v-progress-circular
+                        color="primary"
+                        size="64"
+                        indeterminate
+                    ></v-progress-circular>
+                </v-overlay>
         </v-btn>
-        <v-btn class="bg-black text-blue" @click="toLogin"> ログイン </v-btn>
+        <v-btn class="bg-black text-blue m-5" @click="toLogin"> ログイン </v-btn>
     </v-card>
 </template>

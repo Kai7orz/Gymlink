@@ -51,10 +51,10 @@
 
 <template>
     <ui-add-card 
-                v-model:exerciseTime="time"
+                v-model:cleanTime="time"
                 v-model:date="date"
                 v-model:comment="comment"
-                v-model:is-shown-menu=isShownMenu
+                v-model:isShownMenu=isShownMenu
                 :imageUrl="imageUrl"
                 :illustObjs="illustrationsObjs"
                 @open="openMenu" 

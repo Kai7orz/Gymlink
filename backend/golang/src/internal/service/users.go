@@ -9,14 +9,14 @@ import (
 
 // service の依存
 type userService struct {
-	q  UserQueryRepo  // ユーザー読み取り用 repo interface
-	cm UserCreateRepo // ユーザー書き込み用 repo interface
+	q  UserQueryRepo   // ユーザー読み取り用 repo interface
+	cm UserCommandRepo // ユーザー書き込み用 repo interface
 	p  ProfileRepo
 	a  AuthClient // 外部Auth との接続用 interface
 }
 
 // UserQueryRepo
-func NewUserService(q UserQueryRepo, cm UserCreateRepo, p ProfileRepo, a AuthClient) (UserService, error) {
+func NewUserService(q UserQueryRepo, cm UserCommandRepo, p ProfileRepo, a AuthClient) (UserService, error) {
 	if q == nil || cm == nil || a == nil {
 		return nil, errors.New("nil error: UserQueryRepo or UserCreateRepo or AuthClient")
 	}
@@ -46,7 +46,6 @@ func (s *userService) LoginUser(ctx context.Context, idToken string) (*entity.Us
 	if err != nil {
 		return nil, errors.New("failed to verify user")
 	}
-	log.Println("Verify User ✅")
 
 	user, err := s.q.FindByToken(ctx, token.UID)
 	if err != nil {

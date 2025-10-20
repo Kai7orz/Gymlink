@@ -12,22 +12,22 @@ import (
 	"github.com/google/uuid"
 )
 
-type exerciseService struct {
-	e  ExerciseQueryRepo
-	ec ExerciseCreateRepo
+type recordService struct {
+	e  RecordQueryRepo
+	ec RecordCommandRepo
 	a  AuthClient
 	gc GptClient
 	ac AwsClient
 }
 
-func NewExerciseService(e ExerciseQueryRepo, ec ExerciseCreateRepo, a AuthClient, gc GptClient, ac AwsClient) (ExerciseService, error) {
+func NewRecordService(e RecordQueryRepo, ec RecordCommandRepo, a AuthClient, gc GptClient, ac AwsClient) (RecordService, error) {
 	if e == nil {
-		return nil, errors.New("nil error: ExerciseQueryRepo or ExerciseCreateRepo")
+		return nil, errors.New("nil error: RecordQueryRepo or Record CreateRepo")
 	}
-	return &exerciseService{e: e, ec: ec, a: a, gc: gc, ac: ac}, nil
+	return &recordService{e: e, ec: ec, a: a, gc: gc, ac: ac}, nil
 }
 
-func (s *exerciseService) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error) {
+func (s *recordService) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error) {
 	recordsRaw, err := s.e.GetRecordsById(ctx, id)
 	if err != nil {
 		log.Println("error: ", err)
@@ -60,7 +60,7 @@ func (s *exerciseService) GetRecordsById(ctx context.Context, id int64) ([]entit
 	return records, nil
 }
 
-func (s *exerciseService) GetRecords(ctx context.Context) ([]entity.RecordType, error) {
+func (s *recordService) GetRecords(ctx context.Context) ([]entity.RecordType, error) {
 	recordsRaw, err := s.e.GetRecords(ctx)
 	if err != nil {
 		log.Println("error: ", err)
@@ -93,7 +93,7 @@ func (s *exerciseService) GetRecords(ctx context.Context) ([]entity.RecordType, 
 	return records, nil
 }
 
-func (s *exerciseService) CreateRecord(ctx context.Context, objectKey string, cleanUpTimeRaw string, cleanUpDateRaw string, comment string, idToken string) error {
+func (s *recordService) CreateRecord(ctx context.Context, objectKey string, cleanUpTimeRaw string, cleanUpDateRaw string, comment string, idToken string) error {
 	if s.a == nil {
 		return errors.New("error auth nil")
 	}
@@ -124,7 +124,7 @@ func (s *exerciseService) CreateRecord(ctx context.Context, objectKey string, cl
 	return nil
 }
 
-func (s *exerciseService) CheckLikeById(ctx context.Context, exerciseRecordId int64, idToken string) (bool, error) {
+func (s *recordService) CheckLikeById(ctx context.Context, recordId int64, idToken string) (bool, error) {
 	if s.a == nil {
 		return false, errors.New("error auth nil")
 	}
@@ -133,8 +133,7 @@ func (s *exerciseService) CheckLikeById(ctx context.Context, exerciseRecordId in
 		log.Println("error: ", err)
 		return false, errors.New("failed to verify user ")
 	}
-	log.Println("exercise record id --> ", exerciseRecordId)
-	liked, err := s.ec.CheckLike(ctx, exerciseRecordId, token.UID)
+	liked, err := s.ec.CheckLike(ctx, recordId, token.UID)
 	if err != nil {
 		log.Println("error check like: ", err)
 		return false, err
@@ -142,7 +141,7 @@ func (s *exerciseService) CheckLikeById(ctx context.Context, exerciseRecordId in
 	return liked, nil
 }
 
-func (s *exerciseService) CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error {
+func (s *recordService) CreateLike(ctx context.Context, recordId int64, idToken string) error {
 	if s.a == nil {
 		return errors.New("error auth nil")
 	}
@@ -151,7 +150,7 @@ func (s *exerciseService) CreateLike(ctx context.Context, exerciseRecordId int64
 		log.Println("error: ", err)
 		return errors.New("failed to verify user ")
 	}
-	err = s.ec.CreateLike(ctx, exerciseRecordId, token.UID)
+	err = s.ec.CreateLike(ctx, recordId, token.UID)
 	if err != nil {
 		log.Println("error create like: ", err)
 		return err
@@ -159,7 +158,7 @@ func (s *exerciseService) CreateLike(ctx context.Context, exerciseRecordId int64
 	return nil
 }
 
-func (s *exerciseService) DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error {
+func (s *recordService) DeleteLikeById(ctx context.Context, recordId int64, idToken string) error {
 	if s.a == nil {
 		return errors.New("error auth nil")
 	}
@@ -168,7 +167,7 @@ func (s *exerciseService) DeleteLikeById(ctx context.Context, exerciseRecordId i
 		log.Println("failed to verify user ")
 		return err
 	}
-	err = s.ec.DeleteLike(ctx, exerciseRecordId, token.UID)
+	err = s.ec.DeleteLike(ctx, recordId, token.UID)
 	if err != nil {
 		log.Println("error delete like ")
 		return err
@@ -178,7 +177,7 @@ func (s *exerciseService) DeleteLikeById(ctx context.Context, exerciseRecordId i
 
 }
 
-func (s *exerciseService) GenerateImgAndUpload(ctx context.Context, image *multipart.FileHeader, s3KeyRaw string) (string, error) {
+func (s *recordService) GenerateImgAndUpload(ctx context.Context, image *multipart.FileHeader, s3KeyRaw string) (string, error) {
 	// 画像を読み込み
 	// GPT API interface　の　アップロード関数を呼び出す
 	// レスポンスの画像を記録する．

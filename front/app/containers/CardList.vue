@@ -27,7 +27,7 @@
         user.setUser(Number(tempUserId.value),tempUserName.value)
         }
 
-        const url =   props.isOwner? '/api/users/' + String(user.userId) + '/exercises' : '/api/exercises'
+        const url =   props.isOwner? '/api/users/' + String(user.userId) + '/records' : '/api/records'
         const data = await $fetch(url,{
                 method: 'GET',
                 headers: {
