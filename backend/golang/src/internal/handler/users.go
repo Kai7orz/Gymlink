@@ -67,7 +67,6 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 		Id:   userRaw.Id,
 		Name: userRaw.Name,
 	}
-	log.Println("Get user successfully ✅：", user)
 	ctx.JSON(http.StatusOK, user)
 }
 
@@ -90,7 +89,6 @@ func (h *UserHandler) GetProfilebyId(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
-	log.Println("Get profile successfully ✅：", profileRaw)
 
 	profile := dto.ProfileType{
 		Id:            profileRaw.Id,

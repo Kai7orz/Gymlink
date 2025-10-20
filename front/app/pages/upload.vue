@@ -99,7 +99,7 @@ onMounted(()=>{
   <v-container>
     <v-container class="flex flex-row justify-center items-center m-10 p-2">
       <ui-add-card 
-                v-model:exerciseTime="time"
+                v-model:cleanTime="time"
                 v-model:date="cleanDate"
                 v-model:comment="comment"
                 v-model:is-shown-menu=isShownMenu

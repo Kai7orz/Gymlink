@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import ExerciseModal from '~/components/UiExerciseModal.vue';
+    import CleanModal from '~/containers/CleanModal.vue';
     import type { Illustration } from '~/type';
 
     const props = defineProps<{
@@ -16,7 +16,7 @@
 
     const isShownMenu = defineModel('isShownMenu')
     const date = defineModel<string>('date')
-    const exerciseTime = defineModel<string>('exerciseTime')
+    const cleanTime = defineModel<string>('cleanTime')
     const comment = defineModel<string>('comment')
     const onSelect = (imageId: string) => {
         emits('select',imageId)
@@ -27,8 +27,8 @@
 
 <template>
         <v-icon class="mx-5 my-auto" size="50" icon="mdi-plus-box" @click="emits('open')"></v-icon>
-        <exercise-modal
-                        v-model:exerciseTime="exerciseTime"
+        <clean-modal
+                        v-model:cleanTime="cleanTime"
                         v-model:date="date"
                         v-model:comment="comment"
                         v-model:is-shown-menu="isShownMenu"
@@ -36,6 +36,6 @@
                         :illustObjs="props.illustObjs"
                         @record="emits('add')" 
                         @close="emits('close')"
-                        @select="onSelect"></exercise-modal>
+                        @select="onSelect"></clean-modal>
 
 </template>

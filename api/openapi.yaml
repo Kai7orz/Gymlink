@@ -89,7 +89,7 @@ paths:
                   profile_image:
                     type: string
 
-  /users/{user_id}/exercises:
+  /users/{user_id}/records:
     get:
       summary: Get exercises records for a user by ID)
       description: ログインしたユーザの運動投稿記録を取得するための API

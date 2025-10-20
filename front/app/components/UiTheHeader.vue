@@ -3,7 +3,6 @@
     home: [],
     account: [],
     monster: [],
-    team: [],
     share:[],
     signout:[],
   }>();
@@ -18,7 +17,6 @@
         <v-icon class="mx-5" icon="mdi-home" @click="emits('home')"></v-icon>
         <v-icon class="mx-5" icon="mdi-sheep" @click="emits('monster')"></v-icon>
         <v-icon class="mx-5" icon="mdi-account" @click="emits('account')"></v-icon>
-        <v-icon class="mx-5" icon="mdi-account-group" @click="emits('team')"></v-icon>
         <v-icon class="mx-5 bg-red" icon="mdi-exit-run" @click="emits('signout')"></v-icon>
       </v-app-bar>
 </template>

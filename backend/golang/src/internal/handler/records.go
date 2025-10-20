@@ -11,15 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ExerciseHandler struct {
-	svc service.ExerciseService
+type RecordHandler struct {
+	svc service.RecordService
 }
 
-func NewExerciseHandler(svc service.ExerciseService) *ExerciseHandler {
-	return &ExerciseHandler{svc: svc}
+func NewRecordHandler(svc service.RecordService) *RecordHandler {
+	return &RecordHandler{svc: svc}
 }
 
-func (h *ExerciseHandler) GetExercisesById(ctx *gin.Context) {
+func (h *RecordHandler) GetRecordsById(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
@@ -32,31 +32,29 @@ func (h *ExerciseHandler) GetExercisesById(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
-	exercises, err := h.svc.GetRecordsById(ctx, id)
+	records, err := h.svc.GetRecordsById(ctx, id)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
-
-	log.Println("Get Exercise User ", id, " exercises: ", exercises)
-	ctx.JSON(http.StatusOK, exercises)
+	ctx.JSON(http.StatusOK, records)
 }
 
-func (h *ExerciseHandler) GetRecords(ctx *gin.Context) {
+func (h *RecordHandler) GetRecords(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
-	exercises, err := h.svc.GetRecords(ctx)
+	records, err := h.svc.GetRecords(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
-	ctx.JSON(http.StatusOK, exercises)
+	ctx.JSON(http.StatusOK, records)
 }
 
-func (h *ExerciseHandler) CreateLike(ctx *gin.Context) {
+func (h *RecordHandler) CreateLike(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
@@ -66,22 +64,22 @@ func (h *ExerciseHandler) CreateLike(ctx *gin.Context) {
 
 	var recordLike dto.RecordLikeType
 	if err := ctx.ShouldBindJSON(&recordLike); err != nil {
-		log.Println("error: exercise like ", err)
+		log.Println("error: record like ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
 
 	err := h.svc.CreateLike(ctx.Request.Context(), recordLike.RecordId, token)
 	if err != nil {
-		log.Println("error: exercise like ", err)
+		log.Println("error: record like ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "exercise like created successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "record like created successfully"})
 }
 
-func (h *ExerciseHandler) CheckLike(ctx *gin.Context) {
+func (h *RecordHandler) CheckLike(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
@@ -89,15 +87,14 @@ func (h *ExerciseHandler) CheckLike(ctx *gin.Context) {
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
 
-	exerciseRecordIdStr := ctx.Param("record_id")
-	log.Println("record ->", exerciseRecordIdStr)
-	exerciseRecordId, err := strconv.ParseInt(exerciseRecordIdStr, 10, 64)
+	recordIdStr := ctx.Param("record_id")
+	recordId, err := strconv.ParseInt(recordIdStr, 10, 64)
 	if err != nil {
 		log.Println("failed to parse record_id")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
 		return
 	}
-	liked, err := h.svc.CheckLikeById(ctx.Request.Context(), exerciseRecordId, token)
+	liked, err := h.svc.CheckLikeById(ctx.Request.Context(), recordId, token)
 	if err != nil {
 		log.Println("error check like ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
@@ -108,34 +105,34 @@ func (h *ExerciseHandler) CheckLike(ctx *gin.Context) {
 
 }
 
-func (h *ExerciseHandler) DeleteLike(ctx *gin.Context) {
+func (h *RecordHandler) DeleteLike(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
-	exerciseRecordIdStr := ctx.Param("record_id")
-	log.Println("record str -> ", exerciseRecordIdStr)
-	exerciseRecordId, err := strconv.ParseInt(exerciseRecordIdStr, 10, 64)
+	recordIdStr := ctx.Param("record_id")
+	log.Println("record str -> ", recordIdStr)
+	recordId, err := strconv.ParseInt(recordIdStr, 10, 64)
 	if err != nil {
 		log.Println("failed to parse record_id")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
 		return
 	}
 
-	err = h.svc.DeleteLikeById(ctx.Request.Context(), exerciseRecordId, token)
+	err = h.svc.DeleteLikeById(ctx.Request.Context(), recordId, token)
 	if err != nil {
 		log.Println("error delete like ", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "exercise like deleted successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "record like deleted successfully"})
 
 }
 
-func (h *ExerciseHandler) GenerateIllustration(ctx *gin.Context) {
+func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 	// ヘッダー取り出し
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {

@@ -84,41 +84,41 @@ func main() {
 
 	userQueryRepo := dbase.NewUserQueryRepo(db)
 
-	userCreateRepo := dbase.NewUserCreateRepo(db)
+	userCommandRepo := dbase.NewUserCreateRepo(db)
 
 	profileRepo := dbase.NewProfileRepo(db)
 
-	exerciseQueryRepo := dbase.NewExerciseQueryRepo(db)
+	recordQueryRepo := dbase.NewRecordQueryRepo(db)
 
-	exerciseCreateRepo := dbase.NewExerciseCreateRepo(db)
+	recordCommandRepo := dbase.NewRecordCommandRepo(db)
 
-	userSvc, err := service.NewUserService(userQueryRepo, userCreateRepo, profileRepo, authC)
+	userSvc, err := service.NewUserService(userQueryRepo, userCommandRepo, profileRepo, authC)
 	if err != nil {
 		log.Fatal("user service error")
 	}
 
-	exerciseSvc, err := service.NewExerciseService(exerciseQueryRepo, exerciseCreateRepo, authC, gptCli, awsCli)
+	recordSvc, err := service.NewRecordService(recordQueryRepo, recordCommandRepo, authC, gptCli, awsCli)
 	if err != nil {
-		log.Fatal("exercise service error")
+		log.Fatal("record service error")
 	}
 
 	userHandler := handler.NewUserHandler(userSvc)
-	exerciseHandler := handler.NewExerciseHandler(exerciseSvc)
+	recordHandler := handler.NewRecordHandler(recordSvc)
 
 	r := gin.Default()
 	r.POST("/users", userHandler.SignUpUserById)
 	r.POST("/login", userHandler.LoginUser)
 	r.GET("/user_profiles/:user_id", userHandler.GetProfilebyId)
-	r.GET("/users/:user_id/exercises", exerciseHandler.GetExercisesById)
-	r.GET("/records", exerciseHandler.GetRecords)
-	// r.POST("/records", exerciseHandler.GenerateIllustration)
-	r.POST("/likes", exerciseHandler.CreateLike)
-	r.GET("/likes/:record_id", exerciseHandler.CheckLike)
-	r.DELETE("/likes/:record_id", exerciseHandler.DeleteLike)
+	r.GET("/users/:user_id/records", recordHandler.GetRecordsById)
+	r.GET("/records", recordHandler.GetRecords)
+	// r.POST("/records", recordHandler.GenerateIllustration)
+	r.POST("/likes", recordHandler.CreateLike)
+	r.GET("/likes/:record_id", recordHandler.CheckLike)
+	r.DELETE("/likes/:record_id", recordHandler.DeleteLike)
 	r.POST("/follows", userHandler.FollowUser)
 	r.GET("/follows/:user_id", userHandler.CheckFollow)
 	r.DELETE("/users/unfollows", userHandler.DeleteFollowUser)
-	r.POST("/upload", exerciseHandler.GenerateIllustration)
+	r.POST("/upload", recordHandler.GenerateIllustration)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)

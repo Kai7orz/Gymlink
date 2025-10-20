@@ -17,7 +17,7 @@ type UserQueryRepo interface {
 	CheckFollowById(ctx context.Context, followId int64, uid string) (bool, error)
 }
 
-type UserCreateRepo interface {
+type UserCommandRepo interface {
 	CreateUserById(ctx context.Context, name string, avatarUrl string, uid string) error
 	FollowUserById(ctx context.Context, followerId int64, followedId int64) error
 	DeleteFollowUserById(ctx context.Context, followerId int64, followedId int64) error
@@ -27,16 +27,16 @@ type ProfileRepo interface {
 	GetProfileById(ctx context.Context, id int64) (*entity.ProfileType, error)
 }
 
-type ExerciseQueryRepo interface {
+type RecordQueryRepo interface {
 	GetRecordsById(ctx context.Context, id int64) ([]entity.RecordRawType, error)
 	GetRecords(ctx context.Context) ([]entity.RecordRawType, error)
 }
 
-type ExerciseCreateRepo interface {
-	CreateRecordById(ctx context.Context, objectKey string, exerciseTime int64, date time.Time, comment string, uid string) error
-	CreateLike(ctx context.Context, exerciseRecordId int64, uid string) error
-	CheckLike(ctx context.Context, exerciseRecordId int64, uid string) (bool, error)
-	DeleteLike(ctx context.Context, exerciseRecordId int64, uid string) error
+type RecordCommandRepo interface {
+	CreateRecordById(ctx context.Context, objectKey string, time int64, date time.Time, comment string, uid string) error
+	CreateLike(ctx context.Context, recordId int64, uid string) error
+	CheckLike(ctx context.Context, recordId int64, uid string) (bool, error)
+	DeleteLike(ctx context.Context, recordId int64, uid string) error
 }
 
 // Firebase とやりとりするためのインターフェース
@@ -67,12 +67,12 @@ type UserService interface {
 	DeleteFollowUser(ctx context.Context, followerId int64, followedId int64) error
 }
 
-type ExerciseService interface {
+type RecordService interface {
 	GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error)
 	GetRecords(ctx context.Context) ([]entity.RecordType, error)
 	CreateRecord(ctx context.Context, objectKey string, cleanUpTime string, cleanUpdate string, comment string, idToken string) error
-	CreateLike(ctx context.Context, exerciseRecordId int64, idToken string) error
-	CheckLikeById(ctx context.Context, exerciseRecordId int64, idToken string) (bool, error)
-	DeleteLikeById(ctx context.Context, exerciseRecordId int64, idToken string) error
+	CreateLike(ctx context.Context, recordId int64, idToken string) error
+	CheckLikeById(ctx context.Context, recordId int64, idToken string) (bool, error)
+	DeleteLikeById(ctx context.Context, recordId int64, idToken string) error
 	GenerateImgAndUpload(ctx context.Context, image *multipart.FileHeader, s3Key string) (string, error)
 }

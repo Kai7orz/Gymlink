@@ -62,7 +62,7 @@
 <template>
     <div>
     <ClientOnly>
-        <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg bg-grey-darken-1 rounded-lg">
+        <v-card  class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg rounded-lg bg-grey-darken-3">
             <v-snackbar class="mb-20" v-model="isError"
                     multi-line>
                     Sign in error

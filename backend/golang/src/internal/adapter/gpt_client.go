@@ -72,7 +72,6 @@ func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.Fi
 		log.Println("error: copy image object")
 		return err
 	}
-	log.Println("copy")
 
 	if err := writer.Close(); err != nil {
 		log.Println("error: writer cannot close!")
@@ -130,8 +129,6 @@ func (gc *gptClient) CreateIllustration(ctx context.Context, image *multipart.Fi
 	if _, err := outFile.Write(dec); err != nil {
 		return err
 	}
-
-	log.Println("illustration is finished")
 
 	return nil
 }

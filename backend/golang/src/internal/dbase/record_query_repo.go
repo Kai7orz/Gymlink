@@ -8,15 +8,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type exerciseQueryRepo struct {
+type recordQueryRepo struct {
 	db *sqlx.DB
 }
 
-func NewExerciseQueryRepo(db *sqlx.DB) *exerciseQueryRepo {
-	return &exerciseQueryRepo{db: db}
+func NewRecordQueryRepo(db *sqlx.DB) *recordQueryRepo {
+	return &recordQueryRepo{db: db}
 }
 
-func (r *exerciseQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordRawType, error) {
+func (r *recordQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordRawType, error) {
 
 	sql := `SELECT 
 			records.id,
@@ -47,7 +47,7 @@ func (r *exerciseQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]ent
 
 }
 
-func (r *exerciseQueryRepo) GetRecords(ctx context.Context) ([]entity.RecordRawType, error) {
+func (r *recordQueryRepo) GetRecords(ctx context.Context) ([]entity.RecordRawType, error) {
 
 	sql := `SELECT 
 			records.id,

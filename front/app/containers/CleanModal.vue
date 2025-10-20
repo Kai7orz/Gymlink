@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-    import UiExerciseModal from '~/components/UiExerciseModal.vue';
+    import UiCleanModal from '~/components/UiCleanModal.vue';
     import type { Illustration } from '~/type';
 
     const props = defineProps<{
@@ -10,7 +10,7 @@
     const isShownMenu = defineModel('isShownMenu')
 
     const date = defineModel<string>('date')
-    const exerciseTime = defineModel<string>('exerciseTime')
+    const cleanTime = defineModel<string>('cleanTime')
     const comment = defineModel<string>('comment')
     const emits = defineEmits<{
         close: [],
@@ -25,11 +25,11 @@
 </script>
 
 <template>
-    <ui-exercise-modal 
-                       v-model:exerciseTime="exerciseTime"
+    <ui-clean-modal 
+                       v-model:cleanTime="cleanTime"
                        v-model:date="date"
                        v-model:comment="comment"
-                       v-model:is-shown-menu="isShownMenu"
+                       v-model:isShownMenu="isShownMenu"
                        :imageUrl="props.imageUrl"
                        :illustObjs="props.illustObjs"
                        @record="emits('record')"

@@ -43,8 +43,6 @@ onUnmounted(()=>{
     }
 })
 
-console.log("isFollow::",props.isFollow)
-
 </script>
 
 <template>

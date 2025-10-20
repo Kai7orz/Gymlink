@@ -8,7 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type exerciseCreateRepo struct {
+type recordCommandRepo struct {
 	db *sqlx.DB
 }
 
@@ -17,47 +17,46 @@ type recordLikeTypeDTO struct {
 	RecordId int64  `db:"record_id"`
 }
 
-func NewExerciseCreateRepo(db *sqlx.DB) *exerciseCreateRepo {
-	return &exerciseCreateRepo{db: db}
+func NewRecordCommandRepo(db *sqlx.DB) *recordCommandRepo {
+	return &recordCommandRepo{db: db}
 }
 
-func (r *exerciseCreateRepo) CreateRecordById(ctx context.Context, objectKey string, cleanUpTime int64, cleanUpDate time.Time, comment string, uid string) error {
-	type exerciseRawCreateTypeDTO struct {
+func (r *recordCommandRepo) CreateRecordById(ctx context.Context, objectKey string, cleanUpTime int64, cleanUpDate time.Time, comment string, uid string) error {
+	type recordRawCreateTypeDTO struct {
 		UId         string    `db:"firebase_uid"`
 		ObjectKey   string    `db:"object_key"`
 		CleanUpTime int64     `db:"clean_up_time"`
 		CleanUpDate time.Time `db:"clean_up_date"`
 		Comment     string    `db:"comment"`
 	}
-	exerciseCreate := exerciseRawCreateTypeDTO{
+	recordCreate := recordRawCreateTypeDTO{
 		UId:         uid,
 		ObjectKey:   objectKey,
 		CleanUpTime: cleanUpTime,
 		CleanUpDate: cleanUpDate,
 		Comment:     comment,
 	}
-	log.Println("repo create exercise:")
 	sql := `INSERT INTO records (user_id,object_key,clean_up_time,clean_up_date,comment) 
 	VALUES ((SELECT id FROM users WHERE users.firebase_uid = :firebase_uid LIMIT 1),:object_key,:clean_up_time,:clean_up_date,:comment)
 	ON DUPLICATE KEY UPDATE updated_at = NOW();
 	`
-	_, err := r.db.NamedExec(sql, exerciseCreate)
+	_, err := r.db.NamedExec(sql, recordCreate)
 	if err != nil {
-		log.Println("INSERT exercise error: ", err)
+		log.Println("INSERT record error: ", err)
 		return err
 	}
 	return nil
 }
 
-func (r *exerciseCreateRepo) CreateLike(ctx context.Context, recordId int64, uid string) error {
-	exerciseLike := recordLikeTypeDTO{
+func (r *recordCommandRepo) CreateLike(ctx context.Context, recordId int64, uid string) error {
+	recordLike := recordLikeTypeDTO{
 		UId:      uid,
 		RecordId: recordId,
 	}
 	sql := `INSERT INTO user_likes (user_id,record_id) 
 	VALUES ((SELECT id FROM users WHERE users.firebase_uid = :firebase_uid LIMIT 1),:record_id) 
 	ON DUPLICATE KEY UPDATE updated_at = NOW()`
-	_, err := r.db.NamedExec(sql, exerciseLike)
+	_, err := r.db.NamedExec(sql, recordLike)
 	if err != nil {
 		log.Println("INSERT like error: ", err)
 		return err
@@ -65,10 +64,10 @@ func (r *exerciseCreateRepo) CreateLike(ctx context.Context, recordId int64, uid
 	return nil
 }
 
-func (r *exerciseCreateRepo) CheckLike(ctx context.Context, recordId int64, uid string) (bool, error) {
+func (r *recordCommandRepo) CheckLike(ctx context.Context, recordId int64, uid string) (bool, error) {
 	var liked bool
 
-	exerciseCheckLike := recordLikeTypeDTO{
+	recordCheckLike := recordLikeTypeDTO{
 		UId:      uid,
 		RecordId: recordId,
 	}
@@ -82,7 +81,7 @@ func (r *exerciseCreateRepo) CheckLike(ctx context.Context, recordId int64, uid 
         ) AS liked;
     `
 	log.Println("recordid -->", recordId)
-	err := r.db.Get(&liked, sql, exerciseCheckLike.RecordId, exerciseCheckLike.UId)
+	err := r.db.Get(&liked, sql, recordCheckLike.RecordId, recordCheckLike.UId)
 	if err != nil {
 		log.Println("SELECT like error: ", err)
 		return false, err
@@ -90,13 +89,13 @@ func (r *exerciseCreateRepo) CheckLike(ctx context.Context, recordId int64, uid 
 	return liked, nil
 }
 
-func (r *exerciseCreateRepo) DeleteLike(ctx context.Context, recordId int64, uid string) error {
-	exerciseDeleteLeike := recordLikeTypeDTO{
+func (r *recordCommandRepo) DeleteLike(ctx context.Context, recordId int64, uid string) error {
+	recordDeleteLeike := recordLikeTypeDTO{
 		UId:      uid,
 		RecordId: recordId,
 	}
 	sql := `DELETE FROM user_likes WHERE record_id = :record_id and user_id = (SELECT id FROM users WHERE users.firebase_uid = :firebase_uid LIMIT 1)`
-	_, err := r.db.NamedExec(sql, exerciseDeleteLeike)
+	_, err := r.db.NamedExec(sql, recordDeleteLeike)
 	if err != nil {
 		log.Println("DELETE like error: ", err)
 		return err

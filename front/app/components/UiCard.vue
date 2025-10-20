@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     detail: [id:number],
-    like: [id:number], //exercise record のいいねボタン押した際にいいねした人一覧見えるようにするために，クリック時にロジック側にexercise record の id を渡すようにする
+    like: [id:number], //record のいいねボタン押した際にいいねした人一覧見えるようにするために，クリック時にロジック側に record の id を渡すようにする
     account: [id:number],
 }>();
 
