@@ -767,6 +767,7 @@ chown でプログラムを実行したユーザーに権限を譲渡して対�
   - DNS サーバ構築-> Route53
 
 参考：Amazon Web Service 基礎からのネットワーク＆サーバ構築
+     https://zenn.dev/not75743/articles/c139dc1e99f790
 
 ### 細分化
 - VPC の構築
@@ -775,12 +776,25 @@ chown でプログラムを実行したユーザーに権限を譲渡して対�
       - インターネットゲートウェイを作成
       - ルートテーブルを設定（インターネットと疎通できるように）
     - プライベートサブネットの作成
+    
 - ACM 証明書
 - S3
 - NAT GATEWAY 作成
 - EC2 の設定
   - Web 用
+  - private subnet においた ec2 アクセスの設定
+    - VPC Endopoint のセキュリティグループ設定・作成 https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/create-ec2-instance-connect-endpoints.html
+    - ec2 コンソールで EC2 へ接続し
+        https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#connect-linux-inst-eic-cli-ssh
+
+        https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+        ```
+         aws ec2-instance-connect ssh --instance-id i-04a775b3d0ba68298
+         ```
+    - VPC Endpoint で EC2 への接続
+
 - RDS の設定
+  - RDS 用のサブネット(2az以上含む)を作成
   - セキュリティグループ設定
 - ALB 
 - Route53
