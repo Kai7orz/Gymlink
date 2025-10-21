@@ -62,7 +62,7 @@ func main() {
 	ctx := context.Background()
 	authCli, err := app.Auth(ctx)
 	if err != nil {
-		log.Fatal("error in Auth")
+		log.Fatal("error in Auth", err)
 	}
 	authC := adapter.NewAuthClient(authCli)
 
