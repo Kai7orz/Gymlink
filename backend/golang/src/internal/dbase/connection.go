@@ -20,7 +20,7 @@ func open(path string, count uint) *sqlx.DB {
 	// 	fmt.Printf("retry... count:%v\n", count)
 	// 	return open(path, count)
 	// }
-	fmt.Println("db connected!!")
+	// fmt.Println("db connected!!")
 	return db
 }
 
