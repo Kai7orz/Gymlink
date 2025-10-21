@@ -1,3 +1,47 @@
+## デプロイ手順
+AWS でデプロイを行う．
+無料枠のインスタンスではスペックが不足するため，m5.large を利用する．
+### 設定
+- ネットワーク設定には，パブリックサブネットの 10.1.4.0/24 を割り当て
+- パブリックip の自動割り当てを有効化する
+- セキュリティグループは，22port のインバウンド， 88port のアウトバンド を許可する
+上記設定でインスタンスを起動（今回は m5.large ）
+
+### インスタンス起動後
+ssh をホストから行う．
+```
+ssh -i katazuke.pem \
+  -o ServerAliveInterval=30 \
+  -o ServerAliveCountMax=6 \
+  ec2-user@パブリックIP
+
+```
+を terminal から実行する．
+
+### SSH通信確立後
+確立後は AWS のインスタンス内で project の git clone を行う．
+```
+[ec2-user@ip-10-1-4-126 ~]$ sudo dnf install -y git
+[ec2-user@ip-10-1-4-126 ~]$ git clone -b prod https://github.com/Kai7orz/Gymlink.git
+### docker & docker composeinstall :参考　https://zenn.dev/rock_penguin/articles/28875c7b0a5e30
+```
+install 完了後は， project の Gymlink/ に mysql/.env と golang/の src 配下にも .env を作成し，DB 用環境をセット．
+
+この状態で一度，sudo docker-compose up
+この際立ち上がるがセキュリティに 3000port 開放規則入れていないので追加する（カスタムtcp 3000 port リソース：マイIP）
+
+この段階で Nuxt をパブリックにアクセスできることを確認した．
+続いて EC2 と RDS の接続を行う．
+EC2 はパブリックサブネットにいるが，RDS はプライベートサブネットにいるので，その間の通信を許可するセキュリティグループが必要．
+
+EC2 にアタッチしているセキュリティグループからアクセスを許可するセキュリティグループを新たに作成する．タイプは MYSQL/Auorora (port 3306 自動設定)
+
+上記 SG を RDS へ付ける
+
+Go -> RDS へ Connect ができないので ping が通るかを見る．
+そもそも ICMP 許可してないから db.Ping() でエラーになりそう？？
+
+
 ## 構成
 
 ### Go + MySQL 構築
@@ -784,14 +828,23 @@ chown でプログラムを実行したユーザーに権限を譲渡して対�
   - Web 用
   - private subnet においた ec2 アクセスの設定
     - VPC Endopoint のセキュリティグループ設定・作成 https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/create-ec2-instance-connect-endpoints.html
-    - ec2 コンソールで EC2 へ接続し
-        https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html#connect-linux-inst-eic-cli-ssh
+    - SSH で EC2 へ接続し(EC2 にパブリックIP 付けるの忘れずに!)
+      ```
+        ssh -i my-key.pem ec2-user@publicIp
+      ```
+      - EC2配置していたサブネットのサブネットルートテーブル内のルートをインターネットゲートウェイに追加するの忘れていてアクセスできなかったので注意
+        - インターネットゲートウェイを作成して，サブネットの持つルートテーブルに，送信先 0.0.0.0/0 に対して作成したインターネットゲートウェイを割り当てればよい
+      - 加えてSG の設定で通信をブロックしていたのでつながらなかった
+        - ```
+          curl https://checkip.amazonaws.com
+          ```
+          を実行してグローバルIP 確認して SG に設定する．
+    - ec2 への ping が通らない
+    - SGのアウトバンドルールでブロックされていた． port 443 の https を開放して対処
+    - docker-compose up までいけたが, yml の処理で http80 port 通して取得する処理があり，sg で 80 port ブロックしていたのでエラーがでた　SG 80 port 開放して対処
 
-        https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-        ```
-         aws ec2-instance-connect ssh --instance-id i-04a775b3d0ba68298
-         ```
-      この際ec2 はインターネットにつながっていないので，git command などを install できない．したがって，さきに NAT Gateway を整備する
+
+
     - NAT Gateway の構築
       - NAT Gateway はすぐ作成でき，VPC メニューからルートテーブルを構成することが主な仕事
         - プライベートサブネットのルートテーブルを NAT Gateway に変更する
@@ -802,22 +855,8 @@ chown でプログラムを実行したユーザーに権限を譲渡して対�
     - VPC Endpoint で EC2 への接続
     ```
 
-
-    ```
-    [ec2-user@ip-10-1-2-93 ~]$ git clone -b prod https://github.com/Kai7orz/Gymlink.git
-    [ec2-user@ip-10-1-2-93 ~]$ sudo dnf -y install git
-    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo dnf update
-    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo dnf install -y docker
-    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo systemctl start docker
-    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo gpasswd -a $(whoami) docker
-    Adding user ec2-user to group docker
-    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo chgrp docker /var/run/docker.sock
-    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo service docker restart
-    Redirecting to /bin/systemctl restart docker.service
-    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo systemctl enable docker
-    [ec2-user@ip-10-1-2-93 Gymlink]$ sudo curl -L "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    [ec2-user@ip-10-1-2-93 Gymlink]$ docker-compose up
-    ```
+  - ec2 内で Gymlink/mysql/.env を作成
+  - ec2 内で Gymlink/backend/golang/src/.env   
 
 - RDS の設定
   - RDS 用のサブネット(2az以上含む)を作成
