@@ -55,7 +55,33 @@ go exited with code 1
 再度 docker-compose up 後にこのログが出てきたので，docker 側が同一ホストから db
 探していそう．yml の environment の DB_HOST にRDS のエンドポイントを
 指定してみる.
+同じくエラー、ログ見るとやはり接続部なのでもう一度見る
+package dbase
 
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/jmoiron/sqlx"
+)
+
+func open(path string, count uint) *sqlx.DB {
+	db, err := sqlx.Open("mysql", path)
+	if err != nil {
+		log.Fatal("open error: ", err)
+	}
+	return db
+}
+
+func ConnectDB() *sqlx.DB {
+	var path string = fmt.Sprintf("%s:%s@tcp(db:3306)/%s?charset=utf8&parseTime=true",
+		os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"),
+		os.Getenv("MYSQL_DATABASE"))
+	return open(path, 100)
+}
+
+db:3306 が怪しい
 
 ## 構成
 
@@ -180,7 +206,7 @@ DB を開発用と本番用で分ける
   MySQL の.env に　DEV 用の設定を追加
 
   コンテナも dev 開発用に建てる．（docker-compose.yml）
-```
+  ```
   dev_db:
     container_name: dev_db
     build:
@@ -204,7 +230,8 @@ DB を開発用と本番用で分ける
       - type: bind 
         source: ./mysql/init
         target: /docker-entrypoint-initdb.d
-```
+  ```
+
 
 2. Go（アプリ側）の DB 接続先を dev 用に変更[ .env に APP_ENV を用意し，その文字列から環境を指定 APP_ENV=development なら dev用DB, APP_ENV=product なら 本番用 DB に接続するロジックに]
 3. Go（アプリ側）migration ファイルの指定先の変更[2と同様]
