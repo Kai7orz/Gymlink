@@ -25,8 +25,9 @@ func open(path string, count uint) *sqlx.DB {
 }
 
 func ConnectDB() *sqlx.DB {
-	var path string = fmt.Sprintf("%s:%s@tcp(db:3306)/%s?charset=utf8&parseTime=true",
+	var path string = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true",
 		os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"),
+		os.Getenv("MYSQL_HOST"), os.Getenv("MYSQL_PORT"),
 		os.Getenv("MYSQL_DATABASE"))
 	return open(path, 100)
 }
