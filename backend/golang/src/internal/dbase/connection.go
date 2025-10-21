@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -15,12 +14,12 @@ func open(path string, count uint) *sqlx.DB {
 		log.Fatal("open error: ", err)
 	}
 
-	if err = db.Ping(); err != nil {
-		time.Sleep(time.Second * 2)
-		count--
-		fmt.Printf("retry... count:%v\n", count)
-		return open(path, count)
-	}
+	// if err = db.Ping(); err != nil {
+	// 	time.Sleep(time.Second * 2)
+	// 	count--
+	// 	fmt.Printf("retry... count:%v\n", count)
+	// 	return open(path, count)
+	// }
 	fmt.Println("db connected!!")
 	return db
 }

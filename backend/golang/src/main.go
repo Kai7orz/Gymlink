@@ -35,7 +35,7 @@ func main() {
 	//マイグレーション
 	err = dbase.MigrateUp(db)
 	if err != nil {
-		log.Fatal("migrate up failed")
+		log.Fatal("migrate up failed:", err)
 	}
 	//seeding
 	err = dbase.SeedingDB(db)
