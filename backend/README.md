@@ -17,6 +17,7 @@ ssh -i katazuke.pem \
 
 ```
 を terminal から実行する．
+※ -o がないと terminal 固まってしまうので注意（SSH で定期的に動いていることを伝える）
 
 ### SSH通信確立後
 確立後は AWS のインスタンス内で project の git clone を行う．
