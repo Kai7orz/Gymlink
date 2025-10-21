@@ -40,6 +40,21 @@ EC2 にアタッチしているセキュリティグループからアクセス�
 
 Go -> RDS へ Connect ができないので ping が通るかを見る．
 そもそも ICMP 許可してないから db.Ping() でエラーになりそう？？
+ICMP を許可する予定だったが, RDS はそもそも pingを受け付けない設計ということが
+分かったので，Go の connectino.go から Ping() の接続確認コード削除することで対応
+
+```
+
+go    | region: ap-northeast-1
+go    | db connected!!
+go    | error mysql.WithInstance()
+go    | 2025/10/21 15:46:15 migrate up failed:dial tcp: lookup db on 127.0.0.11:53: no such host
+go    | exit status 1
+go exited with code 1
+```
+再度 docker-compose up 後にこのログが出てきたので，docker 側が同一ホストから db
+探していそう．yml の environment の DB_HOST にRDS のエンドポイントを
+指定してみる.
 
 
 ## 構成
