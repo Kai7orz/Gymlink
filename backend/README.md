@@ -84,6 +84,17 @@ func ConnectDB() *sqlx.DB {
 
 db:3306 が怪しい
 
+MYSQL の host をRDS のエンドポイントとして指定したら通った
+
+```
+go    | region: ap-northeast-1
+go    | 2025/10/21 16:48:10 Migration successful ✅
+go    | 2025/10/21 16:48:10 bound--> {0xc0000ba380 0xc0000c4630}
+go    | 2025/10/21 16:48:10 error in Authcannot read credentials file: open ./internal/rizap-hackathon-firebase-adminsdk-fbsvc-162f53a89e.json: no such file or directory
+```
+次にこのエラー．　
+internal/ 配下に firebase の json 設置．
+
 ## 構成
 
 ### Go + MySQL 構築
