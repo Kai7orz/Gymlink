@@ -93,7 +93,54 @@ go    | 2025/10/21 16:48:10 bound--> {0xc0000ba380 0xc0000c4630}
 go    | 2025/10/21 16:48:10 error in Authcannot read credentials file: open ./internal/rizap-hackathon-firebase-adminsdk-fbsvc-162f53a89e.json: no such file or directory
 ```
 次にこのエラー．　
-internal/ 配下に firebase の json 設置．
+internal/ 配下に firebase の json 設置し，Auth 対応完了
+
+次に EC2 にドメインを割り当てる
+
+https://qiita.com/yuichi1992_west/items/e842d8ee50c4afd88775
+Route53 を利用してドメイン名を割り当てる．
+ホストゾーンを作成
+作成後は EC2 に移動 t3.medium で運用
+作成後に Elastic IP をEC２ の画面から選択
+EC2 に割り当てる
+次にそのIP　を Route53 で紐づける
+これで katazuke.kai7orz.com でアクセスできる
+
+続いてcloud front を設置する
+ACM で *.kai7orz.com の証明書を作成して，Route53 のレコードに保存する
+
+### cloud front
+#### なぜ配置するか
+通信を 安全に行うための HTTPS 対応にしたい
+#### 作成
+- Cloud Front 画面で ディストリビューションを作成する
+- route53 のhost zone の email 認証していなくて kai7orz.com が使えないことに気づかず3,4時間格闘した... 
+
+cloudfront の ipをec2 から許可する（cloudfront からのリクエストに秘密のへえだーを追加:カスタムヘッダー認証）
+
+現在 ec2 はマイIP しか受け付けていないので cloudfrontからの通信は受け付けていないので，その通信を受け入れるように設定する
+
+cloud front -> EC2 の構成を想定していたが， IP レンジをSG に登録したり，EC2 自体はIP 上はパブリックとなっていて不便なので　，
+- IP レンジを SG に登録不要
+- プライベートサブネットにもスムーズに移行可能
+という要件を満たすように cloud front -> ALB -> EC2 の構成に変更することにした
+
+ロードバランサ―を作成 今回は ALB を利用する
+https://note.com/standenglish/n/n0bdd964c308f
+https://zenn.dev/catatsumuri/articles/974e8430273860
+ec2 ターゲットグループを作成　これは ALB で受信したリクエストをどこに転送するから設定する
+https://aws.amazon.com/jp/blogs/networking-and-content-delivery/limit-access-to-your-origins-using-the-aws-managed-prefix-list-for-amazon-cloudfront/?utm_source=chatgpt.com
+を参考にcloud front からの通信のみ受け取るよにする
+
+この SG を ALB につけて保存作成．
+＋　ターゲットグループを作成．
+
+ec2 から ALB のアクセス許可 ec2 のsg にaLB のセキュリティグループを指定する　これ忘れて少してこずった
+ALB のtarget 指定で ec2 インスタンスが登録されていない状態のtarget を指定していたので 503 エラーでハマっていた．target に登録したら問題なく動いた
+
+上記でターゲット問題解決後は origin の問題
+Blocked request. This host ("katazuke-balancer-1270398432.ap-northeast-1.elb.amazonaws.com") is not allowed.
+To allow this host, add "katazuke-balancer-1270398432.ap-northeast-1.elb.amazonaws.com" to `server.allowedHosts` in vite.config.js.
 
 ## 構成
 
