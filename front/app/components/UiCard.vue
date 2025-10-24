@@ -2,6 +2,7 @@
 import { mergeProps } from 'vue';
 
 const props = defineProps<{
+        isOwner: boolean,   
             id: number,
             userId: number,
             userName: string,
@@ -16,10 +17,16 @@ const emits = defineEmits<{
     detail: [id:number],
     like: [id:number], //record のいいねボタン押した際にいいねした人一覧見えるようにするために，クリック時にロジック側に record の id を渡すようにする
     account: [id:number],
+    delete: [id:number],
 }>();
 
 const clicked = (id:number) => {
     emits('detail',id);
+}
+
+const onDelete = async (id:number) => 
+{
+    emits('delete',id)
 }
 
 const onAccount = async (uid: number) => {
@@ -40,8 +47,11 @@ const onAccount = async (uid: number) => {
                     <v-icon class="mx-3" icon="mdi-thumb-up"></v-icon>
                     <div>{{ props.likesCount }}</div>
                 </div>
-            </div>        
+            </div>
         </v-card>
+        <v-btn v-if="props.isOwner" class="d-flex mx-auto m-5" color="red" @click="()=>onDelete(props.id)">
+                    delete
+        </v-btn>    
     </v-hover>
     </div>
 </template>

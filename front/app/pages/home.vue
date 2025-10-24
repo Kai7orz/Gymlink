@@ -7,6 +7,6 @@
 <template>
     <v-container class="d-flex">
         <add-card />
-        <card-list :is-owner="isOwner" />
+        <card-list :isOwner="isOwner" />
     </v-container>
 </template>

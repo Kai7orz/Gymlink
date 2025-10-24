@@ -2,7 +2,8 @@
 import type { RecordType } from '~/type';
 
     const props = defineProps<{
-        recordList: RecordType[]
+        recordList: RecordType[],
+        isOwner: boolean,
     }>();
 
     const emits = defineEmits<{
@@ -12,6 +13,10 @@ import type { RecordType } from '~/type';
 
     const toDetail = (id:number) => {
         emits('detail',id)
+    }
+
+    const toDelete = (id:number) => {
+      emits('delete',id)
     }
 
     const toAccount = (uid:number) => {
@@ -30,6 +35,7 @@ import type { RecordType } from '~/type';
       >
         <ui-card
           class="w-100"
+          :isOwner="props.isOwner"
           :id="record.id"
           :userId="Number(record.user_id)"
           :userName="record.user_name"
@@ -39,6 +45,7 @@ import type { RecordType } from '~/type';
           :comment="record.comment"
           :likesCount="record.likes_count"
           @detail="toDetail"
+          @delete="toDelete"
           @account="toAccount"
         />
       </v-col>
