@@ -142,6 +142,90 @@ ALB のtarget 指定で ec2 インスタンスが登録されていない状態�
 Blocked request. This host ("katazuke-balancer-1270398432.ap-northeast-1.elb.amazonaws.com") is not allowed.
 To allow this host, add "katazuke-balancer-1270398432.ap-northeast-1.elb.amazonaws.com" to `server.allowedHosts` in vite.config.js.
 
+build して出力される　.output/server/index.mjs を実行する
+
+nuxt  |
+nuxt  |
+nuxt  |  ERROR  Cannot find module 'vite-plugin-vuetify'
+nuxt  | Require stack:
+nuxt  | - /app/nuxt.config.ts
+
+nuxt.config.ts で import vite-plugin-vuetify がされているがそれが見つからないというエラー
+
+runner で postinstall 画はしてしまっているのが原因なので　package.json で postinstall を無効化
+
+ec2 の volumes を拡張し 8 GB -> 40 GB に変更した
+
+```
+lsblk -f 
+df -h
+
+sudo growpart /dev/nvme0n1 1
+sudo xfs_grows -d 
+df -h
+```
+で容量確保と確認
+
+```
+Attaching to go, nuxt
+go    | region: ap-northeast-1
+go    | cannot get project root path: not found go.mod
+go    | migration file path: file:/internal/dbase/migration
+go    | failed to open source, "file:/internal/dbase/migration": open .: no such file or directory
+nuxt  | node:internal/modules/cjs/loader:1386
+nuxt  |   throw err;
+nuxt  |   ^
+nuxt  |
+nuxt  | Error: Cannot find module '/app/.output/server/index.mjs'
+nuxt  |     at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
+nuxt  |     at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+nuxt  |     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+nuxt  |     at Function._load (node:internal/modules/cjs/loader:1192:37)
+nuxt  |     at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+nuxt  |     at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+nuxt  |     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+nuxt  |     at node:internal/main/run_main_module:36:49 {
+nuxt  |   code: 'MODULE_NOT_FOUND',
+nuxt  |   requireStack: []
+nuxt  | }
+nuxt  |
+nuxt  | Node.js v22.21.0
+go exited with code 0
+nuxt exited with code 0
+[ec2-user@ip-10-1-4-29 Gymlink]$
+```
+
+このエラーで詰まったのでコンテナ入って調査する
+
+まず exit してしまう点を解消する
+```
+command: ["sh","-lc","tail -f /dev/null"]
+```
+をdocker-copmose.yml のnuxt コンテナのサービスに追加する．
+ 
+ npm ci から
+https://zenn.dev/nrikiji/articles/f0a8f5c32a44e3
+を参考に
+ npm install にし
+
+ ALB -> EC2 アクセスで nuxt のページが見れることを確認した
+
+ 実際にデプロイが完了したが，本番環境では firebase のtoken 認証がうまくいかない...
+
+nuxt の  server/api を見たら，idToken = undefined となていたので, idToken に authStore がセットできていない？ いったんブラウザでの挙動を見る
+
+ブラウザだと TOKEN 表示されたので ブラウザ -> Nitro 間で token が消えている
+
+原因 AI に聞いたところ
+ ブラウザ -> CloudFront -> ALB -> EC2
+ の通信の流れの中でCloudFront が Authorization ヘッダをオリジンに転送していないパターンがある．
+ CloudFront でヘッダを制御する　https://repost.aws/ja/knowledge-center/configure-cloudfront-to-forward-headers
+
+ CloudFront に オリジンポリシーを追加　https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-key-create-cache-policy.html
+うまく機能した.
+
+
+
 ## 構成
 
 ### Go + MySQL 構築

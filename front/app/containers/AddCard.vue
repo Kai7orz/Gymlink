@@ -14,6 +14,7 @@
     const illustrationsObjs = illustrations
 
     const addCard = async ()=>{
+        console.log("add card of add idToken:",auth.idToken)
         const TOKEN = auth.idToken
         await $fetch('/api/userRecord',{
             method: 'POST',
