@@ -21,7 +21,7 @@ func NewRecordHandler(svc service.RecordService) *RecordHandler {
 
 func (h *RecordHandler) GetRecordsById(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
-	if !strings.HasPrefix(authz, "Bearer ") {
+	if !strings.HasPrefix(authz, "Bearer ") { 
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
