@@ -71,8 +71,6 @@ func main() {
 		log.Fatal("error: ", err)
 	}
 	awsCli := adapter.NewAwsClient(awsCfg, "katazuke")
-	// awsCli.CheckBucket("katazuke")
-	// awsCli.UploadImage(ctx, "katazuke", "myKey.png")
 
 	apiKey := os.Getenv("GPT_API_KEY")
 	baseUrl := os.Getenv("GPT_URL")
