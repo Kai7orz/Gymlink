@@ -74,6 +74,6 @@
                     </div>
                 </v-overlay>
         </v-btn>
-        <v-btn class="d-flex justify-center items-center mx-auto md:w-1/2 bg-black text-blue m-5"  @click="toSignUp"> ログイン </v-btn>
+        <v-btn class="d-flex justify-center items-center mx-auto md:w-1/2 bg-black text-blue m-5"  @click="toLogin"> ログイン </v-btn>
     </v-card>
 </template>
