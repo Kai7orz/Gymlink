@@ -21,8 +21,8 @@ func NewRecordHandler(svc service.RecordService) *RecordHandler {
 
 func (h *RecordHandler) GetRecordsById(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
-	if !strings.HasPrefix(authz, "Bearer ") { 
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
 	idStr := ctx.Param("user_id")
@@ -43,15 +43,46 @@ func (h *RecordHandler) GetRecordsById(ctx *gin.Context) {
 func (h *RecordHandler) GetRecords(ctx *gin.Context) {
 	authz := ctx.GetHeader("Authorization")
 	if !strings.HasPrefix(authz, "Bearer ") {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
 	records, err := h.svc.GetRecords(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
 	ctx.JSON(http.StatusOK, records)
+}
+
+func (h *RecordHandler) DeleteRecord(ctx *gin.Context) {
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+		return
+	}
+	token := strings.TrimPrefix(authz, "Bearer ")
+
+	userIdStr := ctx.Param("user_id")
+	recordIdStr := ctx.Param("record_id")
+	if userIdStr == "" || recordIdStr == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": " failed to receive paramas: user_id or record_id"})
+		return
+	}
+
+	userId, err := strconv.ParseInt(userIdStr, 10, 64)
+	if err != nil {
+		log.Println("failed to parse user_id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "failed to parse user_id"})
+	}
+
+	recordId, err := strconv.ParseInt(recordIdStr, 10, 64)
+	if err != nil {
+		log.Println("failed to parse record_id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+		return
+	}
+
+	h.svc.DeleteRecordById(ctx.Request.Context(), userId, recordId, token)
 }
 
 func (h *RecordHandler) CreateLike(ctx *gin.Context) {
@@ -113,7 +144,6 @@ func (h *RecordHandler) DeleteLike(ctx *gin.Context) {
 	}
 	token := strings.TrimPrefix(authz, "Bearer ")
 	recordIdStr := ctx.Param("record_id")
-	log.Println("record str -> ", recordIdStr)
 	recordId, err := strconv.ParseInt(recordIdStr, 10, 64)
 	if err != nil {
 		log.Println("failed to parse record_id")

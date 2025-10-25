@@ -35,7 +35,7 @@ func main() {
 	//マイグレーション
 	err = dbase.MigrateUp(db)
 	if err != nil {
-		log.Fatal("migrate up failed:", err)
+		log.Fatal("migrate up failed")
 	}
 	//seeding
 	err = dbase.SeedingDB(db)
@@ -71,8 +71,6 @@ func main() {
 		log.Fatal("error: ", err)
 	}
 	awsCli := adapter.NewAwsClient(awsCfg, "katazuke")
-	// awsCli.CheckBucket("katazuke")
-	// awsCli.UploadImage(ctx, "katazuke", "myKey.png")
 
 	apiKey := os.Getenv("GPT_API_KEY")
 	baseUrl := os.Getenv("GPT_URL")
@@ -111,6 +109,7 @@ func main() {
 	r.GET("/user_profiles/:user_id", userHandler.GetProfilebyId)
 	r.GET("/users/:user_id/records", recordHandler.GetRecordsById)
 	r.GET("/records", recordHandler.GetRecords)
+	r.DELETE("/users/:user_id/records/:record_id", recordHandler.DeleteRecord)
 	// r.POST("/records", recordHandler.GenerateIllustration)
 	r.POST("/likes", recordHandler.CreateLike)
 	r.GET("/likes/:record_id", recordHandler.CheckLike)

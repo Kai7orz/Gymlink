@@ -32,6 +32,7 @@
                     'Authorization': 'Bearer ' + TOKEN,
                     'Content-Type': 'application/json'
                 }
+            
         })
  
         recordList.value = data
@@ -41,6 +42,7 @@
         })
 
     })
+    
     const toAccount = (uid:number) => {
          navigateTo({name: 'Account-id', params: {id:uid}})
     }
@@ -76,6 +78,7 @@
                     'Content-Type': 'application/json'
                 }
         })
+        location.reload()   
     }
 </script>
 
