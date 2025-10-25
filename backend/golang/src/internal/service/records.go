@@ -124,6 +124,21 @@ func (s *recordService) CreateRecord(ctx context.Context, objectKey string, clea
 	return nil
 }
 
+func (s *recordService) DeleteRecordById(ctx context.Context, userId int64, recordId int64, idToken string) error {
+	token, err := s.a.VerifyUser(ctx, idToken)
+	if err != nil {
+		log.Println("failed to verify user ")
+		return err
+	}
+
+	err = s.ec.DeleteRecordById(ctx, userId, recordId, token.UID)
+	if err != nil {
+		log.Println("error delete record")
+		return err
+	}
+	return nil
+}
+
 func (s *recordService) CheckLikeById(ctx context.Context, recordId int64, idToken string) (bool, error) {
 	if s.a == nil {
 		return false, errors.New("error auth nil")

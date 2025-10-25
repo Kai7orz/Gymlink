@@ -1,3 +1,231 @@
+## デプロイ手順
+AWS でデプロイを行う．
+無料枠のインスタンスではスペックが不足するため，m5.large を利用する．
+### 設定
+- ネットワーク設定には，パブリックサブネットの 10.1.4.0/24 を割り当て
+- パブリックip の自動割り当てを有効化する
+- セキュリティグループは，22port のインバウンド， 88port のアウトバンド を許可する
+上記設定でインスタンスを起動（今回は m5.large ）
+
+### インスタンス起動後
+ssh をホストから行う．
+```
+ssh -i katazuke.pem \
+  -o ServerAliveInterval=30 \
+  -o ServerAliveCountMax=6 \
+  ec2-user@パブリックIP
+
+```
+を terminal から実行する．
+※ -o がないと terminal 固まってしまうので注意（SSH で定期的に動いていることを伝える）
+
+### SSH通信確立後
+確立後は AWS のインスタンス内で project の git clone を行う．
+```
+[ec2-user@ip-10-1-4-126 ~]$ sudo dnf install -y git
+[ec2-user@ip-10-1-4-126 ~]$ git clone -b prod https://github.com/Kai7orz/Gymlink.git
+### docker & docker composeinstall :参考　https://zenn.dev/rock_penguin/articles/28875c7b0a5e30
+```
+install 完了後は， project の Gymlink/ に mysql/.env と golang/の src 配下にも .env を作成し，DB 用環境をセット．
+
+この状態で一度，sudo docker-compose up
+この際立ち上がるがセキュリティに 3000port 開放規則入れていないので追加する（カスタムtcp 3000 port リソース：マイIP）
+
+この段階で Nuxt をパブリックにアクセスできることを確認した．
+続いて EC2 と RDS の接続を行う．
+EC2 はパブリックサブネットにいるが，RDS はプライベートサブネットにいるので，その間の通信を許可するセキュリティグループが必要．
+
+EC2 にアタッチしているセキュリティグループからアクセスを許可するセキュリティグループを新たに作成する．タイプは MYSQL/Auorora (port 3306 自動設定)
+
+上記 SG を RDS へ付ける
+
+Go -> RDS へ Connect ができないので ping が通るかを見る．
+そもそも ICMP 許可してないから db.Ping() でエラーになりそう？？
+ICMP を許可する予定だったが, RDS はそもそも pingを受け付けない設計ということが
+分かったので，Go の connectino.go から Ping() の接続確認コード削除することで対応
+
+```
+
+go    | region: ap-northeast-1
+go    | db connected!!
+go    | error mysql.WithInstance()
+go    | 2025/10/21 15:46:15 migrate up failed:dial tcp: lookup db on 127.0.0.11:53: no such host
+go    | exit status 1
+go exited with code 1
+```
+再度 docker-compose up 後にこのログが出てきたので，docker 側が同一ホストから db
+探していそう．yml の environment の DB_HOST にRDS のエンドポイントを
+指定してみる.
+同じくエラー、ログ見るとやはり接続部なのでもう一度見る
+package dbase
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/jmoiron/sqlx"
+)
+
+func open(path string, count uint) *sqlx.DB {
+	db, err := sqlx.Open("mysql", path)
+	if err != nil {
+		log.Fatal("open error: ", err)
+	}
+	return db
+}
+
+func ConnectDB() *sqlx.DB {
+	var path string = fmt.Sprintf("%s:%s@tcp(db:3306)/%s?charset=utf8&parseTime=true",
+		os.Getenv("MYSQL_USER"), os.Getenv("MYSQL_PASSWORD"),
+		os.Getenv("MYSQL_DATABASE"))
+	return open(path, 100)
+}
+
+db:3306 が怪しい
+
+MYSQL の host をRDS のエンドポイントとして指定したら通った
+
+```
+go    | region: ap-northeast-1
+go    | 2025/10/21 16:48:10 Migration successful ✅
+go    | 2025/10/21 16:48:10 bound--> {0xc0000ba380 0xc0000c4630}
+go    | 2025/10/21 16:48:10 error in Authcannot read credentials file: open ./internal/rizap-hackathon-firebase-adminsdk-fbsvc-162f53a89e.json: no such file or directory
+```
+次にこのエラー．　
+internal/ 配下に firebase の json 設置し，Auth 対応完了
+
+次に EC2 にドメインを割り当てる
+
+https://qiita.com/yuichi1992_west/items/e842d8ee50c4afd88775
+Route53 を利用してドメイン名を割り当てる．
+ホストゾーンを作成
+作成後は EC2 に移動 t3.medium で運用
+作成後に Elastic IP をEC２ の画面から選択
+EC2 に割り当てる
+次にそのIP　を Route53 で紐づける
+これで katazuke.kai7orz.com でアクセスできる
+
+続いてcloud front を設置する
+ACM で *.kai7orz.com の証明書を作成して，Route53 のレコードに保存する
+
+### cloud front
+#### なぜ配置するか
+通信を 安全に行うための HTTPS 対応にしたい
+#### 作成
+- Cloud Front 画面で ディストリビューションを作成する
+- route53 のhost zone の email 認証していなくて kai7orz.com が使えないことに気づかず3,4時間格闘した... 
+
+cloudfront の ipをec2 から許可する（cloudfront からのリクエストに秘密のへえだーを追加:カスタムヘッダー認証）
+
+現在 ec2 はマイIP しか受け付けていないので cloudfrontからの通信は受け付けていないので，その通信を受け入れるように設定する
+
+cloud front -> EC2 の構成を想定していたが， IP レンジをSG に登録したり，EC2 自体はIP 上はパブリックとなっていて不便なので　，
+- IP レンジを SG に登録不要
+- プライベートサブネットにもスムーズに移行可能
+という要件を満たすように cloud front -> ALB -> EC2 の構成に変更することにした
+
+ロードバランサ―を作成 今回は ALB を利用する
+https://note.com/standenglish/n/n0bdd964c308f
+https://zenn.dev/catatsumuri/articles/974e8430273860
+ec2 ターゲットグループを作成　これは ALB で受信したリクエストをどこに転送するから設定する
+https://aws.amazon.com/jp/blogs/networking-and-content-delivery/limit-access-to-your-origins-using-the-aws-managed-prefix-list-for-amazon-cloudfront/?utm_source=chatgpt.com
+を参考にcloud front からの通信のみ受け取るよにする
+
+この SG を ALB につけて保存作成．
+＋　ターゲットグループを作成．
+
+ec2 から ALB のアクセス許可 ec2 のsg にaLB のセキュリティグループを指定する　これ忘れて少してこずった
+ALB のtarget 指定で ec2 インスタンスが登録されていない状態のtarget を指定していたので 503 エラーでハマっていた．target に登録したら問題なく動いた
+
+上記でターゲット問題解決後は origin の問題
+Blocked request. This host ("katazuke-balancer-1270398432.ap-northeast-1.elb.amazonaws.com") is not allowed.
+To allow this host, add "katazuke-balancer-1270398432.ap-northeast-1.elb.amazonaws.com" to `server.allowedHosts` in vite.config.js.
+
+build して出力される　.output/server/index.mjs を実行する
+
+nuxt  |
+nuxt  |
+nuxt  |  ERROR  Cannot find module 'vite-plugin-vuetify'
+nuxt  | Require stack:
+nuxt  | - /app/nuxt.config.ts
+
+nuxt.config.ts で import vite-plugin-vuetify がされているがそれが見つからないというエラー
+
+runner で postinstall 画はしてしまっているのが原因なので　package.json で postinstall を無効化
+
+ec2 の volumes を拡張し 8 GB -> 40 GB に変更した
+
+```
+lsblk -f 
+df -h
+
+sudo growpart /dev/nvme0n1 1
+sudo xfs_grows -d 
+df -h
+```
+で容量確保と確認
+
+```
+Attaching to go, nuxt
+go    | region: ap-northeast-1
+go    | cannot get project root path: not found go.mod
+go    | migration file path: file:/internal/dbase/migration
+go    | failed to open source, "file:/internal/dbase/migration": open .: no such file or directory
+nuxt  | node:internal/modules/cjs/loader:1386
+nuxt  |   throw err;
+nuxt  |   ^
+nuxt  |
+nuxt  | Error: Cannot find module '/app/.output/server/index.mjs'
+nuxt  |     at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
+nuxt  |     at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+nuxt  |     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+nuxt  |     at Function._load (node:internal/modules/cjs/loader:1192:37)
+nuxt  |     at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+nuxt  |     at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+nuxt  |     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+nuxt  |     at node:internal/main/run_main_module:36:49 {
+nuxt  |   code: 'MODULE_NOT_FOUND',
+nuxt  |   requireStack: []
+nuxt  | }
+nuxt  |
+nuxt  | Node.js v22.21.0
+go exited with code 0
+nuxt exited with code 0
+[ec2-user@ip-10-1-4-29 Gymlink]$
+```
+
+このエラーで詰まったのでコンテナ入って調査する
+
+まず exit してしまう点を解消する
+```
+command: ["sh","-lc","tail -f /dev/null"]
+```
+をdocker-copmose.yml のnuxt コンテナのサービスに追加する．
+ 
+ npm ci から
+https://zenn.dev/nrikiji/articles/f0a8f5c32a44e3
+を参考に
+ npm install にし
+
+ ALB -> EC2 アクセスで nuxt のページが見れることを確認した
+
+ 実際にデプロイが完了したが，本番環境では firebase のtoken 認証がうまくいかない...
+
+nuxt の  server/api を見たら，idToken = undefined となていたので, idToken に authStore がセットできていない？ いったんブラウザでの挙動を見る
+
+ブラウザだと TOKEN 表示されたので ブラウザ -> Nitro 間で token が消えている
+
+原因 AI に聞いたところ
+ ブラウザ -> CloudFront -> ALB -> EC2
+ の通信の流れの中でCloudFront が Authorization ヘッダをオリジンに転送していないパターンがある．
+ CloudFront でヘッダを制御する　https://repost.aws/ja/knowledge-center/configure-cloudfront-to-forward-headers
+
+ CloudFront に オリジンポリシーを追加　https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-key-create-cache-policy.html
+うまく機能した.
+
+
+
 ## 構成
 
 ### Go + MySQL 構築
@@ -121,7 +349,7 @@ DB を開発用と本番用で分ける
   MySQL の.env に　DEV 用の設定を追加
 
   コンテナも dev 開発用に建てる．（docker-compose.yml）
-```
+  ```
   dev_db:
     container_name: dev_db
     build:
@@ -145,7 +373,8 @@ DB を開発用と本番用で分ける
       - type: bind 
         source: ./mysql/init
         target: /docker-entrypoint-initdb.d
-```
+  ```
+
 
 2. Go（アプリ側）の DB 接続先を dev 用に変更[ .env に APP_ENV を用意し，その文字列から環境を指定 APP_ENV=development なら dev用DB, APP_ENV=product なら 本番用 DB に接続するロジックに]
 3. Go（アプリ側）migration ファイルの指定先の変更[2と同様]
@@ -767,6 +996,7 @@ chown でプログラムを実行したユーザーに権限を譲渡して対�
   - DNS サーバ構築-> Route53
 
 参考：Amazon Web Service 基礎からのネットワーク＆サーバ構築
+     https://zenn.dev/not75743/articles/c139dc1e99f790
 
 ### 細分化
 - VPC の構築
@@ -775,12 +1005,46 @@ chown でプログラムを実行したユーザーに権限を譲渡して対�
       - インターネットゲートウェイを作成
       - ルートテーブルを設定（インターネットと疎通できるように）
     - プライベートサブネットの作成
+    
 - ACM 証明書
 - S3
 - NAT GATEWAY 作成
 - EC2 の設定
   - Web 用
+  - private subnet においた ec2 アクセスの設定
+    - VPC Endopoint のセキュリティグループ設定・作成 https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/create-ec2-instance-connect-endpoints.html
+    - SSH で EC2 へ接続し(EC2 にパブリックIP 付けるの忘れずに!)
+      ```
+        ssh -i my-key.pem ec2-user@publicIp
+      ```
+      - EC2配置していたサブネットのサブネットルートテーブル内のルートをインターネットゲートウェイに追加するの忘れていてアクセスできなかったので注意
+        - インターネットゲートウェイを作成して，サブネットの持つルートテーブルに，送信先 0.0.0.0/0 に対して作成したインターネットゲートウェイを割り当てればよい
+      - 加えてSG の設定で通信をブロックしていたのでつながらなかった
+        - ```
+          curl https://checkip.amazonaws.com
+          ```
+          を実行してグローバルIP 確認して SG に設定する．
+    - ec2 への ping が通らない
+    - SGのアウトバンドルールでブロックされていた． port 443 の https を開放して対処
+    - docker-compose up までいけたが, yml の処理で http80 port 通して取得する処理があり，sg で 80 port ブロックしていたのでエラーがでた　SG 80 port 開放して対処
+
+
+
+    - NAT Gateway の構築
+      - NAT Gateway はすぐ作成でき，VPC メニューからルートテーブルを構成することが主な仕事
+        - プライベートサブネットのルートテーブルを NAT Gateway に変更する
+          - ルートタブでルートを編集ボタンをクリックし，ルート追加で0.0.0.0/0 に対して，NAT ゲートウェイのIDをクリック
+    - Web サーバがインターネットを通じてセットアップ可能になる．
+      - https://qiita.com/taedookim/items/57afb631ae353f1977ad, https://zenn.dev/rock_penguin/articles/28875c7b0a5e30 を参考に 
+      Docker, Docker Compose install
+    - VPC Endpoint で EC2 への接続
+    ```
+
+  - ec2 内で Gymlink/mysql/.env を作成
+  - ec2 内で Gymlink/backend/golang/src/.env   
+
 - RDS の設定
+  - RDS 用のサブネット(2az以上含む)を作成
   - セキュリティグループ設定
 - ALB 
 - Route53

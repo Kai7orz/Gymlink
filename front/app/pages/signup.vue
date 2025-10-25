@@ -64,11 +64,14 @@
                     location-strategy="connected"
                     class="d-flex justify-center items-center mx-auto my-auto" min-width="150"
                 >
-                    <v-progress-circular
-                        color="primary"
-                        size="64"
-                        indeterminate
-                    ></v-progress-circular>
+                    <div class="d-flex justify-center">
+                        <v-progress-circular
+                            class="mx-auto"
+                            color="primary"
+                            size="64"
+                            indeterminate
+                        ></v-progress-circular>
+                    </div>
                 </v-overlay>
         </v-btn>
         <v-btn class="bg-black text-blue m-5" @click="toLogin"> ログイン </v-btn>

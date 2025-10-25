@@ -102,6 +102,26 @@ paths:
                 type: array
                 items: 
                   $ref: '#/components/schemas/Exercise'
+  /users/{user_id}/records/{record_id}:
+    delete:
+      summary: Delete record for a user
+      description: 指定した user_id と record_id の運動投稿記録を削除するための API
+      responses:
+        '200':
+          description: Successfully deleted record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "deleted"
+    
+  
   /upload:
     post:
       summary: multipart/form-data 形式で 一旦全部 image 以外はstring で送信

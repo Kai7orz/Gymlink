@@ -11,7 +11,6 @@
     const props = defineProps<{
         isOwner: boolean,
     }>();
-
     const tempUserId = ref("")
     const tempUserName = ref("")
     const TOKEN = auth.idToken
@@ -26,7 +25,6 @@
         tempUserName.value = tempUserNameRaw
         user.setUser(Number(tempUserId.value),tempUserName.value)
         }
-
         const url =   props.isOwner? '/api/users/' + String(user.userId) + '/records' : '/api/records'
         const data = await $fetch(url,{
                 method: 'GET',
@@ -34,9 +32,15 @@
                     'Authorization': 'Bearer ' + TOKEN,
                     'Content-Type': 'application/json'
                 }
+            
         })
  
         recordList.value = data
+
+        recordList.value.map((record : RecordType, index:number) => {
+            record.clean_up_date = String(new Date(record.clean_up_date).getMonth() + 1 + '月' + new Date(record.clean_up_date).getDate() + '日')
+        })
+
     })
     const toAccount = (uid:number) => {
          navigateTo({name: 'Account-id', params: {id:uid}})
@@ -64,8 +68,19 @@
     }
         navigateTo({name: 'Detail-id', params: {id: id }})
     }
+
+    const toDelete = async (id:number) => {
+        const date = await $fetch('/api/users/' + String(user.userId) + '/records/' + String(id),{
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + TOKEN,
+                    'Content-Type': 'application/json'
+                }
+        })
+        location.reload()   
+    }
 </script>
 
 <template>
-    <ui-card-list :recordList="recordList" @detail="toDetail"  @account="toAccount"/>
+    <ui-card-list :recordList="recordList" :isOwner="props.isOwner" @detail="toDetail"  @delete="toDelete" @account="toAccount"/>
 </template>

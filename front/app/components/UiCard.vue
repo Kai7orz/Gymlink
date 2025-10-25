@@ -2,6 +2,7 @@
 import { mergeProps } from 'vue';
 
 const props = defineProps<{
+        isOwner: boolean,   
             id: number,
             userId: number,
             userName: string,
@@ -16,10 +17,16 @@ const emits = defineEmits<{
     detail: [id:number],
     like: [id:number], //record のいいねボタン押した際にいいねした人一覧見えるようにするために，クリック時にロジック側に record の id を渡すようにする
     account: [id:number],
+    delete: [id:number],
 }>();
 
 const clicked = (id:number) => {
     emits('detail',id);
+}
+
+const onDelete = async (id:number) => 
+{
+    emits('delete',id)
 }
 
 const onAccount = async (uid: number) => {
@@ -32,6 +39,7 @@ const onAccount = async (uid: number) => {
     <div class="w-100 h-100">
     <v-hover v-slot="{ isHovering, props: hoverProps }">
         <v-card class="d-flex flex-column h-100 max-w-sm mx-auto gap-2 pb-15  my-auto bg-grey-darken-4 rounded-xl card" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
+            <div>{{props.date }} : {{ props.userName }}</div>
             <img :src="props.image" alt="image not found" class="w-60 h-50 rounded-xl" />
             <v-card-subtitle class="pb-0">片付け時間: {{ props.time }}分</v-card-subtitle>
             <div class="d-flex mt-10 gap-5">
@@ -40,7 +48,10 @@ const onAccount = async (uid: number) => {
                     <v-icon class="mx-3" icon="mdi-thumb-up"></v-icon>
                     <div>{{ props.likesCount }}</div>
                 </div>
-            </div>        
+            </div>
+            <v-btn v-if="props.isOwner" class="d-flex mx-auto m-5" color="red" @click.stop="()=>onDelete(props.id)">
+                    delete
+            </v-btn>    
         </v-card>
     </v-hover>
     </div>
