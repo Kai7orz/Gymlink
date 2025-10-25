@@ -102,7 +102,7 @@ paths:
                 type: array
                 items: 
                   $ref: '#/components/schemas/Exercise'
-  /users/{user_id}/record/{record_id}:
+  /users/{user_id}/records/{record_id}:
     delete:
       summary: Delete record for a user
       description: 指定した user_id と record_id の運動投稿記録を削除するための API

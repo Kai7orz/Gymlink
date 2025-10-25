@@ -109,6 +109,7 @@ func main() {
 	r.GET("/user_profiles/:user_id", userHandler.GetProfilebyId)
 	r.GET("/users/:user_id/records", recordHandler.GetRecordsById)
 	r.GET("/records", recordHandler.GetRecords)
+	r.DELETE("/users/:user_id/records/:record_id", recordHandler.DeleteRecord)
 	// r.POST("/records", recordHandler.GenerateIllustration)
 	r.POST("/likes", recordHandler.CreateLike)
 	r.GET("/likes/:record_id", recordHandler.CheckLike)

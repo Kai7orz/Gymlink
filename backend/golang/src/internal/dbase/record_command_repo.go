@@ -17,18 +17,24 @@ type recordLikeTypeDTO struct {
 	RecordId int64  `db:"record_id"`
 }
 
+type recordRawCreateTypeDTO struct {
+	UId         string    `db:"firebase_uid"`
+	ObjectKey   string    `db:"object_key"`
+	CleanUpTime int64     `db:"clean_up_time"`
+	CleanUpDate time.Time `db:"clean_up_date"`
+	Comment     string    `db:"comment"`
+}
+
+type recordDeleteTypeDTO struct {
+	UId      string `db:"firebase_uid"`
+	RecordId int64  `db:"record_id"`
+}
+
 func NewRecordCommandRepo(db *sqlx.DB) *recordCommandRepo {
 	return &recordCommandRepo{db: db}
 }
 
 func (r *recordCommandRepo) CreateRecordById(ctx context.Context, objectKey string, cleanUpTime int64, cleanUpDate time.Time, comment string, uid string) error {
-	type recordRawCreateTypeDTO struct {
-		UId         string    `db:"firebase_uid"`
-		ObjectKey   string    `db:"object_key"`
-		CleanUpTime int64     `db:"clean_up_time"`
-		CleanUpDate time.Time `db:"clean_up_date"`
-		Comment     string    `db:"comment"`
-	}
 	recordCreate := recordRawCreateTypeDTO{
 		UId:         uid,
 		ObjectKey:   objectKey,
@@ -44,6 +50,20 @@ func (r *recordCommandRepo) CreateRecordById(ctx context.Context, objectKey stri
 	if err != nil {
 		log.Println("INSERT record error: ", err)
 		return err
+	}
+	return nil
+}
+
+func (r *recordCommandRepo) DeleteRecordById(ctx context.Context, userId int64, recordId int64, uid string) error {
+	// firebase の uid 見てユーザー選択するので userId は削除する
+	recordDelete := recordDeleteTypeDTO{
+		UId:      uid,
+		RecordId: recordId,
+	}
+	sql := `DELETE FROM records WHERE records.id = :record_id AND user_id = (SELECT id FROM users WHERE users.firebase_uid = :firebase_uid)`
+	_, err := r.db.NamedExec(sql, recordDelete)
+	if err != nil {
+		log.Println("DELETE record error: ", err)
 	}
 	return nil
 }

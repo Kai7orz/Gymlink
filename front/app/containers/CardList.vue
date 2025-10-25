@@ -32,6 +32,7 @@
                     'Authorization': 'Bearer ' + TOKEN,
                     'Content-Type': 'application/json'
                 }
+            
         })
  
         recordList.value = data
@@ -76,6 +77,7 @@
                     'Content-Type': 'application/json'
                 }
         })
+        location.reload()   
     }
 </script>
 

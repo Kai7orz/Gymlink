@@ -34,6 +34,7 @@ type RecordQueryRepo interface {
 
 type RecordCommandRepo interface {
 	CreateRecordById(ctx context.Context, objectKey string, time int64, date time.Time, comment string, uid string) error
+	DeleteRecordById(ctx context.Context, userId int64, recordId int64, uid string) error
 	CreateLike(ctx context.Context, recordId int64, uid string) error
 	CheckLike(ctx context.Context, recordId int64, uid string) (bool, error)
 	DeleteLike(ctx context.Context, recordId int64, uid string) error
@@ -71,6 +72,7 @@ type RecordService interface {
 	GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error)
 	GetRecords(ctx context.Context) ([]entity.RecordType, error)
 	CreateRecord(ctx context.Context, objectKey string, cleanUpTime string, cleanUpdate string, comment string, idToken string) error
+	DeleteRecordById(ctx context.Context, userId int64, recordId int64, idToken string) error
 	CreateLike(ctx context.Context, recordId int64, idToken string) error
 	CheckLikeById(ctx context.Context, recordId int64, idToken string) (bool, error)
 	DeleteLikeById(ctx context.Context, recordId int64, idToken string) error
