@@ -5,7 +5,7 @@
 </script>
 
 <template>
-    <v-container class="d-flex">
+    <v-container class="p-100 min-h-screen">
         <add-card />
         <card-list :isOwner="isOwner" />
     </v-container>
