@@ -58,7 +58,7 @@
         <v-text-field v-model="name" class="w-1/2 mx-auto m-5 " label="ユーザーネーム" />
         <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
         <v-text-field v-model="password" class="w-1/2 mx-auto m-5" label="パスワード" type="password" />
-        <v-btn class="d-flex justify-center m-5" @click="signUpUser" color="primary">
+        <v-btn class="d-flex justify-center mx-auto m-5" @click="signUpUser" color="primary">
             サインアップ
                 <v-overlay v-model="isLoading"
                     location-strategy="connected"
@@ -74,6 +74,6 @@
                     </div>
                 </v-overlay>
         </v-btn>
-        <v-btn class="bg-black text-blue m-5" @click="toLogin"> ログイン </v-btn>
+        <v-btn class="d-flex justify-center items-center mx-auto md:w-1/2 bg-black text-blue m-5"  @click="toSignUp"> ログイン </v-btn>
     </v-card>
 </template>
