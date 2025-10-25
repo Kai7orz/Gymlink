@@ -9,8 +9,8 @@
 </script>
 
 <template>
-      <v-app-bar scroll-behavior="hide" color="black" class="mb-4 ">
-        <v-app-bar-title>
+      <v-app-bar scroll-behavior="hide" color="black" class="flex mb-4 ">
+        <v-app-bar-title class="hidden md:inline-block">
           KMonitor
         </v-app-bar-title>
         <v-icon class="mx-5" icon="mdi-book-open-page-variant" @click="emits('share')"></v-icon>

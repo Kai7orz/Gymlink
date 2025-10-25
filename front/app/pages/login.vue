@@ -62,7 +62,7 @@
 <template>
     <div>
     <ClientOnly>
-        <v-card  class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg rounded-lg bg-grey-darken-3">
+        <v-card  class="d-flex flex-column justify-center mx-auto w-3/5 mt-20 border-lg rounded-lg bg-grey-darken-3">
             <v-snackbar class="mb-20" v-model="isError"
                     multi-line>
                     Sign in error
@@ -76,8 +76,8 @@
                 </template>        
             </v-snackbar>
             <v-card-title class="d-flex justify-center">サインイン</v-card-title>
-            <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
-            <v-text-field v-model="password" class="w-1/2 mx-auto m-5" label="パスワード" type="password" />
+            <v-text-field v-model="email" class="md:w-1/2 w-2/3 mx-auto m-5" label="メールアドレス" />
+            <v-text-field v-model="password" class="md:w-1/2 w-2/3 mx-auto m-5" label="パスワード" type="password" />
             <v-btn class="d-flex justify-center mx-auto m-5" @click="signInUser" color="primary">
                 サインイン
                 <v-overlay v-model="isLoading"
@@ -94,7 +94,7 @@
                     </div>
                 </v-overlay>
             </v-btn>
-            <v-btn class="bg-black text-blue m-5"  @click="toSignUp">未登録の方 サインアップ </v-btn>
+            <v-btn class="d-flex justify-center items-center mx-auto md:w-1/2 bg-black text-blue m-5"  @click="toSignUp">未登録の方 サインアップ </v-btn>
         </v-card>
     </ClientOnly>
     </div>
