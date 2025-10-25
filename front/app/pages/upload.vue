@@ -3,12 +3,10 @@
 import { illustrations } from '~/data/illustrations';
     
 
-
+const color = ref("grey-darken-3")
+const isEmpty = ref(false)
 const url = "/api/records/record"
-
-
 const selectedFile = ref<File | null>(null)
-
 const responsedUrl = ref<string>("")
 const previewUrl = ref<string>("")
 
@@ -42,7 +40,10 @@ const postData = reactive({
  
   const getIllustration = async (event: Event) => {
   event.preventDefault()
-  if (!selectedFile.value) return
+  if (time.value=="" || cleanDate.value=="" || comment.value=="" || selectedFile.value==""){
+    isEmpty.value = true
+    return 
+  }
 
   const formData = new FormData()
   formData.append('file', selectedFile.value, selectedFile.value.name)
@@ -51,9 +52,6 @@ const postData = reactive({
   formData.append('clean_up_date',formatDate(cleanDate.value))
   formData.append('comment',comment.value)
   isLoading.value = true
-
-
-
 
   try {
     await useFetch("/api/upload", {
@@ -96,7 +94,19 @@ onMounted(()=>{
 </script>
 
 <template>
-  <v-container>
+  <v-container class="d-flex flex-column items-center">
+      <v-snackbar class="mb-20" v-model="isEmpty"
+                multi-line>
+                form is empty
+        <template v-slot:actions>
+            <v-btn
+                  color="red"
+                  variant="text"
+                  @click="isEmpty = false">
+                Close    
+            </v-btn>
+        </template>        
+    </v-snackbar>
     <v-container class="flex flex-row justify-center items-center m-10 p-2">
       <ui-add-card 
                 v-model:cleanTime="time"
@@ -125,14 +135,21 @@ onMounted(()=>{
         <ui-image-card :image_url="previewUrl"><template #title/></ui-image-card>
       </div>
     </v-container>
-    <v-sheet class="flex m-10 bg-black text-center rounded-lg">
-      <v-container class="bg-black">
-        <v-card class="m-2 bg-grey">{{ cleanDate ? cleanDate :"日付：未入力"}}</v-card>
-        <v-card class="m-2 bg-grey">{{time ? time : "片付け時間：未入力"}}</v-card>
-        <v-card class="m-2 bg-grey">{{comment ? comment : "コメント：未入力"}}</v-card>
+    <v-sheet class="flex w-2/3 m-10 p-1 bg-black text-center rounded-lg">
+      <v-container class="d-flex flex-column justify-center items-center bg-black gap-4">
+        <div class="w-full d-flex justify-center ">
+          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ cleanDate ? "✅" + cleanDate :"日付：未入力"}}</v-card>
+        </div>
+        <div class="d-flex w-full m-4 gap-4">
+          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{time ? "✅" + time : "片付け時間：未入力"}}</v-card>
+          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{comment ? "✅"+comment : "コメント：未入力"}}</v-card>
+        </div>
+        <div class="w-full d-flex justify-center ">
+          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ selectedFile ? "✅ 画像選択済" :"画像：未入力"}}</v-card>
+        </div>
       </v-container>
       <v-btn class="m-5" variant="outlined" @click="getIllustration">
-        レコード記録
+        レコード保存
       </v-btn>
         <v-overlay v-model="isLoading"
                 location-strategy="connected"
