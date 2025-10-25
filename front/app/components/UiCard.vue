@@ -49,7 +49,7 @@ const onAccount = async (uid: number) => {
                     <div>{{ props.likesCount }}</div>
                 </div>
             </div>
-            <v-btn v-if="props.isOwner" class="d-flex mx-auto m-5" color="red" @click="()=>onDelete(props.id)">
+            <v-btn v-if="props.isOwner" class="d-flex mx-auto m-5" color="red" @click.stop="()=>onDelete(props.id)">
                     delete
             </v-btn>    
         </v-card>
