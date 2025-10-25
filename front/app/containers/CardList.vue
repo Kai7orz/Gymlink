@@ -13,6 +13,7 @@
     }>();
     const tempUserId = ref("")
     const tempUserName = ref("")
+    const numMap = new Map<number,number>()
     const TOKEN = auth.idToken
     let recordList = ref([])
     // login 時にセットした id,name を localstorage から取得してくる処理
@@ -36,13 +37,16 @@
         })
  
         recordList.value = data
+        // recordList.value の index と　対応する　data.id のマッピングを登録 {data.id : index}
+        recordList.value.forEach((value:any,index:number)=>{
+            numMap.set(value.id,index) 
+        })
 
         recordList.value.map((record : RecordType, index:number) => {
             record.clean_up_date = String(new Date(record.clean_up_date).getMonth() + 1 + '月' + new Date(record.clean_up_date).getDate() + '日')
         })
 
     })
-    
     const toAccount = (uid:number) => {
          navigateTo({name: 'Account-id', params: {id:uid}})
     }
@@ -50,7 +54,7 @@
     const detailStore = useDetailStore();
 
     const toDetail = (id:number) => {
-        // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
+    // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
     if(props.isOwner){
         const tempRecord = recordList.value.find((record : RecordType)=>{
         return record.id == id
@@ -63,11 +67,11 @@
         }
     }
     else{
-        const  detailRecord = recordList.value[ recordList.value.length - id];
+        const detailRecord = recordList.value[numMap.get(id)];
         if(!detailRecord) return;
         detailStore.setDetail(detailRecord.id,detailRecord.user_id,detailRecord.user_name,detailRecord.presigned_image,detailRecord.clean_up_time,detailRecord.clean_up_date,detailRecord.comment,detailRecord.likes_count)
     }
-        navigateTo({name: 'Detail-id', params: {id: id }})
+        navigateTo({name: 'Detail-id', params: {id: Number(id)}})
     }
 
     const toDelete = async (id:number) => {

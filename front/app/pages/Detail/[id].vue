@@ -5,6 +5,6 @@
 
 <template>
         <div>
-          <card-detail :id="route.params.id"/>
+          <card-detail :id="Number(route.params.id)"/>
         </div>
 </template>
