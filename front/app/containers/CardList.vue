@@ -35,6 +35,11 @@
         })
  
         recordList.value = data
+
+        recordList.value.map((record : RecordType, index:number) => {
+            record.clean_up_date = String(new Date(record.clean_up_date).getMonth() + 1 + '月' + new Date(record.clean_up_date).getDate() + '日')
+        })
+
     })
     const toAccount = (uid:number) => {
          navigateTo({name: 'Account-id', params: {id:uid}})

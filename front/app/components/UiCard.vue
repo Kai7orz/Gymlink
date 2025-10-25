@@ -39,6 +39,7 @@ const onAccount = async (uid: number) => {
     <div class="w-100 h-100">
     <v-hover v-slot="{ isHovering, props: hoverProps }">
         <v-card class="d-flex flex-column h-100 max-w-sm mx-auto gap-2 pb-15  my-auto bg-grey-darken-4 rounded-xl card" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
+            <div>{{props.date }} : {{ props.userName }}</div>
             <img :src="props.image" alt="image not found" class="w-60 h-50 rounded-xl" />
             <v-card-subtitle class="pb-0">片付け時間: {{ props.time }}分</v-card-subtitle>
             <div class="d-flex mt-10 gap-5">
@@ -48,7 +49,7 @@ const onAccount = async (uid: number) => {
                     <div>{{ props.likesCount }}</div>
                 </div>
             </div>
-            <v-btn v-if="!props.isOwner" class="d-flex mx-auto m-5" color="red" @click="()=>onDelete(props.id)">
+            <v-btn v-if="props.isOwner" class="d-flex mx-auto m-5" color="red" @click="()=>onDelete(props.id)">
                     delete
             </v-btn>    
         </v-card>
