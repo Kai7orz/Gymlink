@@ -3,32 +3,32 @@
 import { illustrations } from '~/data/illustrations';
     
 
-const color = ref("grey-darken-3")
-const isEmpty = ref(false)
-const url = "/api/records/record"
-const selectedFile = ref<File | null>(null)
-const responsedUrl = ref<string>("")
-const previewUrl = ref<string>("")
+  const color = ref("grey-darken-3")
+  const isEmpty = ref(false)
+  const url = "/api/records/record"
+  const selectedFile = ref<File | null>(null)
+  const responsedUrl = ref<string>("")
+  const previewUrl = ref<string>("")
 
-const postData = reactive({
-  userId: "",
-  categoryId: "",
-  recordName: "",
-  imageUrl: "",
-  imageDescription: "",
-})
+  const postData = reactive({
+    userId: "",
+    categoryId: "",
+    recordName: "",
+    imageUrl: "",
+    imageDescription: "",
+  })
 
-    const isLoading = ref(false);
-    const isShownMenu = ref(false);
-    const time = ref("")
-    const cleanDate = ref("")
-    const comment = ref("")
-    const imageUrl = ref('')
-    const user = useUserStore()
-    const auth = useAuthStore()
-    const TOKEN = auth.idToken
-    // イラスト一覧を読み込んで propsとして渡して表示する
-    const illustrationsObjs = illustrations
+  const isLoading = ref(false);
+  const isShownMenu = ref(false);
+  const time = ref("")
+  const cleanDate = ref(new Date())
+  const comment = ref("")
+  const imageUrl = ref('')
+  const user = useUserStore()
+  const auth = useAuthStore()
+  const TOKEN = auth.idToken
+  // イラスト一覧を読み込んで propsとして渡して表示する
+  const illustrationsObjs = illustrations
 
   const formatDate = (d: Date | string) => {
     const date = new Date(d)
@@ -37,7 +37,7 @@ const postData = reactive({
     const dd = String(date.getDate()).padStart(2, '0')
     return `${yyyy}${mm}${dd}`
   }
- 
+
   const getIllustration = async (event: Event) => {
   event.preventDefault()
   if (time.value=="" || cleanDate.value=="" || comment.value=="" || selectedFile.value==""){
@@ -138,7 +138,7 @@ onMounted(()=>{
     <v-sheet class="flex w-2/3 m-10 p-1 bg-black text-center rounded-lg">
       <v-container class="d-flex flex-column justify-center items-center bg-black gap-4">
         <div class="w-full d-flex justify-center ">
-          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ cleanDate ? "✅" + cleanDate :"日付：未入力"}}</v-card>
+          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ cleanDate ? "✅ " + String((cleanDate.getMonth() + 1) + '月'+cleanDate.getDate() + '日') :"日付：未入力"}}</v-card>
         </div>
         <div class="d-flex w-full m-4 gap-4">
           <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{time ? "✅" + time : "片付け時間：未入力"}}</v-card>
