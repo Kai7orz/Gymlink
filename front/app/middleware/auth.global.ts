@@ -22,7 +22,6 @@ export default defineNuxtRouteMiddleware(async (to,from) => {
     }
 
     if(!auth.isAuthenticated){
-        console.log("middleware is blocking")
         return navigateTo('/login',{replace:true})
     }  
 })
