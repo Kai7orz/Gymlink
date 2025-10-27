@@ -77,11 +77,10 @@ import { illustrations } from '~/data/illustrations';
   const select = (imageId:string) => {
       imageUrl.value = illustrationsObjs[imageId]?.src
   }
-
+  
   watch(selectedFile,()=>{
-    if(selectedFile.value.type != 'image/png'){
+    if(selectedFile.value == undefined || selectedFile.value.type != 'image/png'){
       isError.value = true
-      console.log("error: file format is invalid: ",selectedFile.value.type)
     }
   })
 
