@@ -32,7 +32,7 @@ const toBack = () => {
 };
 
 onUnmounted(() => {
-  if (props.id == user.userId || props.state == props.isFollow) {
+  if (props.id == user.userId || state.value == props.isFollow) {
     return;
   }
   else if (state.value) {

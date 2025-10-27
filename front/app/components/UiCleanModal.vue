@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import type { Illustration } from "~/type";
-
-const props = defineProps<{
-  illustObjs: Record<string, Illustration>;
-  imageUrl: string;
-}>();
 
 const emits = defineEmits<{
   record: [];

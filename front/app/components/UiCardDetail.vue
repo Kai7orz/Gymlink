@@ -20,7 +20,7 @@ const toBack = () => {
   else navigateTo({ name: "share" });
 };
 
-const GoodOrDelete = (id: number) => {
+const GoodOrDelete = () => {
   state.value = !state.value;
 };
 
@@ -96,7 +96,7 @@ onUnmounted(() => {
         <v-divider class="opacity-30" />
 
         <v-card-actions class="justify-end gap-2 py-4">
-          <!--  click 複数回押しても対応できるように，clicke のたびに liked の false ,true 切り替わる処理を入れる　何回もAPI 叩かないようにする -->
+          <!--  click 複数回押しても対応できるように，clicke のたびに liked の false ,true 切り替わる処理を入れる何回もAPI 叩かないようにする -->
           <v-btn v-if="state" variant="elevated" color="amber-accent-3" class="text-black font-medium" @click ="() => GoodOrDelete(props.id)">
             <v-icon size="20" class="m-2" icon="mdi-heart" color="red"/>
             いいね
