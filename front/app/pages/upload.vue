@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { illustrations } from '~/data/illustrations';
+  import { illustrations } from '~/data/illustrations';
 
   const color = ref("grey-darken-3")
   const isError = ref(false)
