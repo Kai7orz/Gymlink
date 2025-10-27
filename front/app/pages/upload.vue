@@ -1,23 +1,13 @@
 <script setup lang="ts">
 
-import { illustrations } from '~/data/illustrations';
-    
+  import { illustrations } from '~/data/illustrations';
 
   const color = ref("grey-darken-3")
-  const isEmpty = ref(false)
+  const isError = ref(false)
   const url = "/api/records/record"
   const selectedFile = ref<File | null>(null)
   const responsedUrl = ref<string>("")
   const previewUrl = ref<string>("")
-
-  const postData = reactive({
-    userId: "",
-    categoryId: "",
-    recordName: "",
-    imageUrl: "",
-    imageDescription: "",
-  })
-
   const isLoading = ref(false);
   const isShownMenu = ref(false);
   const time = ref("")
@@ -40,8 +30,8 @@ import { illustrations } from '~/data/illustrations';
 
   const getIllustration = async (event: Event) => {
   event.preventDefault()
-  if (time.value=="" || cleanDate.value=="" || comment.value=="" || selectedFile.value==""){
-    isEmpty.value = true
+  if ( isError.value || time.value=="" || cleanDate.value=="" || comment.value=="" || selectedFile.value==""){
+    isError.value = true
     return 
   }
 
@@ -89,8 +79,9 @@ import { illustrations } from '~/data/illustrations';
   }
 
   watch(selectedFile,()=>{
-    if(selectedFile.type != 'image/png'){
-      console.log("error: file format is invalid")
+    if(selectedFile.value.type != 'image/png'){
+      isError.value = true
+      console.log("error: file format is invalid: ",selectedFile.value.type)
     }
   })
 
@@ -101,14 +92,14 @@ import { illustrations } from '~/data/illustrations';
 
 <template>
   <v-container class="d-flex flex-column items-center">
-      <v-snackbar class="mb-20" v-model="isEmpty"
+      <v-snackbar class="mb-20" v-model="isError"
                 multi-line>
-                form is empty
+                Invalid Form : form is empty or file isn't png
         <template v-slot:actions>
             <v-btn
                   color="red"
                   variant="text"
-                  @click="isEmpty = false">
+                  @click="isError = false">
                 Close    
             </v-btn>
         </template>        
@@ -130,7 +121,7 @@ import { illustrations } from '~/data/illustrations';
           v-model="selectedFile"
           class="w-100 mx-auto p-3"
           accept="image/png"
-          label="Select Image to Illustrate"
+          label="Select PNG Image"
           @change="getPreview"
           :show-size="true"
         />
