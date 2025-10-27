@@ -18,7 +18,7 @@ const TOKEN = auth.idToken;
 const recordList = ref([]);
 // login 時にセットした id,name を localstorage から取得してくる処理
 onMounted(async () => {
-  await new Promise(r => setTimeout(r, 80)); // 遅延がないといいね　反転後の1回目の一覧表示でいいねが反映されない（like のPOST,DELETE　よりも先に　カードリスト取得処理が走ってしまっているのでその応急処置）
+  await new Promise(r => setTimeout(r, 80)); // 遅延がないといいね反転後の1回目の一覧表示でいいねが反映されない（like のPOST,DELETEよりも先にカードリスト取得処理が走ってしまっているのでその応急処置）
   const tempUserIdRaw = localStorage.getItem("userId");
   const tempUserNameRaw = localStorage.getItem("userName");
   if (tempUserIdRaw != null && tempUserNameRaw != null) {
@@ -37,12 +37,12 @@ onMounted(async () => {
   });
 
   recordList.value = data;
-  // recordList.value の index と　対応する　data.id のマッピングを登録 {data.id : index}
+  // recordList.value の index と対応するdata.id のマッピングを登録 {data.id : index}
   recordList.value.forEach((value: any, index: number) => {
     numMap.set(value.id, index);
   });
 
-  recordList.value.map((record: RecordType, index: number) => {
+  recordList.value.map((record: RecordType, _: number) => {
     record.clean_up_date = String(new Date(record.clean_up_date).getMonth() + 1 + "月" + new Date(record.clean_up_date).getDate() + "日");
   });
 });
@@ -53,7 +53,7 @@ const toAccount = (uid: number) => {
 const detailStore = useDetailStore();
 
 const toDetail = (id: number) => {
-  // Store に運動記録の情報をセットしてから遷移して，詳細画面で Store　から取り出す
+  // Store に運動記録の情報をセットしてから遷移して，詳細画面で Storeから取り出す
   if (props.isOwner) {
     const tempRecord = recordList.value.find((record: RecordType) => {
       return record.id == id;
