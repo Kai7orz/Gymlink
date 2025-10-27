@@ -91,7 +91,7 @@ onUnmounted(()=>{
  .name-size {
     font-size: 100px;
     @media (max-width:700px) {
-        font-size: 50px;
+        font-size: 40px;
     }
  }
 </style>
