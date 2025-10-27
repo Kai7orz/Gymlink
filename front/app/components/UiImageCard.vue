@@ -5,7 +5,7 @@
 </script>
 
 <template>
-    <v-sheet class="p-5 bg-black"  rounded="rounded">
-        <img :src=props.image_url >
+    <v-sheet class="p-5 w-100 bg-black" rounded="rounded">
+        <img  :src=props.image_url >
     </v-sheet>
 </template>
