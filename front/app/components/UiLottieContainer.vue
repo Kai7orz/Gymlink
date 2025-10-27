@@ -21,7 +21,7 @@ onMounted(async () => {
   // loadAnimation の仕様は lottie-web に乗っているのでそれを参照する
   // container はアニメーションを引っ掛けるための DOM 要素で， ref を使ってあらかじめ用意した変数 lavContainer にその要素情報を入れておく． onMounted の中では DOM 要素が確実に存在するので template に記述したdiv の情報がlavContainerに代入されて，
   // それをcontainer に指定することで， その要素に対して animation を描画してくれる流れ
-  const anim = lottie.loadAnimation({
+  lottie.loadAnimation({
     container: lavContainer.value,
     renderer: "svg",
     loop: props.loop,

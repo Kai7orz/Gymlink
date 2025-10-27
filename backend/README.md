@@ -1,3 +1,22 @@
+## DB 制約
+ON DELETE CASCADE 制約をつけれていなかったので，マイグレーションで対応する
+https://qiita.com/nebukuro/items/a6dc7fdaed0b5791b253　を参考に進めた
+
+① RDS へアクセス : 接続されているEC2からセキュリティグループを経由して接続する
+https://qiita.com/tamorieeeen/items/b4a5342f556eed31036c 
+ - EC2 に mysql client を install する
+ ```
+ sudo dnf localinstall -y https://dev.mysql.com/get/mysql80-community-release-el9-5.noarch.rpm
+ sudo dnf install -y mysql-community-client # install
+ mysql -h rdsのエンドポイント -u rdsのusername -p # 接続確認
+```
+② 制約を追加したい外部キーの名前を取得
+```
+use xxxdatabase
+show create table user_likes;
+```
+この後はqiita の記事と全く同じ（実際に制約を確認したら制約ついていた... のでこれ以降の作業する必要がなくなった）
+
 ## デプロイ手順
 AWS でデプロイを行う．
 無料枠のインスタンスではスペックが不足するため，m5.large を利用する．
