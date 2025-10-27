@@ -75,22 +75,28 @@ import { illustrations } from '~/data/illustrations';
     if (!selectedFile.value) return
     previewUrl.value = URL.createObjectURL(selectedFile.value)
   }
-    const items = ref([])
-    const closeMenu = ()=>{
-        isShownMenu.value = false;
-    }
+  const items = ref([])
+  const closeMenu = ()=>{
+      isShownMenu.value = false;
+  }
 
-    const openMenu = ()=>{
-      isShownMenu.value = true
-    }
+  const openMenu = ()=>{
+    isShownMenu.value = true
+  }
 
-    const select = (imageId:string) => {
-        imageUrl.value = illustrationsObjs[imageId]?.src
-    }
+  const select = (imageId:string) => {
+      imageUrl.value = illustrationsObjs[imageId]?.src
+  }
 
-onMounted(()=>{
-  responsedUrl.value = "https://katazuke.s3.ap-northeast-1.amazonaws.com/katazuke.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA2CUNLZ5LROQUFMZJ%2F20251017%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251017T042100Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=404a1ff2fa9ef4e8ce1415a2949125f7ec36c9920980cd35d294165bbd2db4b6"
-})
+  watch(selectedFile,()=>{
+    if(selectedFile.type != 'image/png'){
+      console.log("error: file format is invalid")
+    }
+  })
+
+  onMounted(()=>{
+    responsedUrl.value = "https://katazuke.s3.ap-northeast-1.amazonaws.com/katazuke.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA2CUNLZ5LROQUFMZJ%2F20251017%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251017T042100Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=404a1ff2fa9ef4e8ce1415a2949125f7ec36c9920980cd35d294165bbd2db4b6"
+  })
 </script>
 
 <template>
