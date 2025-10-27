@@ -34,9 +34,8 @@ const onAccount = async (uid: number) => {
 </script>
 
 <template>
-    <div class="w-100 h-100">
     <v-hover v-slot="{ isHovering, props: hoverProps }">
-        <v-card class="d-flex flex-column h-100 max-w-sm mx-auto gap-2 pb-15  my-auto bg-grey-darken-4 rounded-xl card" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
+        <v-card class="d-flex flex-column max-w-sm mx-auto gap-2 pb-15  my-auto bg-grey-darken-4 rounded-xl card" :class=" isHovering? 'on-hover':'non-hover'" v-bind="hoverProps" @click="() => clicked(props.id)">
             <div>{{props.date }} : {{ props.userName }}</div>
             <img :src="props.image" alt="image not found" class="w-60 h-50 rounded-xl" >
             <v-card-subtitle class="pb-0">片付け時間: {{ props.time }}分</v-card-subtitle>
@@ -52,13 +51,13 @@ const onAccount = async (uid: number) => {
             </v-btn>
         </v-card>
     </v-hover>
-    </div>
 </template>
 
 <style scoped>
 
 .card {
 
+  height:600px;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 
