@@ -6,7 +6,6 @@ export const useUserStore = defineStore('user',
         const userName = ref("")
 
         const setUser = (id:number,name:string)=>{
-            console.log("store: id,",id," name",name)
             userId.value = id
             userName.value = name
         }
