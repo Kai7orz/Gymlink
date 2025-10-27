@@ -107,7 +107,7 @@ onMounted(()=>{
             </v-btn>
         </template>        
     </v-snackbar>
-    <v-container class="flex flex-row justify-center items-center m-10 p-2">
+    <v-container class="add-item">
       <ui-add-card 
                 v-model:cleanTime="time"
                 v-model:date="cleanDate"
@@ -119,33 +119,33 @@ onMounted(()=>{
                 @add="addCard" 
                 @close="closeMenu"
                 @select="select" />
-      <form class="w-1/3">
+      <form class="upload-form">
         <v-file-input
           v-model="selectedFile"
-          class="w-100 m-5 p-3"
+          class="w-100 mx-auto p-3"
+          accept="image/png"
           label="Select Image to Illustrate"
           @change="getPreview"
           :show-size="true"
-          accept="image/*"
         />
       </form>
     </v-container>
     <v-container class="flex flex-row justify-center">
-      <div v-if='previewUrl!=""' class="w-1/3 flex flex-col md:flex-row md:justify-center m-10">
+      <div v-if='previewUrl!=""' class="w-2/3 flex flex-col md:flex-row md:justify-center m-5">
         <ui-image-card :image_url="previewUrl"><template #title/></ui-image-card>
       </div>
     </v-container>
-    <v-sheet class="flex w-2/3 m-10 p-1 bg-black text-center rounded-lg">
+    <v-sheet class="flex w-2/3 p-1 bg-black text-center rounded-lg">
       <v-container class="d-flex flex-column justify-center items-center bg-black gap-4">
         <div class="w-full d-flex justify-center ">
           <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ cleanDate ? "✅ " + String((cleanDate.getMonth() + 1) + '月'+cleanDate.getDate() + '日') :"日付：未入力"}}</v-card>
         </div>
-        <div class="d-flex w-full m-4 gap-4">
+        <div class="mini-boxes">
           <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{time ? "✅" + time : "片付け時間：未入力"}}</v-card>
-          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{comment ? "✅"+comment : "コメント：未入力"}}</v-card>
+          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{ selectedFile ? "✅ 画像選択済" :"画像：未入力"}}</v-card>
         </div>
         <div class="w-full d-flex justify-center ">
-          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ selectedFile ? "✅ 画像選択済" :"画像：未入力"}}</v-card>
+          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{comment ? "✅"+comment : "コメント：未入力"}}</v-card>
         </div>
       </v-container>
       <v-btn class="m-5" variant="outlined" @click="getIllustration">
@@ -162,3 +162,32 @@ onMounted(()=>{
     </v-sheet>
   </v-container>
 </template>
+
+<style>
+  .add-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 12px;
+    padding: 8px;
+    @media (max-width: 700px){
+      flex-direction: column;
+    }
+  }
+
+  .upload-form {
+    width: 50%;
+    @media (max-width: 700px){
+      width: 100%;
+    }
+  }
+
+  .mini-boxes {
+    display: flex;
+    width: 100%;
+    gap: 16px;
+    @media (max-width: 700px){
+      flex-direction: column;
+    }
+  }
+</style>
