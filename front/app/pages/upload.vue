@@ -119,19 +119,19 @@ onMounted(()=>{
                 @add="addCard" 
                 @close="closeMenu"
                 @select="select" />
-      <form class="w-1/3">
+      <form class="md:w-1/2 w-50">
         <v-file-input
           v-model="selectedFile"
-          class="w-100 m-5 p-3"
+          class="img-input w-100 m-5 p-3"
+          accept="image/png"
           label="Select Image to Illustrate"
           @change="getPreview"
           :show-size="true"
-          accept="image/*"
         />
       </form>
     </v-container>
     <v-container class="flex flex-row justify-center">
-      <div v-if='previewUrl!=""' class="w-1/3 flex flex-col md:flex-row md:justify-center m-10">
+      <div v-if='previewUrl!=""' class="w-2/3 flex flex-col md:flex-row md:justify-center m-10">
         <ui-image-card :image_url="previewUrl"><template #title/></ui-image-card>
       </div>
     </v-container>
@@ -162,3 +162,11 @@ onMounted(()=>{
     </v-sheet>
   </v-container>
 </template>
+
+<style>
+    @media (max-width: 400px){
+      label{
+        display: none;
+      }
+    }
+</style>
