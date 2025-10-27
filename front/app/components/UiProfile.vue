@@ -1,47 +1,47 @@
 <script setup lang="ts">
-import { useUserStore } from '~/stores/userStore';
-const isError = ref(false)
-const user = useUserStore()
+import { useUserStore } from "~/stores/userStore";
+const isError = ref(false);
+const user = useUserStore();
 const props = defineProps<{
-            id: number,
-            isFollow: boolean,
-            name: string,
-            profileImage: string,
-            followCount: number,
-            followerCount: number
-    }>();
-
-const emits = defineEmits<{
-    follow: [id:number],
-    unfollow: [id:number],
-    following: [id:number],
-    followed: [id:number],
+  id: number;
+  isFollow: boolean;
+  name: string;
+  profileImage: string;
+  followCount: number;
+  followerCount: number;
 }>();
 
-const state = ref(props.isFollow)
+const emits = defineEmits<{
+  follow: [id: number];
+  unfollow: [id: number];
+  following: [id: number];
+  followed: [id: number];
+}>();
+
+const state = ref(props.isFollow);
 const toggleFollow = () => {
-    if(props.id == user.userId){
-        isError.value = true
-        return
-    }
-    state.value = !state.value
-}
+  if (props.id == user.userId) {
+    isError.value = true;
+    return;
+  }
+  state.value = !state.value;
+};
 
-const toBack = () =>{
-    navigateTo("/home")
-}
+const toBack = () => {
+  navigateTo("/home");
+};
 
-onUnmounted(()=>{
-    if(props.id == user.userId || props.state == props.isFollow){
-        return 
-    }
-    else if(state.value){
-        emits('follow',props.id)
-    }
-    else{
-        emits('unfollow',props.id)
-    }
-})
+onUnmounted(() => {
+  if (props.id == user.userId || state.value == props.isFollow) {
+    return;
+  }
+  else if (state.value) {
+    emits("follow", props.id);
+  }
+  else {
+    emits("unfollow", props.id);
+  }
+});
 
 </script>
 
@@ -68,20 +68,21 @@ onUnmounted(()=>{
             </div>
         </v-container>
         <v-container class="d-flex mx-auto my-10 gap-10">
-            <v-btn class="bg-red mx-auto p-5 px-10 rounded-lg" color="primary" v-bind:class="{'bg-red': state===true, 'bg-blue': state=== false}" @click="toggleFollow">
+            <v-btn class="bg-red mx-auto p-5 px-10 rounded-lg" color="primary" :class="{'bg-red': state===true, 'bg-blue': state=== false}" @click="toggleFollow">
                 {{ state ? "フォロー解除" : "フォロー" }}
             </v-btn>
-            <v-snackbar class="mb-20" v-model="isError"
+            <v-snackbar
+v-model="isError" class="mb-20"
                     multi-line>
-                    cannot follow yourself 
-                <template v-slot:actions>
+                    cannot follow yourself
+                <template #actions>
                     <v-btn
                         color="red"
                         variant="text"
                         @click="isError = false">
-                        Close    
+                        Close
                     </v-btn>
-                </template>        
+                </template>
             </v-snackbar>
         </v-container>
     </v-container>
