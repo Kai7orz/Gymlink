@@ -1,23 +1,13 @@
 <script setup lang="ts">
 
 import { illustrations } from '~/data/illustrations';
-    
 
   const color = ref("grey-darken-3")
-  const isEmpty = ref(false)
+  const isError = ref(false)
   const url = "/api/records/record"
   const selectedFile = ref<File | null>(null)
   const responsedUrl = ref<string>("")
   const previewUrl = ref<string>("")
-
-  const postData = reactive({
-    userId: "",
-    categoryId: "",
-    recordName: "",
-    imageUrl: "",
-    imageDescription: "",
-  })
-
   const isLoading = ref(false);
   const isShownMenu = ref(false);
   const time = ref("")
@@ -40,8 +30,8 @@ import { illustrations } from '~/data/illustrations';
 
   const getIllustration = async (event: Event) => {
   event.preventDefault()
-  if (time.value=="" || cleanDate.value=="" || comment.value=="" || selectedFile.value==""){
-    isEmpty.value = true
+  if ( isError.value || time.value=="" || cleanDate.value=="" || comment.value=="" || selectedFile.value==""){
+    isError.value = true
     return 
   }
 
@@ -75,34 +65,41 @@ import { illustrations } from '~/data/illustrations';
     if (!selectedFile.value) return
     previewUrl.value = URL.createObjectURL(selectedFile.value)
   }
-    const items = ref([])
-    const closeMenu = ()=>{
-        isShownMenu.value = false;
-    }
+  const items = ref([])
+  const closeMenu = ()=>{
+      isShownMenu.value = false;
+  }
 
-    const openMenu = ()=>{
-      isShownMenu.value = true
-    }
+  const openMenu = ()=>{
+    isShownMenu.value = true
+  }
 
-    const select = (imageId:string) => {
-        imageUrl.value = illustrationsObjs[imageId]?.src
-    }
+  const select = (imageId:string) => {
+      imageUrl.value = illustrationsObjs[imageId]?.src
+  }
 
-onMounted(()=>{
-  responsedUrl.value = "https://katazuke.s3.ap-northeast-1.amazonaws.com/katazuke.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA2CUNLZ5LROQUFMZJ%2F20251017%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251017T042100Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=404a1ff2fa9ef4e8ce1415a2949125f7ec36c9920980cd35d294165bbd2db4b6"
-})
+  watch(selectedFile,()=>{
+    if(selectedFile.value.type != 'image/png'){
+      isError.value = true
+      console.log("error: file format is invalid: ",selectedFile.value.type)
+    }
+  })
+
+  onMounted(()=>{
+    responsedUrl.value = "https://katazuke.s3.ap-northeast-1.amazonaws.com/katazuke.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA2CUNLZ5LROQUFMZJ%2F20251017%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251017T042100Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=404a1ff2fa9ef4e8ce1415a2949125f7ec36c9920980cd35d294165bbd2db4b6"
+  })
 </script>
 
 <template>
   <v-container class="d-flex flex-column items-center">
-      <v-snackbar class="mb-20" v-model="isEmpty"
+      <v-snackbar class="mb-20" v-model="isError"
                 multi-line>
-                form is empty
+                Invalid Form : form is empty or file isn't png
         <template v-slot:actions>
             <v-btn
                   color="red"
                   variant="text"
-                  @click="isEmpty = false">
+                  @click="isError = false">
                 Close    
             </v-btn>
         </template>        
@@ -124,7 +121,7 @@ onMounted(()=>{
           v-model="selectedFile"
           class="w-100 mx-auto p-3"
           accept="image/png"
-          label="Select Image to Illustrate"
+          label="Select PNG Image"
           @change="getPreview"
           :show-size="true"
         />
