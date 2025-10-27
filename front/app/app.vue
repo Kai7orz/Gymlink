@@ -1,15 +1,14 @@
 <script setup lang="ts">
-  import TheHeader from '~/containers/TheHeader.vue';
+import TheHeader from "~/containers/TheHeader.vue";
 </script>
 
 <template>
   <NuxtLayout>
     <v-app>
-      <the-header>
-      </the-header>
-<v-main class="min-h-screen custom-bg" >
-  <NuxtPage />
-</v-main>
+      <the-header/>
+      <v-main class="min-h-screen custom-bg" >
+        <NuxtPage />
+      </v-main>
     </v-app>
   </NuxtLayout>
 </template>

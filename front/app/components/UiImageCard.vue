@@ -1,7 +1,7 @@
 <script setup lang="ts">
-    const props = defineProps<{
-        image_url: string
-    }>();
+const props = defineProps<{
+  image_url: string;
+}>();
 </script>
 
 <template>

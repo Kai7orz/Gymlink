@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    console.log("liked list")
+console.log("liked list");
 </script>
 
 <template>
