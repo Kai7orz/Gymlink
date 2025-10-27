@@ -1,41 +1,40 @@
 <script setup lang="ts">
-import { useDetailStore } from '~/stores/detailStore'
-import { useUserStore } from '~/stores/userStore'
-
+import { useDetailStore } from "~/stores/detailStore";
+import { useUserStore } from "~/stores/userStore";
 
 const props = defineProps<{
-  id: number,
-  liked: boolean,
+  id: number;
+  liked: boolean;
 }>();
-const state = ref(props.liked)
+const state = ref(props.liked);
 
 const emits = defineEmits<{
-  good: [id: number],
-  delete: [id: number]
+  good: [id: number];
+  delete: [id: number];
 }>();
-const detailStore = useDetailStore()
-const user = useUserStore()
+const detailStore = useDetailStore();
+const user = useUserStore();
 
 const toBack = () => {
-  if (user.userName === detailStore.detailName) navigateTo({ name: 'home' })
-  else navigateTo({ name: 'share' })
-}
+  if (user.userName === detailStore.detailName) navigateTo({ name: "home" });
+  else navigateTo({ name: "share" });
+};
 
-const GoodOrDelete = (id:number)=>{
-  state.value = !state.value
-}
+const GoodOrDelete = (id: number) => {
+  state.value = !state.value;
+};
 
-onUnmounted(()=>{
-  if(props.liked == state.value){
-    return
-  } 
-  else if(state.value){
-    emits('good',props.id)
-  } 
-  else{
-    emits('delete',props.id)
+onUnmounted(() => {
+  if (props.liked == state.value) {
+    return;
   }
-})
+  else if (state.value) {
+    emits("good", props.id);
+  }
+  else {
+    emits("delete", props.id);
+  }
+});
 </script>
 
 <template>
@@ -71,7 +70,7 @@ onUnmounted(()=>{
         <v-divider class="opacity-30" />
         <v-container class="d-flex justify-center">
           <v-card class="img-design">
-            <img class="mx-auto bg-black m-10 rounded" :src="detailStore.detailPresignedImage" />
+            <img class="mx-auto bg-black m-10 rounded" :src="detailStore.detailPresignedImage" >
           </v-card>
         </v-container>
         <v-card-text class="py-6">
@@ -99,11 +98,11 @@ onUnmounted(()=>{
         <v-card-actions class="justify-end gap-2 py-4">
           <!--  click 複数回押しても対応できるように，clicke のたびに liked の false ,true 切り替わる処理を入れる　何回もAPI 叩かないようにする -->
           <v-btn v-if="state" variant="elevated" color="amber-accent-3" class="text-black font-medium" @click ="() => GoodOrDelete(props.id)">
-            <v-icon size="20" class="m-2" icon="mdi-heart" color="red"></v-icon>
+            <v-icon size="20" class="m-2" icon="mdi-heart" color="red"/>
             いいね
           </v-btn>
           <v-btn v-if="state==false" variant="elevated" color="amber-accent-3" class="text-black font-medium" @click ="() => GoodOrDelete(props.id)">
-            <v-icon size="20" class="m-2" icon="mdi-heart-outline" color="red"></v-icon>
+            <v-icon size="20" class="m-2" icon="mdi-heart-outline" color="red"/>
             いいね
           </v-btn>
         </v-card-actions>

@@ -1,27 +1,27 @@
-import { useAuthStore } from '~/stores/auth'
+import { useAuthStore } from "~/stores/auth";
 
-export default defineNuxtRouteMiddleware(async (to,from) => {
-    if(process.server) return 
+export default defineNuxtRouteMiddleware(async (to, from) => {
+  if (import.meta.server) return;
 
-    const auth = useAuthStore()
-    const allowlist = new Set<string>(['/','/login','/signin','/signup'])
+  const auth = useAuthStore();
+  const allowlist = new Set<string>(["/", "/login", "/signin", "/signup"]);
 
-    if(allowlist.has(to.path)) return 
+  if (allowlist.has(to.path)) return;
 
-    if(auth.loading){
-        await new Promise<void>((resolve)=>{
-            const stop = watch(()=> auth.loading, (v)=>{
-                if(!v){
-                    stop();
-                    resolve()
-                }
-            },{
-                immediate:true
-            })
-        })
-    }
+  if (auth.loading) {
+    await new Promise<void>((resolve) => {
+      const stop = watch(() => auth.loading, (v) => {
+        if (!v) {
+          stop();
+          resolve();
+        }
+      }, {
+        immediate: true,
+      });
+    });
+  }
 
-    if(!auth.isAuthenticated){
-        return navigateTo('/login',{replace:true})
-    }  
-})
+  if (!auth.isAuthenticated) {
+    return navigateTo("/login", { replace: true });
+  }
+});

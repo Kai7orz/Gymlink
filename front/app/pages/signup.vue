@@ -1,66 +1,70 @@
 <script setup lang="ts">
-    import {signUp}  from '~/composables/SignUpUser';
+import { signUp } from "~/composables/SignUpUser";
 
-    const name = ref('')
-    const email = ref('')
-    const password = ref('')
-    const avatarUrl = ref('/images/test.png')
-    const isLoading = ref(false)
-    const isError = ref(false)
-    const auth = useAuthStore()
-    const signUpUser = async () => {
-        isLoading.value = true
+const name = ref("");
+const email = ref("");
+const password = ref("");
+const avatarUrl = ref("/images/test.png");
+const isLoading = ref(false);
+const isError = ref(false);
+const auth = useAuthStore();
+const signUpUser = async () => {
+  isLoading.value = true;
 
-        try{
-            await signUp(email.value,password.value)
-            const TOKEN = auth.idToken
-            await $fetch("/api/signup",
-                {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + TOKEN,
-                        'Content-Type': 'application/json'
-                    },
-                    body: {
-                        name:  name.value,
-                        avatar_url: avatarUrl.value
-                    }
-                }
-            )
-            await navigateTo('/login')
-        } catch (error) {
-            console.error('Error signing up:', error);
-            isError.value = true
-        } finally {
-            isLoading.value = false
-        }
-    }
-    const toLogin = () => {
-        navigateTo('/login')
-    }
+  try {
+    await signUp(email.value, password.value);
+    const TOKEN = auth.idToken;
+    await $fetch("/api/signup",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + TOKEN,
+          "Content-Type": "application/json",
+        },
+        body: {
+          name: name.value,
+          avatar_url: avatarUrl.value,
+        },
+      },
+    );
+    await navigateTo("/login");
+  }
+  catch (error) {
+    console.error("Error signing up:", error);
+    isError.value = true;
+  }
+  finally {
+    isLoading.value = false;
+  }
+};
+const toLogin = () => {
+  navigateTo("/login");
+};
 </script>
 
 <template>
     <v-card class="d-flex flex-column justify-center mx-auto w-50 m-20 border-lg rounded-lg bg-grey-darken-3">
-        <v-snackbar class="mb-20" v-model="isError"
+        <v-snackbar
+v-model="isError" class="mb-20"
                     multi-line>
                     Sign up Error
-            <template v-slot:actions>
+            <template #actions>
                 <v-btn
                       color="red"
                       variant="text"
                       @click="isError = false">
-                    Close    
+                    Close
                 </v-btn>
-            </template>        
+            </template>
         </v-snackbar>
         <v-card-title class="d-flex justify-center">サインアップ</v-card-title>
         <v-text-field v-model="name" class="w-1/2 mx-auto m-5 " label="ユーザーネーム" />
         <v-text-field v-model="email" class="w-1/2 mx-auto m-5 " label="メールアドレス" />
         <v-text-field v-model="password" class="w-1/2 mx-auto m-5" label="パスワード" type="password" />
-        <v-btn class="d-flex justify-center mx-auto m-5" @click="signUpUser" color="primary">
+        <v-btn class="d-flex justify-center mx-auto m-5" color="primary" @click="signUpUser">
             サインアップ
-                <v-overlay v-model="isLoading"
+                <v-overlay
+v-model="isLoading"
                     location-strategy="connected"
                     class="d-flex justify-center items-center mx-auto my-auto" min-width="150"
                 >
@@ -70,7 +74,7 @@
                             color="primary"
                             size="64"
                             indeterminate
-                        ></v-progress-circular>
+                        />
                     </div>
                 </v-overlay>
         </v-btn>

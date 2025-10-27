@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import CardDetail from '~/containers/CardDetail.vue';
-  const  route = useRoute();
+import CardDetail from "~/containers/CardDetail.vue";
+const route = useRoute();
 </script>
 
 <template>
