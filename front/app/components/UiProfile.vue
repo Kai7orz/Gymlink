@@ -58,7 +58,7 @@ onUnmounted(()=>{
             <span class="text-sm opacity-80">ホームへ</span>
         </div>
         <v-avatar :image="props.profileImage" size="200" class="mx-auto my-3" />
-        <div class="text-h3">{{ props.name }}</div>
+        <div class="name-size">{{ props.name }}</div>
         <v-container class="d-flex mx-auto my-10 gap-10">
             <div class="mx-auto bg-grey-darken-3 p-5 px-10 rounded-lg" @click="emits('following',props.id)">
                 フォロー中 : {{ props.followCount }}
@@ -86,3 +86,12 @@ onUnmounted(()=>{
         </v-container>
     </v-container>
 </template>
+
+<style>
+ .name-size {
+    font-size: 100px;
+    @media (max-width:700px) {
+        font-size: 50px;
+    }
+ }
+</style>
