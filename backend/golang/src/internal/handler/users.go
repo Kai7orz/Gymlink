@@ -32,7 +32,7 @@ func (h *UserHandler) SignUpUserById(ctx *gin.Context) {
 	//　requestBody の読み取り
 	var userCreate dto.UserCreateType
 	if err := ctx.ShouldBindJSON(&userCreate); err != nil {
-		log.Println("error: user create")
+		log.Println("error: user data bind")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
@@ -40,8 +40,8 @@ func (h *UserHandler) SignUpUserById(ctx *gin.Context) {
 	// service に依存
 	err := h.svc.SignUpUser(ctx.Request.Context(), userCreate.Name, userCreate.AvatarUrl, token)
 	if err != nil {
-		log.Println("error: ", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		log.Println("error: failed to signup ", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "failed to signup"})
 		return
 	}
 
@@ -59,7 +59,7 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 
 	userRaw, err := h.svc.LoginUser(ctx.Request.Context(), token)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "failed to login"})
 		return
 	}
 
@@ -79,9 +79,9 @@ func (h *UserHandler) GetProfilebyId(ctx *gin.Context) {
 	}
 	idStr := ctx.Param("user_id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		log.Println("failed to parse user_id")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+	if err != nil || id <= 0 {
+		log.Println("error: invalid user id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
 		return
 	}
 	profileRaw, err := h.svc.GetProfile(ctx.Request.Context(), id)
@@ -133,14 +133,15 @@ func (h *UserHandler) CheckFollow(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
+	token := strings.TrimPrefix(authz, "Bearer ")
+
 	idStr := ctx.Param("user_id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		log.Println("failed to parse user_id")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+	if err != nil || id <= 0 {
+		log.Println("error: invalid user id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
 		return
 	}
-	token := strings.TrimPrefix(authz, "Bearer ")
 	followed, err := h.svc.CheckFollowById(ctx.Request.Context(), id, token)
 	if err != nil {
 		log.Println("failed to check follows")
