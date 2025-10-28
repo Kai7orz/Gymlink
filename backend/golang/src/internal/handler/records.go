@@ -219,7 +219,7 @@ func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 		Comment:        comment,
 	}
 
-	s3Key, err := h.svc.GenerateImgAndUpload(ctx.Request.Context(), image, s3KeyRaw)
+	s3Key, err := h.svc.UploadIllustration(ctx.Request.Context(), image, s3KeyRaw, token)
 	if err != nil {
 		log.Println("image dir error", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
