@@ -20,15 +20,16 @@ func NewRecordHandler(svc service.RecordService) *RecordHandler {
 }
 
 func (h *RecordHandler) GetRecordsById(ctx *gin.Context) {
-	authz := ctx.GetHeader("Authorization")
+	authz := ctx.GetHeader("Authorization") // 認証するためのトークンを持っているか（認証自体はハンドラーの責務ではない）
 	if !strings.HasPrefix(authz, "Bearer ") {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
 	idStr := ctx.Param("user_id")
+	// user_id は自然数でなければならないのでそのバリデーション
 	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		log.Println("failed to parse user_id")
+	if err != nil || id <= 0 {
+		log.Println("error: invalid user id")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
@@ -70,19 +71,24 @@ func (h *RecordHandler) DeleteRecord(ctx *gin.Context) {
 	}
 
 	userId, err := strconv.ParseInt(userIdStr, 10, 64)
-	if err != nil {
-		log.Println("failed to parse user_id")
+	if err != nil || userId <= 0 {
+		log.Println("error: invalid user id")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "failed to parse user_id"})
 	}
 
 	recordId, err := strconv.ParseInt(recordIdStr, 10, 64)
-	if err != nil {
-		log.Println("failed to parse record_id")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+	if err != nil || recordId <= 0 {
+		log.Println("error: invalid record id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
 
-	h.svc.DeleteRecordById(ctx.Request.Context(), userId, recordId, token)
+	err = h.svc.DeleteRecordById(ctx.Request.Context(), userId, recordId, token)
+	if err != nil {
+		log.Println("error in deleting record")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
 }
 
 func (h *RecordHandler) CreateLike(ctx *gin.Context) {
@@ -94,9 +100,9 @@ func (h *RecordHandler) CreateLike(ctx *gin.Context) {
 	token := strings.TrimPrefix(authz, "Bearer ")
 
 	var recordLike dto.RecordLikeType
-	if err := ctx.ShouldBindJSON(&recordLike); err != nil {
-		log.Println("error: record like ", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+	if err := ctx.ShouldBindJSON(&recordLike); err != nil || recordLike.RecordId <= 0 {
+		log.Println("error: invalid record id ", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid record id"})
 		return
 	}
 
@@ -120,9 +126,9 @@ func (h *RecordHandler) CheckLike(ctx *gin.Context) {
 
 	recordIdStr := ctx.Param("record_id")
 	recordId, err := strconv.ParseInt(recordIdStr, 10, 64)
-	if err != nil {
-		log.Println("failed to parse record_id")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+	if err != nil || recordId <= 0 {
+		log.Println("error: invalid record id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid record id"})
 		return
 	}
 	liked, err := h.svc.CheckLikeById(ctx.Request.Context(), recordId, token)
@@ -145,9 +151,9 @@ func (h *RecordHandler) DeleteLike(ctx *gin.Context) {
 	token := strings.TrimPrefix(authz, "Bearer ")
 	recordIdStr := ctx.Param("record_id")
 	recordId, err := strconv.ParseInt(recordIdStr, 10, 64)
-	if err != nil {
-		log.Println("failed to parse record_id")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+	if err != nil || recordId <= 0 {
+		log.Println("error: invalid record id")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid record id"})
 		return
 	}
 
@@ -179,9 +185,10 @@ func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 	}
 
 	cleanUpTimeRaw := ctx.PostForm("clean_up_time")
-	if cleanUpTimeRaw == "" {
-		log.Println("error clean up time is not set")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+	_, err := strconv.Atoi(cleanUpTimeRaw)
+	if err != nil || cleanUpTimeRaw == "" {
+		log.Println("error clean up time must be number")
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
 
@@ -202,6 +209,7 @@ func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 	image, err := ctx.FormFile("file")
 	if err != nil {
 		log.Println("error", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
 	recordCreate := dto.RecordCreateType{

@@ -1,3 +1,6 @@
+## ESLint 
+https://zenn.dev/januswel/articles/402774d76424e71ac906
+
 ## DB 制約
 ON DELETE CASCADE 制約をつけれていなかったので，マイグレーションで対応する
 https://qiita.com/nebukuro/items/a6dc7fdaed0b5791b253　を参考に進めた
