@@ -192,7 +192,7 @@ func (s *recordService) DeleteLikeById(ctx context.Context, recordId int64, idTo
 
 }
 
-func (s *recordService) UploadImage(ctx context.Context, image *multipart.FileHeader, s3KeyRaw string, idToken string) (string, error) {
+func (s *recordService) UploadIllustration(ctx context.Context, image *multipart.FileHeader, s3KeyRaw string, idToken string) (string, error) {
 	if s.a == nil {
 		return "", errors.New("error auth nil")
 	}
@@ -206,7 +206,7 @@ func (s *recordService) UploadImage(ctx context.Context, image *multipart.FileHe
 	// レスポンスの画像を記録する．
 	err = s.gc.CreateIllustration(ctx, image)
 	if err != nil {
-		log.Println("error create illustration")
+		log.Println("error create illustration: ", err)
 		return "", err
 	}
 

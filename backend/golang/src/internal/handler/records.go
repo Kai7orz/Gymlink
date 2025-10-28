@@ -218,10 +218,10 @@ func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 		CleanUpDateRaw: cleanUpDateRaw,
 		Comment:        comment,
 	}
-	// イラストをS3 へアップロード
-	s3Key, err := h.svc.UploadImage(ctx.Request.Context(), image, s3KeyRaw, token)
+
+	s3Key, err := h.svc.UploadIllustration(ctx.Request.Context(), image, s3KeyRaw, token)
 	if err != nil {
-		log.Println("error:failed to upload image", err)
+		log.Println("image dir error", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
