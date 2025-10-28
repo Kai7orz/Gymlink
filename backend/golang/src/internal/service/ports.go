@@ -76,5 +76,5 @@ type RecordService interface {
 	CreateLike(ctx context.Context, recordId int64, idToken string) error
 	CheckLikeById(ctx context.Context, recordId int64, idToken string) (bool, error)
 	DeleteLikeById(ctx context.Context, recordId int64, idToken string) error
-	GenerateImgAndUpload(ctx context.Context, image *multipart.FileHeader, s3Key string) (string, error)
+	UploadImage(ctx context.Context, image *multipart.FileHeader, s3Key string, idToken string) (string, error)
 }
