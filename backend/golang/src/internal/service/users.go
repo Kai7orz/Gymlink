@@ -17,7 +17,7 @@ type userService struct {
 
 // UserQueryRepo
 func NewUserService(q UserQueryRepo, cm UserCommandRepo, p ProfileRepo, a AuthClient) (UserService, error) {
-	if q == nil || cm == nil || a == nil {
+	if q == nil || cm == nil || p == nil || a == nil {
 		return nil, errors.New("nil error: UserQueryRepo or UserCreateRepo or AuthClient")
 	}
 	return &userService{q: q, cm: cm, p: p, a: a}, nil
