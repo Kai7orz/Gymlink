@@ -28,10 +28,25 @@ services:
       - ./mysql/.dev.env
       - ./backend/golang/src/.env
     depends_on:
-      - db
+      - dev_db
     volumes:
       - ./backend/golang/src:/go/src
       - ./backend/golang/src/internal/images:/go/src/internal/images
+
+  go-test:
+    container_name: go-test
+    build:
+      context: .
+      dockerfile: docker/golang/Dockerfile.test
+    tty: true
+    environment:
+      - GO_ENV=test
+    volumes:
+      - ./backend/golang/src:/go/src
+    command: sh -c "cd /go/src && go test ./... -v"
+    depends_on:
+      - dev_db
+
 
   dev_db:
     container_name: dev_db

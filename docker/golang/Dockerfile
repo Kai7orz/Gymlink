@@ -1,4 +1,3 @@
-                                                                          Dockerfile# ---- Builder ----
 FROM golang:1.25 AS builder
 WORKDIR /src/app
 COPY ./golang/src/go.mod ./golang/src/go.sum .
