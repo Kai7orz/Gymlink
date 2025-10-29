@@ -30,14 +30,14 @@
 ![alt text](signIn.png)
 
 #### 自身のレコード表示
-![alt text](myrecord.mp4)
+https://youtu.be/sJVHaV_ckNI
 
 #### 全員のレコード表示 + キャラクター表示
-![alt text](share.mp4)
+https://youtu.be/r0IbwRgQ9JU
 
 #### アップロード画面
 27秒の Loading... から レコード一覧表示までの間イラスト生成のために 40秒ほど時間がかかっています（現状の課題です）
-![alt text](upload.mp4)
+https://youtu.be/KkyxXLnOX8I
 
 ## こだわり
 #### 作成のこだわり
