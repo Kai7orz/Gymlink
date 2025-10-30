@@ -11,7 +11,7 @@ export default withNuxt(
 
   stylistic.configs.customize({
     indent: 2,         
-    quotes: 'single',  
-    semi: false,       
+    quotes: "double",  
+    semi: true,       
   }),
 )
