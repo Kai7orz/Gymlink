@@ -59,7 +59,7 @@ const toDetail = (id: number) => {
       return record.id == id;
     });
     if (tempRecord) {
-      detailStore.setDetail(tempRecord.id, tempRecord.user_id, tempRecord.user_name, tempRecord.presigned_image, tempRecord.clean_up_time, tempRecord.clean_up_date, tempRecord.comment, tempRecord.likes_count);
+      detailStore.setDetail(tempRecord.id, tempRecord.user_id, tempRecord.user_name, tempRecord.presigned_image, tempRecord.clean_up_time, tempRecord.clean_up_date, tempRecord.comment, tempRecord.likes_count, props.isOwner);
     }
     else {
       return;
@@ -68,7 +68,7 @@ const toDetail = (id: number) => {
   else {
     const detailRecord = recordList.value[numMap.get(id)];
     if (!detailRecord) return;
-    detailStore.setDetail(detailRecord.id, detailRecord.user_id, detailRecord.user_name, detailRecord.presigned_image, detailRecord.clean_up_time, detailRecord.clean_up_date, detailRecord.comment, detailRecord.likes_count);
+    detailStore.setDetail(detailRecord.id, detailRecord.user_id, detailRecord.user_name, detailRecord.presigned_image, detailRecord.clean_up_time, detailRecord.clean_up_date, detailRecord.comment, detailRecord.likes_count, props.isOwner);
   }
   navigateTo({ name: "Detail-id", params: { id: Number(id) } });
 };

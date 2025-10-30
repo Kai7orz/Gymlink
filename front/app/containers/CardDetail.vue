@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/auth";
+import { useDetailStore } from "~/stores/detailStore";
 const props = defineProps<{
   id: number;
+  isOwner: boolean;
 }>();
 
 const auth = useAuthStore();
+const detailStore = useDetailStore();
 const TOKEN = auth.idToken;
 const data = ref(false);
 const record_id = props.id;
@@ -37,6 +40,11 @@ const toGood = async (id: number) => {
   }
 };
 
+const toBack = () => {
+  if (detailStore.detailIsOwner) navigateTo({ name: "home" });
+  else navigateTo({ name: "share" });
+};
+
 const toDelete = async (id: number) => {
   const record_id = id;
   try {
@@ -57,6 +65,6 @@ const toDelete = async (id: number) => {
 
 <template>
         <div>
-          <ui-card-detail :id="props.id" :liked="data.liked" @good="toGood" @delete="toDelete"/>
+          <ui-card-detail :id="props.id" :is-owner="props.isOwner" :liked="data.liked" @good="toGood" @delete="toDelete" @back="toBack" />
         </div>
 </template>

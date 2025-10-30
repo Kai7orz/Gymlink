@@ -4,6 +4,7 @@ import { useUserStore } from "~/stores/userStore";
 
 const props = defineProps<{
   id: number;
+  isOwner: boolean;
   liked: boolean;
 }>();
 const state = ref(props.liked);
@@ -11,14 +12,16 @@ const state = ref(props.liked);
 const emits = defineEmits<{
   good: [id: number];
   delete: [id: number];
+  back: [];
 }>();
 const detailStore = useDetailStore();
 const user = useUserStore();
-
-const toBack = () => {
-  if (user.userName === detailStore.detailName) navigateTo({ name: "home" });
-  else navigateTo({ name: "share" });
-};
+const backLabel = "戻る";
+const cleanTimeLabel = "片付け時間";
+const timeLabel = "分";
+const nonCommentLabel = "コメントはありません";
+const commentLabel = "コメント";
+const goodLabel = "いいね";
 
 const GoodOrDelete = () => {
   state.value = !state.value;
@@ -35,6 +38,7 @@ onUnmounted(() => {
     emits("delete", props.id);
   }
 });
+
 </script>
 
 <template>
@@ -46,9 +50,9 @@ onUnmounted(() => {
           variant="text"
           class="rounded-full hover:opacity-90"
           icon="mdi-arrow-left"
-          @click="toBack"
+          @click="emits('back')"
         />
-        <span class="text-sm opacity-80">戻る</span>
+        <span class="text-sm opacity-80">{{ backLabel }}</span>
       </div>
 
       <v-card
@@ -78,16 +82,16 @@ onUnmounted(() => {
             <div class="items gap-4">
                 <v-sheet class="item-content bg-white/5 rounded-lg border border-white/10">
                   <div class="item text-sm mb-1 flex items-center gap-2">
-                    <v-icon size="18" icon="mdi-timer-sand" /> 片付け時間
+                    <v-icon size="18" icon="mdi-timer-sand" /> {{ cleanTimeLabel }}
                   </div>
-                  <div class="mx-2">{{ detailStore.detailTime }} 分</div>
+                  <div class="mx-2">{{ detailStore.detailTime }} {{ timeLabel }}</div>
                 </v-sheet>
                 <v-sheet class="item-content bg-white/5 rounded-lg border border-white/10 md:col-span-2">
                   <div class="item text-sm mb-1 flex items-center gap-2">
-                    <v-icon size="18" icon="mdi-comment-text-outline" /> コメント
+                    <v-icon size="18" icon="mdi-comment-text-outline" /> {{ commentLabel }}
                   </div>
                   <div class="mx-2 leading-relaxed">
-                    {{ detailStore.detailComment || 'コメントはありません' }}
+                    {{ detailStore.detailComment || nonCommentLabel }}
                   </div>
                 </v-sheet>
             </div>
@@ -99,11 +103,11 @@ onUnmounted(() => {
           <!--  click 複数回押しても対応できるように，clicke のたびに liked の false ,true 切り替わる処理を入れる何回もAPI 叩かないようにする -->
           <v-btn v-if="state" variant="elevated" color="amber-accent-3" class="text-black font-medium" @click ="() => GoodOrDelete()">
             <v-icon size="20" class="m-2" icon="mdi-heart" color="red"/>
-            いいね
+            {{ goodLabel }}
           </v-btn>
           <v-btn v-if="state==false" variant="elevated" color="amber-accent-3" class="text-black font-medium" @click ="() => GoodOrDelete()">
             <v-icon size="20" class="m-2" icon="mdi-heart-outline" color="red"/>
-            いいね
+            {{ goodLabel }}
           </v-btn>
         </v-card-actions>
       </v-card>
