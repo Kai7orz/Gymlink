@@ -6,6 +6,6 @@ const route = useRoute();
 
 <template>
         <div>
-          <card-detail :id="Number(route.params.id)" :is-owner="Boolean(route.params.isOwner)"/>
+          <card-detail :id="Number(route.params.id)"/>
         </div>
 </template>
