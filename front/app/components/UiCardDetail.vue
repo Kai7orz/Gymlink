@@ -4,7 +4,6 @@ import { useUserStore } from "~/stores/userStore";
 
 const props = defineProps<{
   id: number;
-  isOwner: boolean;
   liked: boolean;
 }>();
 const state = ref(props.liked);
