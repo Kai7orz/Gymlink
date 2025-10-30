@@ -2,6 +2,7 @@
 import { useAuthStore } from "~/stores/auth";
 const props = defineProps<{
   id: number;
+  isOwner: boolean;
 }>();
 
 const auth = useAuthStore();
@@ -57,6 +58,6 @@ const toDelete = async (id: number) => {
 
 <template>
         <div>
-          <ui-card-detail :id="props.id" :liked="data.liked" @good="toGood" @delete="toDelete"/>
+          <ui-card-detail :id="props.id" :is-owner="props.isOwner" :liked="data.liked" @good="toGood" @delete="toDelete"/>
         </div>
 </template>

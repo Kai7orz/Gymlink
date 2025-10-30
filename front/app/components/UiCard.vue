@@ -19,6 +19,8 @@ const emits = defineEmits<{
   delete: [id: number];
 }>();
 
+const remove = "delete";
+
 const clicked = (id: number) => {
   emits("detail", id);
 };
@@ -47,7 +49,7 @@ const onAccount = async (uid: number) => {
                 </div>
             </div>
             <v-btn v-if="props.isOwner" class="d-flex mx-auto m-5" color="red" @click.stop="()=>onDelete(props.id)">
-                    delete
+                    {{ remove }}
             </v-btn>
         </v-card>
     </v-hover>
