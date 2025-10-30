@@ -66,7 +66,7 @@ onUnmounted(() => {
           </v-chip>
           {{ detailStore.detailName }}
         </v-card-title>
-        
+
         <v-divider class="opacity-30" />
         <div class="responsive-switch">
           <div class="image-content-box">
