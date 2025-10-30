@@ -12,6 +12,7 @@ const state = ref(props.liked);
 const emits = defineEmits<{
   good: [id: number];
   delete: [id: number];
+  back: [];
 }>();
 const detailStore = useDetailStore();
 const user = useUserStore();
@@ -21,11 +22,6 @@ const timeLabel = "分";
 const nonCommentLabel = "コメントはありません";
 const commentLabel = "コメント";
 const goodLabel = "いいね";
-
-const toBack = () => {
-  if (user.userName === detailStore.detailName) navigateTo({ name: "home" });
-  else navigateTo({ name: "share" });
-};
 
 const GoodOrDelete = () => {
   state.value = !state.value;
@@ -54,7 +50,7 @@ onUnmounted(() => {
           variant="text"
           class="rounded-full hover:opacity-90"
           icon="mdi-arrow-left"
-          @click="toBack"
+          @click="emits('back')"
         />
         <span class="text-sm opacity-80">{{ backLabel }}</span>
       </div>

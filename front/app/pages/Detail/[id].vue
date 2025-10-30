@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import CardDetail from "~/containers/CardDetail.vue";
 const route = useRoute();
-console.log("isowner:::", route.params.isOwner);
 
 </script>
 
