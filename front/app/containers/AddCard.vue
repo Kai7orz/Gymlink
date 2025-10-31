@@ -1,58 +1,44 @@
 <script setup lang="ts">
 import UiAddCard from "~/components/UiAddCard.vue";
-import { illustrations } from "~/data/illustrations";
 
-const isShownMenu = ref(false);
-const time = ref("");
-const date = ref("2025/09/27");
-const comment = ref("");
-const imageUrl = ref("");
-const auth = useAuthStore();
-// イラスト一覧を読み込んで propsとして渡して表示する
-const illustrationsObjs = illustrations;
-
-const addCard = async () => {
-  console.log("add card of add idToken:", auth.idToken);
-  const TOKEN = auth.idToken;
-  await $fetch("/api/userRecord", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer " + TOKEN,
-      "Content-Type": "application/json",
-    },
-    body: {
-      object_key: imageUrl.value,
-      clean_up_time: Number(time.value),
-      clean_up_date: date.value,
-      comment: comment.value,
-    },
-  },
-  );
-
-  navigateTo("/home");
+const isShownMenu = defineModel<boolean>("isShownMenu");
+const cleanUpTime = defineModel<string>("cleanUpTime");
+const cleanUpDate = defineModel<Date>("cleanUpDate");
+const comment = defineModel<string>("comment");
+const previewUrl = defineModel<string>("previewUrl");
+const selectedFile = defineModel<File | null>("selectedFile");
+const openMenu = () => {
+  isShownMenu.value = true;
 };
 
 const closeMenu = () => {
   isShownMenu.value = false;
 };
 
-const select = (imageId: string) => {
-  console.log("ttest", imageId);
-  imageUrl.value = illustrationsObjs[imageId]?.src;
+const getPreview = async (event: Event) => {
+  event.preventDefault();
+  if (!selectedFile.value) return;
+  previewUrl.value = URL.createObjectURL(selectedFile.value);
 };
-
 </script>
 
 <template>
     <ui-add-card
-                v-model:clean-time="time"
-                v-model:date="date"
+                v-model:clean-up-time="cleanUpTime"
+                v-model:clean-up-date="cleanUpDate"
                 v-model:comment="comment"
                 v-model:is-shown-menu=isShownMenu
-                :image-url="imageUrl"
-                :illust-objs="illustrationsObjs"
                 @open="openMenu"
-                @add="addCard"
                 @close="closeMenu"
-                @select="select" />
+            />
+    <form class="upload-form">
+        <v-file-input
+          v-model="selectedFile"
+          class="w-100 mx-auto p-3"
+          accept="image/png"
+          label="Select PNG Image"
+          :show-size="true"
+          @change="getPreview"
+        />
+    </form>
 </template>

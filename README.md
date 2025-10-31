@@ -26,6 +26,9 @@
 - オリジナルキャラクタ―表示画面
 
 ## 実際の画面
+https://docodoor.co.jp/staffblog/breakpoint-responsive/ を参考に
+レスポンシブ対応は 390×844 に最適化されています．
+PC 画面は 1280×800 に最適化されています．
 #### ログイン画面
 ![alt text](signIn.png)
 
