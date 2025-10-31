@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { illustrations } from "~/data/illustrations";
+import AddCard from "~/containers/AddCard";
 
 const color = ref("grey-darken-3");
 const isError = ref(false);
@@ -9,10 +9,9 @@ const responsedUrl = ref<string>("");
 const previewUrl = ref<string>("");
 const isLoading = ref(false);
 const isShownMenu = ref(false);
-const time = ref("");
-const cleanDate = ref(new Date());
+const cleanUpTime = ref("");
+const cleanUpDate = ref(new Date());
 const comment = ref("");
-const imageUrl = ref("");
 const auth = useAuthStore();
 const TOKEN = auth.idToken;
 const takeTimeLabel = "※レコードの保存から表示まで1～2分ほど反映にかかります";
@@ -25,7 +24,6 @@ const validImageLabel = "画像選択済み";
 const invalidImageLabel = "画像：未選択";
 const invalidCommentLabel = "コメント：未入力";
 // イラスト一覧を読み込んで propsとして渡して表示する
-const illustrationsObjs = illustrations;
 
 const formatDate = (d: Date | string) => {
   const date = new Date(d);
@@ -37,7 +35,7 @@ const formatDate = (d: Date | string) => {
 
 const getIllustration = async (event: Event) => {
   event.preventDefault();
-  if (isError.value || time.value == "" || comment.value == "" || selectedFile.value == undefined) {
+  if (isError.value || cleanUpTime.value == "" || comment.value == "" || selectedFile.value == undefined) {
     isError.value = true;
     return;
   }
@@ -45,8 +43,8 @@ const getIllustration = async (event: Event) => {
   const formData = new FormData();
   formData.append("file", selectedFile.value, selectedFile.value.name);
   formData.append("s3_key", "raw_image");
-  formData.append("clean_up_time", time.value);
-  formData.append("clean_up_date", formatDate(cleanDate.value));
+  formData.append("clean_up_time", cleanUpTime.value);
+  formData.append("clean_up_date", formatDate(cleanUpDate.value));
   formData.append("comment", comment.value);
   isLoading.value = true;
 
@@ -67,24 +65,6 @@ const getIllustration = async (event: Event) => {
   finally {
     isLoading.value = false;
   }
-};
-
-const getPreview = async (event: Event) => {
-  event.preventDefault();
-  if (!selectedFile.value) return;
-  previewUrl.value = URL.createObjectURL(selectedFile.value);
-};
-
-const closeMenu = () => {
-  isShownMenu.value = false;
-};
-
-const openMenu = () => {
-  isShownMenu.value = true;
-};
-
-const select = (imageId: string) => {
-  imageUrl.value = illustrationsObjs[imageId]?.src;
 };
 
 watch(selectedFile, () => {
@@ -114,27 +94,14 @@ onMounted(() => {
         </template>
     </v-snackbar>
     <v-container class="add-item">
-      <ui-add-card
-                v-model:clean-time="time"
-                v-model:date="cleanDate"
+      <add-card
+                v-model:clean-up-time="cleanUpTime"
+                v-model:clean-up-date="cleanUpDate"
                 v-model:comment="comment"
-                v-model:is-shown-menu=isShownMenu
-                :image-url="imageUrl"
-                :illust-objs="illustrationsObjs"
-                @open="openMenu"
-                @add="addCard"
-                @close="closeMenu"
-                @select="select" />
-      <form class="upload-form">
-        <v-file-input
-          v-model="selectedFile"
-          class="w-100 mx-auto p-3"
-          accept="image/png"
-          label="Select PNG Image"
-          :show-size="true"
-          @change="getPreview"
-        />
-      </form>
+                v-model:is-shown-menu="isShownMenu"
+                v-model:preview-url="previewUrl"
+                v-model:selected-file="selectedFile"
+               />
     </v-container>
     <v-container class="flex flex-row justify-center">
       <div v-if='previewUrl!=""' class="w-2/3 flex flex-col md:flex-row md:justify-center m-5">
@@ -144,10 +111,10 @@ onMounted(() => {
     <v-sheet class="flex w-2/3 p-1 bg-black text-center rounded-lg">
       <v-container class="d-flex flex-column justify-center items-center bg-black gap-4">
         <div class="w-full d-flex justify-center ">
-          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ cleanDate ? "✅ " + String((cleanDate.getMonth() + 1) + '月'+cleanDate.getDate() + '日') :invalidDateLabel}}</v-card>
+          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ cleanUpDate ? "✅ " + String((cleanUpDate.getMonth() + 1) + '月'+cleanUpDate.getDate() + '日') :invalidDateLabel}}</v-card>
         </div>
         <div class="mini-boxes">
-          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{time ? "✅ " + time : invalidCleanTimeLabel }}</v-card>
+          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{ cleanUpTime ? "✅ " + cleanUpTime : invalidCleanTimeLabel }}</v-card>
           <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{ selectedFile ? "✅ " + validImageLabel : invalidImageLabel}}</v-card>
         </div>
         <div class="w-full d-flex justify-center ">

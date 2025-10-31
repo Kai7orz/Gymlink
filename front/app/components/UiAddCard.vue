@@ -1,41 +1,26 @@
 <script setup lang="ts">
-    import CleanModal from '~/containers/CleanModal.vue';
-    import type { Illustration } from '~/type';
+import CleanModal from "~/containers/CleanModal.vue";
 
-    const props = defineProps<{
-        illustObjs: Record<string,Illustration>
-        imageUrl: string
-    }>();
+const emits = defineEmits<{
+  add: [];
+  close: [];
+  open: [];
+}>();
 
-    const emits = defineEmits<{
-        add: [],
-        close: [],
-        open: [],
-        select: [imageId:string]
-    }>();
-
-    const isShownMenu = defineModel('isShownMenu')
-    const date = defineModel<string>('date')
-    const cleanTime = defineModel<string>('cleanTime')
-    const comment = defineModel<string>('comment')
-    const onSelect = (imageId: string) => {
-        emits('select',imageId)
-    }
-   
-
+const isShownMenu = defineModel<boolean>("isShownMenu");
+const cleanUpTime = defineModel<string>("cleanUpTime");
+const cleanUpDate = defineModel<Date>("cleanUpDate");
+const comment = defineModel<string>("comment");
 </script>
 
 <template>
-        <v-icon class="mx-5 my-auto" size="50" icon="mdi-plus-box" @click="emits('open')"></v-icon>
+        <v-icon class="mx-5 my-auto" size="50" icon="mdi-plus-box" @click="emits('open')"/>
         <clean-modal
-                        v-model:cleanTime="cleanTime"
-                        v-model:date="date"
+                        v-model:clean-up-time="cleanUpTime"
+                        v-model:clean-up-date="cleanUpDate"
                         v-model:comment="comment"
                         v-model:is-shown-menu="isShownMenu"
-                        :imageUrl="props.imageUrl"
-                        :illustObjs="props.illustObjs"
-                        @record="emits('add')" 
                         @close="emits('close')"
-                        @select="onSelect"></clean-modal>
+                        />
 
 </template>
