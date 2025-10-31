@@ -15,7 +15,7 @@ const tempUserId = ref("");
 const tempUserName = ref("");
 const numMap = new Map<number, number>();
 const TOKEN = auth.idToken;
-const recordList = ref([]);
+const recordList = ref<RecordType[]>([]);
 // login 時にセットした id,name を localstorage から取得してくる処理
 onMounted(async () => {
   await new Promise(r => setTimeout(r, 80)); // 遅延がないといいね反転後の1回目の一覧表示でいいねが反映されない（like のPOST,DELETEよりも先にカードリスト取得処理が走ってしまっているのでその応急処置）
@@ -27,7 +27,7 @@ onMounted(async () => {
     user.setUser(Number(tempUserId.value), tempUserName.value);
   }
   const url = props.isOwner ? "/api/users/" + String(user.userId) + "/records" : "/api/records";
-  const data = await $fetch(url, {
+  const data = await $fetch<RecordType[]>(url, {
     method: "GET",
     headers: {
       "Authorization": "Bearer " + TOKEN,
