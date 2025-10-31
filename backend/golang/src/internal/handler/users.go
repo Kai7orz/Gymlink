@@ -139,7 +139,12 @@ func (h *UserHandler) GetFollowing(ctx *gin.Context) {
 		log.Println("error: invalid user")
 	}
 	followingUsers, err := h.svc.GetFollowingById(ctx, id)
-	ctx.JSON(http.StatusOK, gin.H{"following": followingUsers})
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+
+	}
+	ctx.JSON(http.StatusOK, followingUsers)
 }
 
 func (h *UserHandler) CheckFollow(ctx *gin.Context) {
