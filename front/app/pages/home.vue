@@ -1,17 +1,12 @@
 <script lang="ts" setup>
+import UploadBtn from "~/containers/UploadBtn.vue";
 import CardList from "~/containers/CardList.vue";
-import AddCard from "~/containers/AddCard.vue";
 const isOwner = ref(true);
-const toUpload = () => {
-  navigateTo("/upload");
-};
 </script>
 
 <template>
     <v-container  class="p-100 min-h-screen" >
-        <div class="upload-pos">
-          <v-btn color="light-blue-accent-4" @click="toUpload">upload</v-btn>
-        </div>
+        <upload-btn />
         <card-list :is-owner="isOwner" />
     </v-container>
 </template>
