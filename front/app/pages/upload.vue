@@ -1,118 +1,120 @@
 <script setup lang="ts">
 
-  import { illustrations } from '~/data/illustrations';
+import { illustrations } from "~/data/illustrations";
 
-  const color = ref("grey-darken-3")
-  const isError = ref(false)
-  const url = "/api/records/record"
-  const selectedFile = ref<File | null>(null)
-  const responsedUrl = ref<string>("")
-  const previewUrl = ref<string>("")
-  const isLoading = ref(false);
-  const isShownMenu = ref(false);
-  const time = ref("")
-  const cleanDate = ref(new Date())
-  const comment = ref("")
-  const imageUrl = ref('')
-  const user = useUserStore()
-  const auth = useAuthStore()
-  const TOKEN = auth.idToken
-  // イラスト一覧を読み込んで propsとして渡して表示する
-  const illustrationsObjs = illustrations
+const color = ref("grey-darken-3");
+const isError = ref(false);
+const selectedFile = ref<File | null>(null);
+const responsedUrl = ref<string>("");
+const previewUrl = ref<string>("");
+const isLoading = ref(false);
+const isShownMenu = ref(false);
+const time = ref("");
+const cleanDate = ref(new Date());
+const comment = ref("");
+const imageUrl = ref("");
+const auth = useAuthStore();
+const TOKEN = auth.idToken;
+const takeTimeLabel = "※レコードの保存から表示まで1～2分ほど反映にかかります"
+// イラスト一覧を読み込んで propsとして渡して表示する
+const illustrationsObjs = illustrations;
 
-  const formatDate = (d: Date | string) => {
-    const date = new Date(d)
-    const yyyy = date.getFullYear()
-    const mm = String(date.getMonth() + 1).padStart(2, '0')
-    const dd = String(date.getDate()).padStart(2, '0')
-    return `${yyyy}${mm}${dd}`
+const formatDate = (d: Date | string) => {
+  const date = new Date(d);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}${mm}${dd}`;
+};
+
+const getIllustration = async (event: Event) => {
+  event.preventDefault();
+  if (isError.value || time.value == "" || comment.value == "" || selectedFile.value == undefined) {
+    isError.value = true;
+    return;
   }
 
-  const getIllustration = async (event: Event) => {
-  event.preventDefault()
-  if ( isError.value || time.value=="" || cleanDate.value=="" || comment.value=="" || selectedFile.value==""){
-    isError.value = true
-    return 
-  }
-
-  const formData = new FormData()
-  formData.append('file', selectedFile.value, selectedFile.value.name)
-  formData.append('s3_key',"raw_image")
-  formData.append('clean_up_time',time.value)
-  formData.append('clean_up_date',formatDate(cleanDate.value))
-  formData.append('comment',comment.value)
-  isLoading.value = true
+  const formData = new FormData();
+  formData.append("file", selectedFile.value, selectedFile.value.name);
+  formData.append("s3_key", "raw_image");
+  formData.append("clean_up_time", time.value);
+  formData.append("clean_up_date", formatDate(cleanDate.value));
+  formData.append("comment", comment.value);
+  isLoading.value = true;
 
   try {
     await useFetch("/api/upload", {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${TOKEN}`,
+        Authorization: `Bearer ${TOKEN}`,
       },
       body: formData,
-    })
+    });
 
-    await navigateTo("/home")
-    } catch(error){
-      console.log("error: response is invalid",error)
-    } finally{
-      isLoading.value = false
-    }
+    await navigateTo("/home");
   }
+  catch (error) {
+    console.log("error: response is invalid", error);
+  }
+  finally {
+    isLoading.value = false;
+  }
+};
 
-  const getPreview = async (event: Event) => {
-    event.preventDefault()
-    if (!selectedFile.value) return
-    previewUrl.value = URL.createObjectURL(selectedFile.value)
-  }
-  const items = ref([])
-  const closeMenu = ()=>{
-      isShownMenu.value = false;
-  }
+const getPreview = async (event: Event) => {
+  event.preventDefault();
+  if (!selectedFile.value) return;
+  previewUrl.value = URL.createObjectURL(selectedFile.value);
+};
 
-  const openMenu = ()=>{
-    isShownMenu.value = true
-  }
+const closeMenu = () => {
+  isShownMenu.value = false;
+};
 
-  const select = (imageId:string) => {
-      imageUrl.value = illustrationsObjs[imageId]?.src
-  }
-  
-  watch(selectedFile,()=>{
-    if(selectedFile.value == undefined || selectedFile.value.type != 'image/png'){
-      isError.value = true
-    }
-  })
+const openMenu = () => {
+  isShownMenu.value = true;
+};
 
-  onMounted(()=>{
-    responsedUrl.value = "https://katazuke.s3.ap-northeast-1.amazonaws.com/katazuke.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA2CUNLZ5LROQUFMZJ%2F20251017%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251017T042100Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=404a1ff2fa9ef4e8ce1415a2949125f7ec36c9920980cd35d294165bbd2db4b6"
-  })
+const select = (imageId: string) => {
+  imageUrl.value = illustrationsObjs[imageId]?.src;
+};
+
+watch(selectedFile, () => {
+  if (selectedFile.value == undefined || selectedFile.value.type != "image/png") {
+    isError.value = true;
+  }
+});
+
+onMounted(() => {
+  responsedUrl.value = "https://katazuke.s3.ap-northeast-1.amazonaws.com/katazuke.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Checksum-Mode=ENABLED&X-Amz-Credential=AKIA2CUNLZ5LROQUFMZJ%2F20251017%2Fap-northeast-1%2Fs3%2Faws4_request&X-Amz-Date=20251017T042100Z&X-Amz-Expires=60&X-Amz-SignedHeaders=host&x-id=GetObject&X-Amz-Signature=404a1ff2fa9ef4e8ce1415a2949125f7ec36c9920980cd35d294165bbd2db4b6";
+});
 </script>
 
 <template>
   <v-container class="d-flex flex-column items-center">
-      <v-snackbar class="mb-20" v-model="isError"
+      <v-snackbar
+v-model="isError" class="mb-20"
                 multi-line>
                 Invalid Form : form is empty or file isn't png
-        <template v-slot:actions>
+        <template #actions>
             <v-btn
                   color="red"
                   variant="text"
                   @click="isError = false">
-                Close    
+                Close
             </v-btn>
-        </template>        
+        </template>
     </v-snackbar>
     <v-container class="add-item">
-      <ui-add-card 
-                v-model:cleanTime="time"
+      <ui-add-card
+                v-model:clean-time="time"
                 v-model:date="cleanDate"
                 v-model:comment="comment"
                 v-model:is-shown-menu=isShownMenu
-                :imageUrl="imageUrl"
-                :illustObjs="illustrationsObjs"
-                @open="openMenu" 
-                @add="addCard" 
+                :image-url="imageUrl"
+                :illust-objs="illustrationsObjs"
+                @open="openMenu"
+                @add="addCard"
                 @close="closeMenu"
                 @select="select" />
       <form class="upload-form">
@@ -121,8 +123,8 @@
           class="w-100 mx-auto p-3"
           accept="image/png"
           label="Select PNG Image"
-          @change="getPreview"
           :show-size="true"
+          @change="getPreview"
         />
       </form>
     </v-container>
@@ -147,14 +149,18 @@
       <v-btn class="m-5" variant="outlined" @click="getIllustration">
         レコード保存
       </v-btn>
-        <v-overlay v-model="isLoading"
-                location-strategy="connected"
-                class="d-flex justify-center items-center mx-auto my-auto"
-              >
-              <v-card class="d-flex items-center justify-center bg-black text-white mx-auto" min-width="150" min-height="100">
-                loading...
-              </v-card>
-        </v-overlay>
+      <v-overlay
+              v-model="isLoading"
+              location-strategy="connected"
+              class="d-flex justify-center items-center mx-auto my-auto"
+            >
+            <v-card class="d-flex items-center justify-center bg-black text-white mx-auto" min-width="150" min-height="100">
+              loading...
+            </v-card>
+      </v-overlay>
+      <v-container>
+        <div class="text-design">{{ takeTimeLabel }}</div>
+      </v-container>
     </v-sheet>
   </v-container>
 </template>
@@ -184,6 +190,13 @@
     gap: 16px;
     @media (max-width: 700px){
       flex-direction: column;
+    }
+  }
+
+  .text-design{
+    font-size:12px;
+    @media (max-width: 400px){
+      font-size: 7px;
     }
   }
 </style>
