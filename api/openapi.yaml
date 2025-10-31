@@ -278,7 +278,7 @@ paths:
                type: array
                items:
                  type: integer
-               example: [1,2,10]
+               example: {following:[1,2,10]}
 
     # 他人のプロフィール画面 & フォロー画面 & フォロワー画面
   /users/unfollows:

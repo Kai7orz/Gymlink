@@ -55,8 +55,8 @@ func (s *userService) LoginUser(ctx context.Context, idToken string) (*entity.Us
 	return user, nil
 }
 
-func (s *userService) GetProfile(ctx context.Context, id int64) (*entity.ProfileType, error) {
-	profile, err := s.p.GetProfileById(ctx, id)
+func (s *userService) GetProfile(ctx context.Context, userId int64) (*entity.ProfileType, error) {
+	profile, err := s.p.GetProfileById(ctx, userId)
 	if err != nil {
 		log.Println("failed to get profile by user id ", err)
 		return nil, err
@@ -72,6 +72,15 @@ func (s *userService) FollowUser(ctx context.Context, followerId int64, followed
 	}
 
 	return nil
+}
+
+func (s *userService) GetFollowingById(ctx context.Context, userId int64) ([]int64, error) {
+	following, err := s.q.GetFollowingById(ctx, userId)
+	if err != nil {
+		log.Println("cannot get following users")
+		return nil, err
+	}
+	return following, nil
 }
 
 func (s *userService) CheckFollowById(ctx context.Context, followId int64, idToken string) (bool, error) {
