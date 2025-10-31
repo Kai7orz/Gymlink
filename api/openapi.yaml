@@ -265,7 +265,20 @@ paths:
             application/json:
               schema:
                   example:
-                    followed: true      
+                    followed: true
+  /users/{user_id}/following:
+    get:
+      summary: user_id の人がフォローしている user id 一覧を返す
+      responses:
+        '200':
+          description: 配列として返却
+          content:
+            application/json:
+             schema:
+               type: array
+               items:
+                 type: integer
+               example: [1,2,10]
 
     # 他人のプロフィール画面 & フォロー画面 & フォロワー画面
   /users/unfollows:
