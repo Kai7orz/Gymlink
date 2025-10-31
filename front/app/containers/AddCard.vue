@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import UiAddCard from "~/components/UiAddCard.vue";
 import { illustrations } from "~/data/illustrations";
-import { useUserStore } from "~/stores/userStore";
 
 const isShownMenu = ref(false);
 const time = ref("");
@@ -35,10 +34,6 @@ const addCard = async () => {
 
 const closeMenu = () => {
   isShownMenu.value = false;
-};
-
-const openMenu = () => {
-  navigateTo("/upload");
 };
 
 const select = (imageId: string) => {
