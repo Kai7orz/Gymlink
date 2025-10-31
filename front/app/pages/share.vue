@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import CardList from "~/containers/CardList.vue";
-import AddCard from "~/containers/AddCard.vue";
 const isOwner = ref(false);
 
 const toUpload = () => {
