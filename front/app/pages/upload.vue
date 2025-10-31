@@ -15,6 +15,7 @@ const comment = ref("");
 const imageUrl = ref("");
 const auth = useAuthStore();
 const TOKEN = auth.idToken;
+const takeTimeLabel = "※レコードの保存から表示まで1～2分ほど反映にかかります"
 // イラスト一覧を読み込んで propsとして渡して表示する
 const illustrationsObjs = illustrations;
 
@@ -148,15 +149,18 @@ v-model="isError" class="mb-20"
       <v-btn class="m-5" variant="outlined" @click="getIllustration">
         レコード保存
       </v-btn>
-        <v-overlay
-                v-model="isLoading"
-                location-strategy="connected"
-                class="d-flex justify-center items-center mx-auto my-auto"
-              >
-              <v-card class="d-flex items-center justify-center bg-black text-white mx-auto" min-width="150" min-height="100">
-                loading...
-              </v-card>
-        </v-overlay>
+      <v-overlay
+              v-model="isLoading"
+              location-strategy="connected"
+              class="d-flex justify-center items-center mx-auto my-auto"
+            >
+            <v-card class="d-flex items-center justify-center bg-black text-white mx-auto" min-width="150" min-height="100">
+              loading...
+            </v-card>
+      </v-overlay>
+      <v-container>
+        <div class="text-design">{{ takeTimeLabel }}</div>
+      </v-container>
     </v-sheet>
   </v-container>
 </template>
@@ -186,6 +190,13 @@ v-model="isError" class="mb-20"
     gap: 16px;
     @media (max-width: 700px){
       flex-direction: column;
+    }
+  }
+
+  .text-design{
+    font-size:12px;
+    @media (max-width: 400px){
+      font-size: 7px;
     }
   }
 </style>
