@@ -15,7 +15,15 @@ const comment = ref("");
 const imageUrl = ref("");
 const auth = useAuthStore();
 const TOKEN = auth.idToken;
-const takeTimeLabel = "※レコードの保存から表示まで1～2分ほど反映にかかります"
+const takeTimeLabel = "※レコードの保存から表示まで1～2分ほど反映にかかります";
+const warningLabel = "Invalid Form : form is empty or file isn't png";
+const saveRecordLabel = "レコード保存";
+const loadingLabel = "Loading...";
+const invalidDateLabel = "日付：未入力";
+const invalidCleanTimeLabel = "片付け時間：未入力";
+const validImageLabel = "画像選択済み";
+const invalidImageLabel = "画像：未選択";
+const invalidCommentLabel = "コメント：未入力";
 // イラスト一覧を読み込んで propsとして渡して表示する
 const illustrationsObjs = illustrations;
 
@@ -93,9 +101,9 @@ onMounted(() => {
 <template>
   <v-container class="d-flex flex-column items-center">
       <v-snackbar
-v-model="isError" class="mb-20"
+                v-model="isError" class="mb-20"
                 multi-line>
-                Invalid Form : form is empty or file isn't png
+                {{ warningLabel }}
         <template #actions>
             <v-btn
                   color="red"
@@ -136,18 +144,18 @@ v-model="isError" class="mb-20"
     <v-sheet class="flex w-2/3 p-1 bg-black text-center rounded-lg">
       <v-container class="d-flex flex-column justify-center items-center bg-black gap-4">
         <div class="w-full d-flex justify-center ">
-          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ cleanDate ? "✅ " + String((cleanDate.getMonth() + 1) + '月'+cleanDate.getDate() + '日') :"日付：未入力"}}</v-card>
+          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{ cleanDate ? "✅ " + String((cleanDate.getMonth() + 1) + '月'+cleanDate.getDate() + '日') :invalidDateLabel}}</v-card>
         </div>
         <div class="mini-boxes">
-          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{time ? "✅" + time : "片付け時間：未入力"}}</v-card>
-          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{ selectedFile ? "✅ 画像選択済" :"画像：未入力"}}</v-card>
+          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{time ? "✅ " + time : invalidCleanTimeLabel }}</v-card>
+          <v-card class="d-flex justify-center items-center w-full sm:w-2/3 h-20" :color="color">{{ selectedFile ? "✅ " + validImageLabel : invalidImageLabel}}</v-card>
         </div>
         <div class="w-full d-flex justify-center ">
-          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{comment ? "✅"+comment : "コメント：未入力"}}</v-card>
+          <v-card class="d-flex justify-center items-center w-full h-20" :color="color">{{comment ? "✅ "+comment : invalidCommentLabel }}</v-card>
         </div>
       </v-container>
       <v-btn class="m-5" variant="outlined" @click="getIllustration">
-        レコード保存
+        {{ saveRecordLabel }}
       </v-btn>
       <v-overlay
               v-model="isLoading"
@@ -155,7 +163,7 @@ v-model="isError" class="mb-20"
               class="d-flex justify-center items-center mx-auto my-auto"
             >
             <v-card class="d-flex items-center justify-center bg-black text-white mx-auto" min-width="150" min-height="100">
-              loading...
+              {{ loadingLabel }}
             </v-card>
       </v-overlay>
       <v-container>
