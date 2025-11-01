@@ -34,8 +34,9 @@ const toggleFollow = () => {
 };
 
 const toFollowing = () => {
-  navigateTo("/following");
-}
+  if (props.id == user.userId) navigateTo("/following"); // 現状は自身のフォロー一覧しか見られない仕様
+  else return;
+};
 
 const toBack = () => {
   navigateTo("/home");

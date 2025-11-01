@@ -19,13 +19,16 @@ const toUserPage = (userId: number) => {
 
 <template>
   <div class="flex justify-center record-design">
-    <v-btn :height="btnHeight" class="button-design" @click="()=> toUserPage(props.userId)" />
+    <v-btn class="button-design" :height="btnHeight" @click="()=> toUserPage(props.userId)">
+      {{ props.userName }}
+    </v-btn>
   </div>
 </template>
 
 <style>
   .button-design {
     width: 600px;
+    font-size: 20px;
     background: rgba(255, 255, 255, 0.4);
     @media (max-width: 700px){
         width: 300
