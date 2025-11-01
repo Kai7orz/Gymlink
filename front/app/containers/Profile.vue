@@ -67,7 +67,5 @@ const unfollow = async (id: number) => {
                 :follower-count="data.follower_count"
                 @follow="follow"
                 @unfollow="unfollow"
-                @following="following"
-                @followd="followed"
                 />
 </template>
