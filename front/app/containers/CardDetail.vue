@@ -5,6 +5,7 @@ const props = defineProps<{
   id: number;
 }>();
 
+const router = useRouter();
 const auth = useAuthStore();
 const detailStore = useDetailStore();
 const TOKEN = auth.idToken;

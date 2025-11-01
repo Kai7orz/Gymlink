@@ -4,6 +4,7 @@ import type { RecordType } from "~/type";
 const props = defineProps<{
   recordList: RecordType[];
   isOwner: boolean;
+  isTargetExist: boolean;
 }>();
 
 const emits = defineEmits<{
@@ -37,6 +38,7 @@ const toAccount = (uid: number) => {
           :id="record.id"
           class="w-100"
           :is-owner="props.isOwner"
+          :is-target-exist="props.isTargetExist"
           :user-id="Number(record.user_id)"
           :user-name="record.user_name"
           :image="record.presigned_image"

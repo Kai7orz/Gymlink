@@ -7,7 +7,7 @@ const isOwner = ref(true);
 <template>
     <v-container  class="p-100 min-h-screen" >
         <upload-btn />
-        <card-list :is-owner="isOwner" />
+        <card-list :is-owner="isOwner" :is-target-exist="false" :target-id="0"/>
     </v-container>
 </template>
 
