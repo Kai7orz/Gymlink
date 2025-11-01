@@ -63,7 +63,7 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	user := dto.UserType{
+	user := dto.UserJsonType{
 		Id:   userRaw.Id,
 		Name: userRaw.Name,
 	}
@@ -138,11 +138,19 @@ func (h *UserHandler) GetFollowing(ctx *gin.Context) {
 	if err != nil || id <= 0 {
 		log.Println("error: invalid user")
 	}
-	followingUsers, err := h.svc.GetFollowingById(ctx, id)
+	followingUsersRaw, err := h.svc.GetFollowingById(ctx, id)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 
+	}
+
+	followingUsers := []dto.UserJsonType{}
+	for _, user := range followingUsersRaw {
+		followingUsers = append(followingUsers, dto.UserJsonType{
+			Id:   user.Id,
+			Name: user.Name,
+		})
 	}
 	ctx.JSON(http.StatusOK, followingUsers)
 }
