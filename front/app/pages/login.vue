@@ -17,7 +17,6 @@
     watch(isLoading, val => {
             val && setTimeout(() => {
             isLoading.value = false
-            console.log("firebase data:",firebaseData.value)
             }, 3000)
         })
 
