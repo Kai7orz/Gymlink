@@ -499,7 +499,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 ```
 で idToken を取得し
 ```
- curl -H GET 'http://localhost:8080/user_profiles/1' -H 'Content-Type:application/json;charset=utf-8' -H 'Authorization: Bearer 取得したidToken
+ curl -H GET 'http://localhost:8080/user_profiles/1' -H 'Content-Type:application/json;charset=utf-8' -H 'Authorization: Bearer 取得したidToken'
 ```
 でリクエストを送信．
 ### テーブル変更（DB リセットできる開発環境時の方法）
