@@ -13,6 +13,7 @@ const cleanUpTime = ref("");
 const cleanUpDate = ref(new Date());
 const comment = ref("");
 const auth = useAuthStore();
+const router = useRouter();
 const TOKEN = auth.idToken;
 const takeTimeLabel = "※レコードの保存から表示まで1～2分ほど反映にかかります";
 const warningLabel = "Invalid Form : form is empty or file isn't png";
@@ -23,6 +24,7 @@ const invalidCleanTimeLabel = "片付け時間：未入力";
 const validImageLabel = "画像選択済み";
 const invalidImageLabel = "画像：未選択";
 const invalidCommentLabel = "コメント：未入力";
+const toBackLabel = "戻る";
 // イラスト一覧を読み込んで propsとして渡して表示する
 
 const formatDate = (d: Date | string) => {
@@ -67,6 +69,10 @@ const getIllustration = async (event: Event) => {
   }
 };
 
+const toBack = () => {
+  router.back();
+};
+
 watch(selectedFile, () => {
   if (selectedFile.value == undefined || selectedFile.value.type != "image/png") {
     isError.value = true;
@@ -80,7 +86,17 @@ onMounted(() => {
 
 <template>
   <v-container class="d-flex flex-column items-center">
-      <v-snackbar
+            <div class="flex items-center gap-3 m-4 text-white/90 mr-auto">
+            <v-btn
+            density="comfortable"
+            variant="text"
+            class="rounded-full hover:opacity-90"
+            icon="mdi-arrow-left"
+            @click="toBack"
+            />
+            <span class="text-sm opacity-80">{{ toBackLabel }}</span>
+        </div>  
+    <v-snackbar
                 v-model="isError" class="mb-20"
                 multi-line>
                 {{ warningLabel }}

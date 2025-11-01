@@ -12,6 +12,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   follow: [id: number];
   unfollow: [id: number];
+  back: [];
   following: [id: number];
   followed: [id: number];
 }>();
@@ -19,7 +20,7 @@ const emits = defineEmits<{
 const isError = ref(false);
 const user = useUserStore();
 const state = ref(props.isFollow);
-const toHomeLabel = "ホームへ";
+const toBackLabel = "戻る";
 const followingLabel = "フォロー中: ";
 const followedLabel = "フォロワー: ";
 const followWarning = "cannot follow yourself";
@@ -39,7 +40,7 @@ const toFollowing = () => {
 };
 
 const toBack = () => {
-  navigateTo("/home");
+  emits("back");
 };
 
 onUnmounted(() => {
@@ -66,7 +67,7 @@ onUnmounted(() => {
             icon="mdi-arrow-left"
             @click="toBack"
             />
-            <span class="text-sm opacity-80">{{ toHomeLabel }}</span>
+            <span class="text-sm opacity-80">{{ toBackLabel }}</span>
         </div>
         <v-avatar :image="props.profileImage" size="200" class="mx-auto my-3" />
         <div class="name-size">{{ props.name }}</div>
