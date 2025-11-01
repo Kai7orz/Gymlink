@@ -41,8 +41,7 @@ const toGood = async (id: number) => {
 };
 
 const toBack = () => {
-  if (detailStore.detailIsOwner) navigateTo({ name: "home" });
-  else navigateTo({ name: "share" });
+  router.back();
 };
 
 const toDelete = async (id: number) => {
