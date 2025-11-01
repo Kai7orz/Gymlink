@@ -1,6 +1,11 @@
 package dto
 
-type UserType struct {
+type UserDBType struct {
+	Id   int64  `db:"followed_id"`
+	Name string `db:"name"`
+}
+
+type UserJsonType struct {
 	Id   int64  `json:"id"`
 	Name string `json:"name"`
 }

@@ -3,6 +3,7 @@
 // button click時に user id を emits させる
 const props = defineProps<{
   userId: number;
+  userName: string;
 }>();
 
 const emits = defineEmits<{

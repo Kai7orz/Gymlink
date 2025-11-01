@@ -3,6 +3,7 @@ package dbase
 import (
 	"context"
 	"fmt"
+	"gymlink/internal/dto"
 	"gymlink/internal/entity"
 	"log"
 
@@ -17,11 +18,6 @@ type checkFollowTypeDTO struct {
 
 type userQueryRepo struct {
 	db *sqlx.DB
-}
-
-type userTypeDTO struct {
-	Id   int64  `db:"followed_id"`
-	Name string `db:"name"`
 }
 
 func NewUserQueryRepo(db *sqlx.DB) *userQueryRepo {
@@ -63,7 +59,7 @@ func (r *userQueryRepo) CheckFollowById(ctx context.Context, followId int64, uid
 
 func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error) {
 
-	followingUsersRaw := []userTypeDTO{}
+	followingUsersRaw := []dto.UserDBType{}
 	sql := `SELECT followed_id,users.name 
 			FROM follows 
 			INNER JOIN users ON users.id = followed_id 

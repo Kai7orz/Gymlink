@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useUserStore } from "~/stores/userStore";
+import type { UserType } from "~/type";
 
 const user = useUserStore();
 const auth = useAuthStore();
 const TOKEN = auth.idToken;
 const uid = Number(user.userId);
-const followingUsers = await $fetch<object>(`/api/following/${uid}`, {
+const followingUsers = await $fetch<UserType[]>(`/api/following/${uid}`, {
   headers: {
     "Authorization": "Bearer " + TOKEN,
     "Content-Type": "application/json",
@@ -15,8 +16,6 @@ const followingUsers = await $fetch<object>(`/api/following/${uid}`, {
 const toFollowingPage = (userId: number) => {
   navigateTo(`/users/${userId}`);
 };
-
-console.log("following::", followingUsers);
 </script>
 
 <template>
