@@ -19,6 +19,11 @@ type userQueryRepo struct {
 	db *sqlx.DB
 }
 
+type userTypeDTO struct {
+	Id   int64  `db:"followed_id"`
+	Name string `db:"name"`
+}
+
 func NewUserQueryRepo(db *sqlx.DB) *userQueryRepo {
 	return &userQueryRepo{db: db}
 }
@@ -56,14 +61,25 @@ func (r *userQueryRepo) CheckFollowById(ctx context.Context, followId int64, uid
 	return followed, nil
 }
 
-func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]int64, error) {
+func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error) {
 
-	followingUsers := []int64{}
-	sql := `SELECT followed_id FROM follows WHERE follower_id = ?`
-	err := r.db.Select(&followingUsers, sql, userId)
+	followingUsersRaw := []userTypeDTO{}
+	sql := `SELECT followed_id,users.name 
+			FROM follows 
+			INNER JOIN users ON users.id = followed_id 
+			WHERE follows.follower_id = ?`
+	err := r.db.Select(&followingUsersRaw, sql, userId)
 	if err != nil {
 		log.Println("SELECT following error: ", err)
 		return nil, err
+	}
+
+	followingUsers := []entity.UserType{}
+	for _, user := range followingUsersRaw {
+		followingUsers = append(followingUsers, entity.UserType{
+			Id:   user.Id,
+			Name: user.Name,
+		})
 	}
 	return followingUsers, nil
 }
