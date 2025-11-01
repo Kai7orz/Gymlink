@@ -5,6 +5,7 @@ const props = defineProps<{
   id: number;
 }>();
 
+const router = useRouter();
 const auth = useAuthStore();
 const detailStore = useDetailStore();
 const TOKEN = auth.idToken;
@@ -40,8 +41,7 @@ const toGood = async (id: number) => {
 };
 
 const toBack = () => {
-  if (detailStore.detailIsOwner) navigateTo({ name: "home" });
-  else navigateTo({ name: "share" });
+  router.back();
 };
 
 const toDelete = async (id: number) => {

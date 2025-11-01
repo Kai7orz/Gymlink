@@ -8,8 +8,11 @@ import { useUserStore } from "~/stores/userStore";
 const auth = useAuthStore();
 const user = useUserStore();
 
+//  自身以外の特定ユーザーのレコード取得時にtrue になり targetId を利用する:targetId は isTargetExist==true の中でしか利用してはいけない
 const props = defineProps<{
   isOwner: boolean;
+  isTargetExist: boolean;
+  targetId: number; //  特定ユーザーを指定しないときは0
 }>();
 const tempUserId = ref("");
 const tempUserName = ref("");
@@ -26,7 +29,17 @@ onMounted(async () => {
     tempUserName.value = tempUserNameRaw;
     user.setUser(Number(tempUserId.value), tempUserName.value);
   }
-  const url = props.isOwner ? "/api/users/" + String(user.userId) + "/records" : "/api/records";
+  let url: string;
+  if (props.isOwner) {
+    url = "/api/users/" + String(user.userId) + "/records";
+  }
+  else if (props.isTargetExist) {
+    url = "/api/users/" + String(props.targetId) + "/records";
+  }
+  else {
+    url = "/api/records";
+  }
+
   const data = await $fetch<RecordType[]>(url, {
     method: "GET",
     headers: {
@@ -54,7 +67,7 @@ const detailStore = useDetailStore();
 
 const toDetail = (id: number) => {
   // Store に運動記録の情報をセットしてから遷移して，詳細画面で Storeから取り出す
-  if (props.isOwner) {
+  if (props.isOwner) { // 自身のレコードか特定のユーザーのレコード表示なら，バックエンドから受け取ったレコードリストのフィルタリングを行う
     const tempRecord = recordList.value.find((record: RecordType) => {
       return record.id == id;
     });
@@ -86,5 +99,5 @@ const toDelete = async (id: number) => {
 </script>
 
 <template>
-    <ui-card-list :record-list="recordList" :is-owner="props.isOwner" @detail="toDetail"  @delete="toDelete" @account="toAccount"/>
+    <ui-card-list :record-list="recordList" :is-owner="props.isOwner" :is-target-exist="props.isTargetExist" @detail="toDetail"  @delete="toDelete" @account="toAccount"/>
 </template>

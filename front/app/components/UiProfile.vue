@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { useUserStore } from "~/stores/userStore";
-const isError = ref(false);
-const user = useUserStore();
 const props = defineProps<{
   id: number;
   isFollow: boolean;
@@ -14,11 +12,20 @@ const props = defineProps<{
 const emits = defineEmits<{
   follow: [id: number];
   unfollow: [id: number];
+  back: [];
   following: [id: number];
   followed: [id: number];
 }>();
 
+const isError = ref(false);
+const user = useUserStore();
 const state = ref(props.isFollow);
+const toBackLabel = "戻る";
+const followingLabel = "フォロー中: ";
+const followedLabel = "フォロワー: ";
+const followWarning = "cannot follow yourself";
+const closeLabel = "close";
+
 const toggleFollow = () => {
   if (props.id == user.userId) {
     isError.value = true;
@@ -27,8 +34,13 @@ const toggleFollow = () => {
   state.value = !state.value;
 };
 
+const toFollowing = () => {
+  if (props.id == user.userId) navigateTo("/following"); // 現状は自身のフォロー一覧しか見られない仕様
+  else return;
+};
+
 const toBack = () => {
-  navigateTo("/home");
+  emits("back");
 };
 
 onUnmounted(() => {
@@ -55,17 +67,13 @@ onUnmounted(() => {
             icon="mdi-arrow-left"
             @click="toBack"
             />
-            <span class="text-sm opacity-80">ホームへ</span>
+            <span class="text-sm opacity-80">{{ toBackLabel }}</span>
         </div>
         <v-avatar :image="props.profileImage" size="200" class="mx-auto my-3" />
         <div class="name-size">{{ props.name }}</div>
         <v-container class="d-flex mx-auto my-10 gap-10">
-            <div class="mx-auto p-4 bg-grey-darken-3 rounded-lg" @click="emits('following',props.id)">
-                フォロー中 : {{ props.followCount }}
-            </div>
-            <div class="mx-auto p-4 bg-grey-darken-3 rounded-lg" @click="emits('followed',props.id)">
-                フォロワー : {{ props.followerCount }}
-            </div>
+            <v-btn  class="mx-auto p-4 bg-grey-darken-3 rounded-lg" @click="toFollowing">{{ followingLabel }} {{ props.followCount }}</v-btn>
+            <v-btn  class="mx-auto p-4 bg-grey-darken-3 rounded-lg" @click="emits('followed',props.id)">{{ followedLabel }} {{ props.followerCount }}</v-btn>
         </v-container>
         <v-container class="d-flex mx-auto my-10 gap-10">
             <v-btn class="bg-red mx-auto p-5 px-10 rounded-lg" color="primary" :class="{'bg-red': state===true, 'bg-blue': state=== false}" @click="toggleFollow">
@@ -74,13 +82,13 @@ onUnmounted(() => {
             <v-snackbar
 v-model="isError" class="mb-20"
                     multi-line>
-                    cannot follow yourself
+                    {{ followWarning }}
                 <template #actions>
                     <v-btn
                         color="red"
                         variant="text"
                         @click="isError = false">
-                        Close
+                        {{ closeLabel }}
                     </v-btn>
                 </template>
             </v-snackbar>

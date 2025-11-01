@@ -1,3 +1,9 @@
+## DTO のリファクタリング
+Handler および Adapter レイヤーで DTO 変換する規則
+- Adapter : DB のカラム形式と合わせるための DTO 定義
+- Handler : JSON 形式に合わせるための DTO 変換
+- Common : 他のレイヤーにまたがるデータの型
+
 ## ESLint 
 https://zenn.dev/januswel/articles/402774d76424e71ac906
 
@@ -499,7 +505,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 ```
 で idToken を取得し
 ```
- curl -H GET 'http://localhost:8080/user_profiles/1' -H 'Content-Type:application/json;charset=utf-8' -H 'Authorization: Bearer 取得したidToken
+ curl -H GET 'http://localhost:8080/user_profiles/1' -H 'Content-Type:application/json;charset=utf-8' -H 'Authorization: Bearer 取得したidToken'
 ```
 でリクエストを送信．
 ### テーブル変更（DB リセットできる開発環境時の方法）

@@ -74,7 +74,7 @@ func (s *userService) FollowUser(ctx context.Context, followerId int64, followed
 	return nil
 }
 
-func (s *userService) GetFollowingById(ctx context.Context, userId int64) ([]int64, error) {
+func (s *userService) GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error) {
 	following, err := s.q.GetFollowingById(ctx, userId)
 	if err != nil {
 		log.Println("cannot get following users")

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-
 import { useUserStore } from "~/stores/userStore";
 const props = defineProps<{
   userId: string;
 }>();
 
+const router = useRouter();
 const user = useUserStore();
 const auth = useAuthStore();
 const TOKEN = auth.idToken;
@@ -55,6 +55,10 @@ const unfollow = async (id: number) => {
   });
 };
 
+const toBack = () => {
+  router.back();
+};
+
 </script>
 
 <template>
@@ -67,7 +71,6 @@ const unfollow = async (id: number) => {
                 :follower-count="data.follower_count"
                 @follow="follow"
                 @unfollow="unfollow"
-                @following="following"
-                @followd="followed"
+                @back="toBack"
                 />
 </template>
