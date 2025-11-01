@@ -3,9 +3,9 @@ import { useAuthStore } from "~/stores/auth";
 import { useDetailStore } from "~/stores/detailStore";
 const props = defineProps<{
   id: number;
-  isOwner: boolean;
 }>();
 
+const router = useRouter();
 const auth = useAuthStore();
 const detailStore = useDetailStore();
 const TOKEN = auth.idToken;

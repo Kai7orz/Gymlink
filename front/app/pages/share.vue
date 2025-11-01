@@ -12,7 +12,7 @@ const toUpload = () => {
         <div class="upload-pos">
           <v-btn color="light-blue-accent-4" @click="toUpload">upload</v-btn>
         </div>
-        <card-list :is-owner="isOwner" />
+        <card-list :is-owner="isOwner" :is-target-exist="false" :target-id="0"/>
     </v-container>
 </template>
 

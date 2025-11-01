@@ -1,27 +1,28 @@
 <script setup lang="ts">
-import type { RecordType } from '~/type';
+import type { RecordType } from "~/type";
 
-    const props = defineProps<{
-        recordList: RecordType[],
-        isOwner: boolean,
-    }>();
+const props = defineProps<{
+  recordList: RecordType[];
+  isOwner: boolean;
+  isTargetExist: boolean;
+}>();
 
-    const emits = defineEmits<{
-        detail: [id: number],
-        like: [id: number],
-    }>();
+const emits = defineEmits<{
+  detail: [id: number];
+  like: [id: number];
+}>();
 
-    const toDetail = (id:number) => {
-        emits('detail',id)
-    }
+const toDetail = (id: number) => {
+  emits("detail", id);
+};
 
-    const toDelete = (id:number) => {
-      emits('delete',id)
-    }
+const toDelete = (id: number) => {
+  emits("delete", id);
+};
 
-    const toAccount = (uid:number) => {
-        emits('account',uid)
-    }
+const toAccount = (uid: number) => {
+  emits("account", uid);
+};
 
 </script>
 <template>
@@ -31,19 +32,20 @@ import type { RecordType } from '~/type';
         v-for="(record, index) in props.recordList"
         :key="index"
         cols="12"
-        md="6"      
+        md="6"
       >
         <ui-card
-          class="w-100"
-          :isOwner="props.isOwner"
           :id="record.id"
-          :userId="Number(record.user_id)"
-          :userName="record.user_name"
+          class="w-100"
+          :is-owner="props.isOwner"
+          :is-target-exist="props.isTargetExist"
+          :user-id="Number(record.user_id)"
+          :user-name="record.user_name"
           :image="record.presigned_image"
           :time="record.clean_up_time"
           :date="record.clean_up_date"
           :comment="record.comment"
-          :likesCount="record.likes_count"
+          :likes-count="record.likes_count"
           @detail="toDetail"
           @delete="toDelete"
           @account="toAccount"

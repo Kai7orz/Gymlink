@@ -2,6 +2,7 @@
 
 const props = defineProps<{
   isOwner: boolean;
+  isTargetExist: boolean;
   id: number;
   userId: number;
   userName: string;
@@ -18,6 +19,8 @@ const emits = defineEmits<{
   account: [id: number];
   delete: [id: number];
 }>();
+
+const remove = "delete";
 
 const clicked = (id: number) => {
   emits("detail", id);
@@ -39,15 +42,15 @@ const onAccount = async (uid: number) => {
             <div>{{props.date }} : {{ props.userName }}</div>
             <img :src="props.image" alt="image not found" class="w-60 h-50 rounded-xl" >
             <v-card-subtitle class="pb-0">片付け時間: {{ props.time }}分</v-card-subtitle>
-            <div class="d-flex mt-10 gap-5">
-                <v-icon class="mr-20" size="30" icon="mdi-account-file-outline" @click="()=>onAccount(props.userId)" />
+            <div class="d-flex mt-10 gap-20">
+                <v-icon v-if="!(props.isTargetExist || props.isOwner)" bclass="mr-20" size="30" icon="mdi-account-file-outline" @click="()=>onAccount(props.userId)" />
                 <div class="d-flex">
                     <v-icon class="mx-3" icon="mdi-thumb-up"/>
                     <div>{{ props.likesCount }}</div>
                 </div>
             </div>
             <v-btn v-if="props.isOwner" class="d-flex mx-auto m-5" color="red" @click.stop="()=>onDelete(props.id)">
-                    delete
+                    {{ remove }}
             </v-btn>
         </v-card>
     </v-hover>
