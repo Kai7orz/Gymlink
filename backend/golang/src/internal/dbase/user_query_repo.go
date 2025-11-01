@@ -59,7 +59,7 @@ func (r *userQueryRepo) CheckFollowById(ctx context.Context, followId int64, uid
 func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]int64, error) {
 
 	followingUsers := []int64{}
-	sql := `SELECT follower_id FROM follows WHERE followed_id = ?`
+	sql := `SELECT followed_id FROM follows WHERE follower_id = ?`
 	err := r.db.Select(&followingUsers, sql, userId)
 	if err != nil {
 		log.Println("SELECT following error: ", err)
