@@ -12,3 +12,8 @@ export type RecordType = {
 export type Illustration = {
   src: string;
 };
+
+export type UserType = {
+  id: number;
+  name: string;
+};

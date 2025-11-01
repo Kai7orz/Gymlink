@@ -1,3 +1,8 @@
+## DTO のリファクタリング
+Handler および Adapter レイヤーで DTO 変換する規則
+- Adapter : DB のカラム形式と合わせるための DTO 定義
+- Handler : JSON 形式に合わせるための DTO 変換
+
 ## ESLint 
 https://zenn.dev/januswel/articles/402774d76424e71ac906
 
