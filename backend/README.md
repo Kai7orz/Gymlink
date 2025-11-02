@@ -1,3 +1,6 @@
+##
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+
 ## DTO のリファクタリング
 Handler および Adapter レイヤーで DTO 変換する規則
 - Adapter : DB のカラム形式と合わせるための DTO 定義
