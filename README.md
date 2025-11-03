@@ -83,7 +83,7 @@ https://youtu.be/KkyxXLnOX8I
 インフラ: AWS
 
 ### 選定理由
-Nuxt: React,Next.js と迷いましたが，Nuxt の方が 
+Nuxt: React,Next.js と迷いましたが,
 - Vuetify や状態管理のPinia など周辺ツールの選択肢がいい意味で少ないため，選定に迷いにくく開発に集中できる
 - React 系に次いで情報が多い
 
