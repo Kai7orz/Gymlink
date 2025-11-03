@@ -116,10 +116,11 @@ func (h *UserHandler) FollowUser(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
+	token := strings.TrimPrefix(authz, "Bearer ")
 
-	err := h.svc.FollowUser(ctx.Request.Context(), userFollow.FollowerId, userFollow.FollowedId)
+	err := h.svc.FollowUser(ctx.Request.Context(), userFollow.FollowerId, userFollow.FollowedId, token)
 	if err != nil {
-		log.Println("error: user follow")
+		log.Println("error: user follow :", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
 		return
 	}
@@ -220,7 +221,7 @@ func (h *UserHandler) DeleteFollowUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
-
+	token := strings.TrimPrefix(authz, "Bearer ")
 	//　requestBody の読み取り
 	var userDeleteFollow dto.UserFollowType
 	if err := ctx.ShouldBindJSON(&userDeleteFollow); err != nil {
@@ -229,7 +230,7 @@ func (h *UserHandler) DeleteFollowUser(ctx *gin.Context) {
 		return
 	}
 
-	err := h.svc.DeleteFollowUser(ctx.Request.Context(), userDeleteFollow.FollowerId, userDeleteFollow.FollowedId)
+	err := h.svc.DeleteFollowUser(ctx.Request.Context(), userDeleteFollow.FollowerId, userDeleteFollow.FollowedId, token)
 	if err != nil {
 		log.Println("error: user follow")
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
