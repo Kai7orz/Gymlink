@@ -4,9 +4,9 @@ const router = useRouter();
 const toBack = () => {
   router.back();
 };
-const pageLabel = "Following Users";
+const pageLabel = "Followed Users";
 const toBackLabel = "戻る";
-const isFollowing = true;
+const isFollowing = false;
 </script>
 
 <template>

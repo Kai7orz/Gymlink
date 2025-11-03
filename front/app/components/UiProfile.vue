@@ -39,6 +39,11 @@ const toFollowing = () => {
   else return;
 };
 
+const toFollowed = () => {
+  if (props.id == user.userId) navigateTo("/followed");
+  else return;
+};
+
 const toBack = () => {
   emits("back");
 };
@@ -73,14 +78,14 @@ onUnmounted(() => {
         <div class="name-size">{{ props.name }}</div>
         <v-container class="d-flex mx-auto my-10 gap-10">
             <v-btn  class="mx-auto p-4 bg-grey-darken-3 rounded-lg" @click="toFollowing">{{ followingLabel }} {{ props.followCount }}</v-btn>
-            <v-btn  class="mx-auto p-4 bg-grey-darken-3 rounded-lg" @click="emits('followed',props.id)">{{ followedLabel }} {{ props.followerCount }}</v-btn>
+            <v-btn  class="mx-auto p-4 bg-grey-darken-3 rounded-lg" @click="toFollowed">{{ followedLabel }} {{ props.followerCount }}</v-btn>
         </v-container>
         <v-container class="d-flex mx-auto my-10 gap-10">
             <v-btn class="bg-red mx-auto p-5 px-10 rounded-lg" color="primary" :class="{'bg-red': state===true, 'bg-blue': state=== false}" @click="toggleFollow">
                 {{ state ? "フォロー解除" : "フォロー" }}
             </v-btn>
             <v-snackbar
-v-model="isError" class="mb-20"
+                    v-model="isError" class="mb-20"
                     multi-line>
                     {{ followWarning }}
                 <template #actions>
