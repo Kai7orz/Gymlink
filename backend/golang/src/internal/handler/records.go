@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"errors"
+	"gymlink/internal/apperrs"
 	"gymlink/internal/dto"
 	"gymlink/internal/service"
 	"log"
@@ -30,13 +32,20 @@ func (h *RecordHandler) GetRecordsById(ctx *gin.Context) {
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil || id <= 0 {
 		log.Println("error: invalid user id")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
 		return
 	}
-	records, err := h.svc.GetRecordsById(ctx, id)
+	records, err := h.svc.GetRecordsById(ctx.Request.Context(), id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 	ctx.JSON(http.StatusOK, records)
 }
@@ -47,11 +56,19 @@ func (h *RecordHandler) GetRecords(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 		return
 	}
-	records, err := h.svc.GetRecords(ctx)
+	records, err := h.svc.GetRecords(ctx.Request.Context())
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
+
 	ctx.JSON(http.StatusOK, records)
 }
 
@@ -85,10 +102,17 @@ func (h *RecordHandler) DeleteRecord(ctx *gin.Context) {
 
 	err = h.svc.DeleteRecordById(ctx.Request.Context(), userId, recordId, token)
 	if err != nil {
-		log.Println("error in deleting record")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 
 func (h *RecordHandler) CreateLike(ctx *gin.Context) {
@@ -108,9 +132,15 @@ func (h *RecordHandler) CreateLike(ctx *gin.Context) {
 
 	err := h.svc.CreateLike(ctx.Request.Context(), recordLike.RecordId, token)
 	if err != nil {
-		log.Println("error: record like ", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "record like created successfully"})
@@ -133,9 +163,15 @@ func (h *RecordHandler) CheckLike(ctx *gin.Context) {
 	}
 	liked, err := h.svc.CheckLikeById(ctx.Request.Context(), recordId, token)
 	if err != nil {
-		log.Println("error check like ", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"liked": liked})
@@ -159,9 +195,15 @@ func (h *RecordHandler) DeleteLike(ctx *gin.Context) {
 
 	err = h.svc.DeleteLikeById(ctx.Request.Context(), recordId, token)
 	if err != nil {
-		log.Println("error delete like ", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "record like deleted successfully"})
@@ -180,7 +222,7 @@ func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 	s3KeyRaw := ctx.PostForm("s3_key")
 	if s3KeyRaw == "" {
 		log.Println("error")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -195,21 +237,21 @@ func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 	cleanUpDateRaw := ctx.PostForm("clean_up_date")
 	if cleanUpDateRaw == "" {
 		log.Println("error clean date time is not set")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
 		return
 	}
 
 	comment := ctx.PostForm("comment")
 	if comment == "" {
 		log.Println("error comment is not set")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
 		return
 	}
 
 	image, err := ctx.FormFile("file")
 	if err != nil {
 		log.Println("error", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
 		return
 	}
 	recordCreate := dto.RecordCreateType{
@@ -222,7 +264,7 @@ func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 	s3Key, err := h.svc.UploadIllustration(ctx.Request.Context(), image, s3KeyRaw, token)
 	if err != nil {
 		log.Println("image dir error", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
 		return
 	}
 
@@ -230,10 +272,17 @@ func (h *RecordHandler) GenerateIllustration(ctx *gin.Context) {
 
 	err = h.svc.CreateRecord(ctx.Request.Context(), recordCreate.ObjectKey, recordCreate.CleanUpTimeRaw, recordCreate.CleanUpDateRaw, recordCreate.Comment, token)
 	if err != nil {
-		log.Println("error: create record", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{"message": "record is created successfully"})
 
 }
