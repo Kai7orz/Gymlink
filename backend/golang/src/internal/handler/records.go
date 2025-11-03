@@ -76,6 +76,8 @@ func (h *RecordHandler) DeleteRecord(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "failed to parse user_id"})
 	}
 
+	// tokenをもとに firebase に対応する user id と post された user id のチェック
+
 	recordId, err := strconv.ParseInt(recordIdStr, 10, 64)
 	if err != nil || recordId <= 0 {
 		log.Println("error: invalid record id")
