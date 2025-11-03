@@ -16,6 +16,7 @@ type UserQueryRepo interface {
 	FindByToken(ctx context.Context, uid string) (*entity.UserType, error)
 	CheckFollowById(ctx context.Context, followId int64, uid string) (bool, error)
 	GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error)
+	GetFollowedById(ctx context.Context, userId int64) ([]entity.UserType, error)
 }
 
 type UserCommandRepo interface {
@@ -66,6 +67,7 @@ type UserService interface {
 	GetProfile(ctx context.Context, id int64) (*entity.ProfileType, error)
 	FollowUser(ctx context.Context, followerId int64, followedId int64) error
 	GetFollowingById(ctx context.Context, id int64) ([]entity.UserType, error)
+	GetFollowedById(ctx context.Context, id int64) ([]entity.UserType, error)
 	CheckFollowById(ctx context.Context, followId int64, idToken string) (bool, error)
 	DeleteFollowUser(ctx context.Context, followerId int64, followedId int64) error
 }
