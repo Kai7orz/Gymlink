@@ -115,6 +115,7 @@ func main() {
 	r.DELETE("/likes/:record_id", recordHandler.DeleteLike)
 	r.POST("/follows", userHandler.FollowUser)
 	r.GET("/users/:user_id/following", userHandler.GetFollowing)
+	r.GET("/users/:user_id/followed", userHandler.GetFollowed)
 	r.GET("/follows/:user_id", userHandler.CheckFollow)
 	r.DELETE("/users/unfollows", userHandler.DeleteFollowUser)
 	r.POST("/upload", recordHandler.GenerateIllustration)
