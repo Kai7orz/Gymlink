@@ -59,7 +59,7 @@ func (r *userQueryRepo) CheckFollowById(ctx context.Context, followId int64, uid
 
 func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error) {
 
-	followingUsersRaw := []dto.UserDBType{}
+	followingUsersRaw := []dto.FollowerDBType{}
 	sql := `SELECT followed_id,users.name 
 			FROM follows 
 			INNER JOIN users ON users.id = followed_id 
@@ -81,10 +81,10 @@ func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]e
 }
 
 func (r *userQueryRepo) GetFollowedById(ctx context.Context, userId int64) ([]entity.UserType, error) {
-	followedUsersRaw := []dto.UserDBType{}
-	sql := `SLELECT folloer_id,users.name
+	followedUsersRaw := []dto.FollowedDBType{}
+	sql := `SELECT follower_id,users.name
 			FROM follows
-			INNER JOIN users ON user.id = follower_id
+			INNER JOIN users ON users.id = follower_id
 			WHERE follows.followed_id = ?`
 	err := r.db.Select(&followedUsersRaw, sql, userId)
 	if err != nil {
