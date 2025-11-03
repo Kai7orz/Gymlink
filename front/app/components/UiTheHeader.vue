@@ -6,7 +6,7 @@ const emits = defineEmits<{
   share: [];
   signout: [];
 }>();
-const appTitle = "KMonitor"
+const appTitle = "KMonitor";
 const shareTip = "みんなの投稿";
 const homeTip = "自分の投稿";
 const motiveTip = "エールをもらう";

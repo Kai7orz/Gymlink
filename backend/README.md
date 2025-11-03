@@ -30,6 +30,7 @@ show create table user_likes;
 この後はqiita の記事と全く同じ（実際に制約を確認したら制約ついていた... のでこれ以降の作業する必要がなくなった）
 
 ## デプロイ手順
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 AWS でデプロイを行う．
 無料枠のインスタンスではスペックが不足するため，m5.large を利用する．
 ### 設定
@@ -58,7 +59,7 @@ ssh -i katazuke.pem \
 ### docker & docker composeinstall :参考　https://zenn.dev/rock_penguin/articles/28875c7b0a5e30
 ```
 install 完了後は， project の Gymlink/ に mysql/.env と golang/の src 配下にも .env を作成し，DB 用環境をセット．
-
+　
 この状態で一度，sudo docker-compose up
 この際立ち上がるがセキュリティに 3000port 開放規則入れていないので追加する（カスタムtcp 3000 port リソース：マイIP）
 

@@ -87,7 +87,7 @@ const toDetail = (id: number) => {
 };
 
 const toDelete = async (id: number) => {
-  const date = await $fetch("/api/users/" + String(user.userId) + "/records/" + String(id), {
+  const data = await $fetch("/api/users/" + String(user.userId) + "/records/" + String(id), {
     method: "DELETE",
     headers: {
       "Authorization": "Bearer " + TOKEN,
