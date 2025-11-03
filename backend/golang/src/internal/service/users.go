@@ -77,10 +77,19 @@ func (s *userService) FollowUser(ctx context.Context, followerId int64, followed
 func (s *userService) GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error) {
 	following, err := s.q.GetFollowingById(ctx, userId)
 	if err != nil {
-		log.Println("cannot get following users")
+		log.Println("cannot get following users :", err)
 		return nil, err
 	}
 	return following, nil
+}
+
+func (s *userService) GetFollowedById(ctx context.Context, userId int64) ([]entity.UserType, error) {
+	followed, err := s.q.GetFollowedById(ctx, userId)
+	if err != nil {
+		log.Println("cannot get followed users :", err)
+		return nil, err
+	}
+	return followed, nil
 }
 
 func (s *userService) CheckFollowById(ctx context.Context, followId int64, idToken string) (bool, error) {

@@ -133,11 +133,13 @@ func (h *UserHandler) GetFollowing(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "missing Bearer token"})
 		return
 	}
+
 	idStr := ctx.Param("user_id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil || id <= 0 {
 		log.Println("error: invalid user")
 	}
+
 	followingUsersRaw, err := h.svc.GetFollowingById(ctx, id)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
@@ -153,6 +155,35 @@ func (h *UserHandler) GetFollowing(ctx *gin.Context) {
 		})
 	}
 	ctx.JSON(http.StatusOK, followingUsers)
+}
+
+func (h *UserHandler) GetFollowed(ctx *gin.Context) {
+	authz := ctx.GetHeader("Authorization")
+	if !strings.HasPrefix(authz, "Bearer ") {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "missing bearer token"})
+		return
+	}
+
+	idStr := ctx.Param("user_id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil || id <= 0 {
+		log.Println("error: invalid user")
+	}
+
+	followedUsersRaw, err := h.svc.GetFollowedById(ctx, id)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
+		return
+	}
+
+	followedUsers := []dto.UserJsonType{}
+	for _, user := range followedUsersRaw {
+		followedUsers = append(followedUsers, dto.UserJsonType{
+			Id:   user.Id,
+			Name: user.Name,
+		})
+	}
+	ctx.JSON(http.StatusOK, followedUsers)
 }
 
 func (h *UserHandler) CheckFollow(ctx *gin.Context) {

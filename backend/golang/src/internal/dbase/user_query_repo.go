@@ -79,3 +79,24 @@ func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]e
 	}
 	return followingUsers, nil
 }
+
+func (r *userQueryRepo) GetFollowedById(ctx context.Context, userId int64) ([]entity.UserType, error) {
+	followedUsersRaw := []dto.UserDBType{}
+	sql := `SLELECT folloer_id,users.name
+			FROM follows
+			INNER JOIN users ON user.id = follower_id
+			WHERE follows.followed_id = ?`
+	err := r.db.Select(&followedUsersRaw, sql, userId)
+	if err != nil {
+		log.Println("SELECT followed error: ", err)
+		return nil, err
+	}
+	followedUsers := []entity.UserType{}
+	for _, user := range followedUsersRaw {
+		followedUsers = append(followedUsers, entity.UserType{
+			Id:   user.Id,
+			Name: user.Name,
+		})
+	}
+	return followedUsers, nil
+}
