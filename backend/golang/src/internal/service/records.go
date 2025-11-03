@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"gymlink/internal/entity"
 	"log"
 	"mime/multipart"
@@ -13,6 +14,7 @@ import (
 )
 
 type recordService struct {
+	q  UserQueryRepo
 	e  RecordQueryRepo
 	ec RecordCommandRepo
 	a  AuthClient
@@ -20,11 +22,11 @@ type recordService struct {
 	ac AwsClient
 }
 
-func NewRecordService(e RecordQueryRepo, ec RecordCommandRepo, a AuthClient, gc GptClient, ac AwsClient) (RecordService, error) {
+func NewRecordService(q UserQueryRepo, e RecordQueryRepo, ec RecordCommandRepo, a AuthClient, gc GptClient, ac AwsClient) (RecordService, error) {
 	if e == nil {
 		return nil, errors.New("nil error: RecordQueryRepo or Record CreateRepo")
 	}
-	return &recordService{e: e, ec: ec, a: a, gc: gc, ac: ac}, nil
+	return &recordService{q: q, e: e, ec: ec, a: a, gc: gc, ac: ac}, nil
 }
 
 func (s *recordService) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error) {
@@ -124,17 +126,23 @@ func (s *recordService) CreateRecord(ctx context.Context, objectKey string, clea
 	return nil
 }
 
-func (s *recordService) DeleteRecordById(ctx context.Context, userId int64, recordId int64, idToken string) error {
+func (s *recordService) DeleteRecordById(ctx context.Context, userIdRaw int64, recordId int64, idToken string) error {
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		log.Println("failed to verify user ")
-		return err
+		return fmt.Errorf("failed to verify user : %w", err)
 	}
 
-	err = s.ec.DeleteRecordById(ctx, userId, recordId, token.UID)
+	user, err := s.q.FindByToken(ctx, token.UID)
 	if err != nil {
-		log.Println("error delete record")
-		return err
+		return fmt.Errorf("error: find by token : %w", err)
+	}
+	if user.Id != userIdRaw {
+		return fmt.Errorf("invalid: delete command must be used by owner : %w", err)
+	}
+
+	err = s.ec.DeleteRecordById(ctx, user.Id, recordId, token.UID)
+	if err != nil {
+		return fmt.Errorf("failed to delete record : %w", err)
 	}
 	return nil
 }
@@ -182,6 +190,7 @@ func (s *recordService) DeleteLikeById(ctx context.Context, recordId int64, idTo
 		log.Println("failed to verify user ")
 		return err
 	}
+
 	err = s.ec.DeleteLike(ctx, recordId, token.UID)
 	if err != nil {
 		log.Println("error delete like ")
