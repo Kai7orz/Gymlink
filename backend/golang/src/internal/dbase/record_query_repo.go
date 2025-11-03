@@ -27,7 +27,7 @@ func (r *recordQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]entit
 		 	records.clean_up_date,
 			records.comment,
 			(SELECT COUNT(*) FROM user_likes WHERE record_id = records.id) AS likes_count 
-			FROM records INNER JOIN users ON users.id = records.user_id WHERE user_id = :id`
+			FROM records INNER JOIN users ON users.id = records.user_id WHERE user_id = :id ORDER BY records.id DESC`
 	bindParams := map[string]any{
 		"id": id,
 	}
@@ -58,7 +58,7 @@ func (r *recordQueryRepo) GetRecords(ctx context.Context) ([]entity.RecordRawTyp
 			records.clean_up_date,
 			records.comment,
 			(SELECT COUNT(*) FROM user_likes WHERE record_id = records.id) AS likes_count 
-			FROM records INNER JOIN users ON users.id = records.user_id ORDER BY records.id DESC LIMIT 20`
+			FROM records INNER JOIN users ON users.id = records.user_id ORDER BY records.id DESC LIMIT 10`
 	records := []entity.RecordRawType{}
 	if err := r.db.Select(&records, sql); err != nil {
 		return nil, err
