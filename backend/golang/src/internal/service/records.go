@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"gymlink/internal/apperrs"
 	"gymlink/internal/entity"
 	"mime/multipart"
 	"strconv"
@@ -39,7 +40,7 @@ func (s *recordService) GetRecordsById(ctx context.Context, id int64) ([]entity.
 	for _, record := range recordsRaw {
 		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 300)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get request")
+			return nil, fmt.Errorf("failed to get request : %w", err)
 		}
 
 		newRecord := entity.RecordType{
@@ -96,7 +97,7 @@ func (s *recordService) CreateRecord(ctx context.Context, objectKey string, clea
 	}
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return fmt.Errorf("failed to verify user : %w", err)
+		return apperrs.ErrVerifyUser
 	}
 	cleanUpTimeInt, err := strconv.Atoi(cleanUpTimeRaw)
 	if err != nil {
@@ -120,7 +121,7 @@ func (s *recordService) CreateRecord(ctx context.Context, objectKey string, clea
 func (s *recordService) DeleteRecordById(ctx context.Context, userIdRaw int64, recordId int64, idToken string) error {
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return fmt.Errorf("failed to verify user : %w", err)
+		return apperrs.ErrVerifyUser
 	}
 
 	user, err := s.q.FindByToken(ctx, token.UID)
@@ -128,7 +129,7 @@ func (s *recordService) DeleteRecordById(ctx context.Context, userIdRaw int64, r
 		return fmt.Errorf("error: find by token : %w", err)
 	}
 	if user.Id != userIdRaw {
-		return fmt.Errorf("invalid: delete command must be used by owner : %w", err)
+		return fmt.Errorf("invalid: delete command must be used by owner")
 	}
 
 	err = s.ec.DeleteRecordById(ctx, user.Id, recordId, token.UID)
@@ -144,7 +145,7 @@ func (s *recordService) CheckLikeById(ctx context.Context, recordId int64, idTok
 	}
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return false, fmt.Errorf("failed to verify user : %w", err)
+		return false, apperrs.ErrVerifyUser
 	}
 	liked, err := s.ec.CheckLike(ctx, recordId, token.UID)
 	if err != nil {
@@ -159,7 +160,7 @@ func (s *recordService) CreateLike(ctx context.Context, recordId int64, idToken 
 	}
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return fmt.Errorf("failed to verify user : %w", err)
+		return apperrs.ErrVerifyUser
 	}
 	err = s.ec.CreateLike(ctx, recordId, token.UID)
 	if err != nil {
@@ -174,7 +175,7 @@ func (s *recordService) DeleteLikeById(ctx context.Context, recordId int64, idTo
 	}
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return fmt.Errorf("failed to verify user : %w", err)
+		return apperrs.ErrVerifyUser
 	}
 
 	err = s.ec.DeleteLike(ctx, recordId, token.UID)
@@ -192,7 +193,7 @@ func (s *recordService) UploadIllustration(ctx context.Context, image *multipart
 	}
 	_, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return "", fmt.Errorf("failed to verify user : %w", err)
+		return "", apperrs.ErrVerifyUser
 	}
 	// 画像を読み込み
 	// GPT API interface　の　アップロード関数を呼び出す

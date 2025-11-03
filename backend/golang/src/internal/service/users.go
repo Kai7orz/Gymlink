@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"gymlink/internal/apperrs"
 	"gymlink/internal/entity"
 )
 
@@ -27,7 +28,7 @@ func (s *userService) SignUpUser(ctx context.Context, name string, avatarUrl str
 	//verify user
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return fmt.Errorf("failed to verify user")
+		return apperrs.ErrVerifyUser
 	}
 
 	// token.UID と CharaceterId(デフォルト1) と FirebaseUID と Name と Email を保持
@@ -44,7 +45,7 @@ func (s *userService) LoginUser(ctx context.Context, idToken string) (*entity.Us
 	//verify user
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return nil, fmt.Errorf("failed to verify user : %w", err)
+		return nil, apperrs.ErrVerifyUser
 	}
 
 	user, err := s.q.FindByToken(ctx, token.UID)
@@ -65,7 +66,7 @@ func (s *userService) GetProfile(ctx context.Context, userId int64) (*entity.Pro
 func (s *userService) FollowUser(ctx context.Context, followerIdRaw int64, followedId int64, idToken string) error {
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return fmt.Errorf("failed to verify user : %w", err)
+		return apperrs.ErrVerifyUser
 	}
 	// firebase Id TOKEN から user_id を取得
 	// ユーザーが followerId を偽装していないかなどチェックする
@@ -111,7 +112,7 @@ func (s *userService) CheckFollowById(ctx context.Context, followId int64, idTok
 	//verify user
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return false, fmt.Errorf("failed to verify user : %w", err)
+		return false, apperrs.ErrVerifyUser
 	}
 
 	followed, err := s.q.CheckFollowById(ctx, followId, token.UID)
@@ -124,7 +125,7 @@ func (s *userService) CheckFollowById(ctx context.Context, followId int64, idTok
 func (s *userService) DeleteFollowUser(ctx context.Context, followerIdRaw int64, followedId int64, idToken string) error {
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
-		return fmt.Errorf("failed to verify user : %w", err)
+		return apperrs.ErrVerifyUser
 	}
 	// firebase Id TOKEN から user_id を取得
 	// ユーザーが followerId を偽装していないかなどチェックする

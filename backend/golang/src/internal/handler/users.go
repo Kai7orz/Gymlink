@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"errors"
+	"gymlink/internal/apperrs"
 	"gymlink/internal/dto"
 	"gymlink/internal/service"
 	"log"
@@ -40,9 +42,15 @@ func (h *UserHandler) SignUpUserById(ctx *gin.Context) {
 	// service に依存
 	err := h.svc.SignUpUser(ctx.Request.Context(), userCreate.Name, userCreate.AvatarUrl, token)
 	if err != nil {
-		log.Println("error: failed to signup ", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "failed to signup"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Finish Setting Endpoints Successfully✅"})
@@ -59,8 +67,15 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 
 	userRaw, err := h.svc.LoginUser(ctx.Request.Context(), token)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "failed to login"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	user := dto.UserJsonType{
@@ -86,8 +101,15 @@ func (h *UserHandler) GetProfilebyId(ctx *gin.Context) {
 	}
 	profileRaw, err := h.svc.GetProfile(ctx.Request.Context(), id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	profile := dto.ProfileType{
@@ -120,10 +142,17 @@ func (h *UserHandler) FollowUser(ctx *gin.Context) {
 
 	err := h.svc.FollowUser(ctx.Request.Context(), userFollow.FollowerId, userFollow.FollowedId, token)
 	if err != nil {
-		log.Println("error: user follow :", err)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{"message": "user follow successfully"})
 }
 
@@ -143,9 +172,15 @@ func (h *UserHandler) GetFollowing(ctx *gin.Context) {
 
 	followingUsersRaw, err := h.svc.GetFollowingById(ctx, id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
-
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	followingUsers := []dto.UserJsonType{}
@@ -173,8 +208,15 @@ func (h *UserHandler) GetFollowed(ctx *gin.Context) {
 
 	followedUsersRaw, err := h.svc.GetFollowedById(ctx, id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	followedUsers := []dto.UserJsonType{}
@@ -205,9 +247,15 @@ func (h *UserHandler) CheckFollow(ctx *gin.Context) {
 	}
 	followed, err := h.svc.CheckFollowById(ctx.Request.Context(), id, token)
 	if err != nil {
-		log.Println("failed to check follows")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"followed": followed})
@@ -232,9 +280,16 @@ func (h *UserHandler) DeleteFollowUser(ctx *gin.Context) {
 
 	err := h.svc.DeleteFollowUser(ctx.Request.Context(), userDeleteFollow.FollowerId, userDeleteFollow.FollowedId, token)
 	if err != nil {
-		log.Println("error: user follow")
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "server internal error"})
-		return
+		switch {
+		case errors.Is(err, apperrs.ErrVerifyUser):
+			log.Println("failed to verify user : ", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid user request"})
+			return
+		default:
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "internal server error"})
+			return
+		}
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{"message": "user follow successfully"})
 }
