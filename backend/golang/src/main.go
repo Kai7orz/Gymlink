@@ -95,7 +95,7 @@ func main() {
 		log.Fatal("user service error")
 	}
 
-	recordSvc, err := service.NewRecordService(recordQueryRepo, recordCommandRepo, authC, gptCli, awsCli)
+	recordSvc, err := service.NewRecordService(userQueryRepo, recordQueryRepo, recordCommandRepo, authC, gptCli, awsCli)
 	if err != nil {
 		log.Fatal("record service error")
 	}
