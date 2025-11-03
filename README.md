@@ -32,15 +32,34 @@ PC 画面は 1280×800 に最適化されています．
 #### ログイン画面
 ![alt text](signIn.png)
 
-#### 自身のレコード表示
+#### 自身のレコード表示画面
 https://youtu.be/sJVHaV_ckNI
 
+#### レコード詳細
+![alt text](katazuke.png)
+
 #### 全員のレコード表示 + キャラクター表示
+![alt text](kmonitor.png)
 https://youtu.be/r0IbwRgQ9JU
 
 #### アップロード画面
+![alt text](upload.png)
+
 27秒の Loading... から レコード一覧表示までの間イラスト生成のために 40秒ほど時間がかかっています（現状の課題です）
 https://youtu.be/KkyxXLnOX8I
+
+#### キャラクター画面
+![alt text](chara.png)
+片付けのモチベーション上げるためにオリジナルキャラクター作成しました！動きます！
+
+#### プロフィール画面
+![alt text](pro.png)
+
+#### フォローユーザー一覧画面
+![alt text](follow.png)
+
+#### フォローユーザーレコード表示画面
+![alt text](following.png)
 
 ## こだわり
 #### 作成のこだわり
