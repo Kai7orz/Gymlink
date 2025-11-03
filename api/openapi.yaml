@@ -278,7 +278,20 @@ paths:
                type: array
                items:
                  type: integer
-               example: [{"userId":1,"userName":"kai"},{"userId:2","userName":"taro"}]
+               example: [{"userId":1,"userName":"kai"},{"userId":2,"userName":"taro"}]
+  /users/{user_id}/followed:
+    get:
+      summary: user_id の人をフォローしている user id 一覧を返す
+      responses:
+        '200':
+          description: 配列として返却
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                example: [{"userId":1,"userName":"followerName"},{"userId":2,"userName":"taro"}]
     # 他人のプロフィール画面 & フォロー画面 & フォロワー画面
   /users/unfollows:
     delete:
