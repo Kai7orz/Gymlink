@@ -37,7 +37,7 @@ func (s *recordService) GetRecordsById(ctx context.Context, id int64) ([]entity.
 	records := []entity.RecordType{}
 
 	for _, record := range recordsRaw {
-		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 60)
+		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 300)
 		if err != nil {
 			log.Println("error presigned get request")
 			return nil, err
@@ -70,7 +70,7 @@ func (s *recordService) GetRecords(ctx context.Context) ([]entity.RecordType, er
 	records := []entity.RecordType{}
 
 	for _, record := range recordsRaw {
-		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 60)
+		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 300)
 		if err != nil {
 			log.Println("error presigned get request")
 			return nil, err
@@ -220,7 +220,6 @@ func (s *recordService) UploadIllustration(ctx context.Context, image *multipart
 	s3Key := uuidV1.String() + s3KeyRaw + ".png"
 	//	os.File を S3　のアップロード時使うからメモリに保存して，それを s3 へアップロードする
 	// 最初は test_image.png でメモリ保存してそれを上書きする運用 これだと同時に複数人が使えないので，のちにkey を使って，それぞれの保存名は変えていき　アップロード後に削除する運用（今はプログラムでtest_image.png を保存すると ownership の関係上pngをホスト側で確認できず不便なので，同名保存の運用にする
-
 	err = s.ac.UploadImage(ctx, s3Key)
 	if err != nil {
 		log.Println("error upload image to S3 ", err)
