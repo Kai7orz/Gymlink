@@ -1,7 +1,12 @@
 package dto
 
-type UserDBType struct {
+type FollowerDBType struct {
 	Id   int64  `db:"followed_id"`
+	Name string `db:"name"`
+}
+
+type FollowedDBType struct {
+	Id   int64  `db:"follower_id"`
 	Name string `db:"name"`
 }
 
