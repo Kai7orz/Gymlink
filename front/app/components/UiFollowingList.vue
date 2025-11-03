@@ -17,7 +17,7 @@ const toUserPage = (userId: number) => {
 <template>
     <v-container class="h-100">
         <div v-for="(user,index) in props.followingUsers" class="flex justify-center h-100" :key="index">
-          <ui-following-record :user-id="user.id" :user-name="user.name" @user="toUserPage"/>
+          <ui-following-record class="m-4" :user-id="user.id" :user-name="user.name" @user="toUserPage"/>
         </div>
     </v-container>
 </template>
