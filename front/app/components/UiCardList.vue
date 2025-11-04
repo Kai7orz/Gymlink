@@ -9,7 +9,8 @@ const props = defineProps<{
 
 const emits = defineEmits<{
   detail: [id: number];
-  like: [id: number];
+  delete: [id: number];
+  account: [uid: number];
 }>();
 
 const toDetail = (id: number) => {
