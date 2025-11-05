@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	"gymlink/internal/entity"
+	"gymlink/internal/domain"
+	"gymlink/internal/mocks"
 	"testing"
 
 	"firebase.google.com/go/auth"
@@ -26,13 +27,13 @@ func (f *fakeAuth) VerifyUser(ctx context.Context, idToken string) (*auth.Token,
 }
 
 type fakeUserQuery struct {
-	userByUID *entity.UserType
+	userByUID *domain.UserType
 	findErr   error
 	isFollow  bool
 	checkErr  error
 }
 
-func (f *fakeUserQuery) FindByToken(ctx context.Context, uid string) (*entity.UserType, error) {
+func (f *fakeUserQuery) FindByToken(ctx context.Context, uid string) (*domain.UserType, error) {
 	if f.findErr != nil {
 		return nil, f.findErr
 	}
@@ -106,11 +107,11 @@ func (f *fakeUserCmd) DeleteFollowUserById(ctx context.Context, followerId, foll
 }
 
 type fakeProfile struct {
-	prof *entity.ProfileType
+	prof *domain.ProfileType
 	err  error
 }
 
-func (f *fakeProfile) GetProfileById(ctx context.Context, id int64) (*entity.ProfileType, error) {
+func (f *fakeProfile) GetProfileById(ctx context.Context, id int64) (*domain.ProfileType, error) {
 	if f.err != nil {
 		return nil, f.err
 	}
@@ -123,17 +124,17 @@ func TestNewUserService_NilDeps(t *testing.T) {
 		t.Fatal("want error where q is nil")
 	}
 
-	_, err = NewUserService(&fakeUserQuery{}, nil, &fakeProfile{}, &fakeAuth{})
+	_, err = NewUserService(&mocks.FakeUserQuery{}, nil, &fakeProfile{}, &fakeAuth{})
 	if err == nil {
 		t.Fatal("want error where cm is nil")
 	}
 
-	_, err = NewUserService(&fakeUserQuery{}, &fakeUserCmd{}, nil, &fakeAuth{})
+	_, err = NewUserService(&mocks.FakeUserQuery{}, &fakeUserCmd{}, nil, &fakeAuth{})
 	if err == nil {
 		t.Fatal("want error where p is nil")
 	}
 
-	_, err = NewUserService(&fakeUserQuery{}, &fakeUserCmd{}, &fakeProfile{}, nil)
+	_, err = NewUserService(&mocks.FakeUserQuery{}, &fakeUserCmd{}, &fakeProfile{}, nil)
 	if err == nil {
 		t.Fatal("want error where q is nil")
 	}

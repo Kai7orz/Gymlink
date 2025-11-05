@@ -1,26 +1,26 @@
-package service
+package mocks
 
 import (
-	"gymlink/internal/entity"
+	"gymlink/internal/domain"
 	"time"
 )
 
-type fakeToken struct{ UID string }
+type FakeToken struct{ UID string }
 
-type fakeAuth struct {
+type FakeAuth struct {
 	wantIDToken string
 	retUID      string
 	err         error
 }
 
-type fakeUserQuery struct {
-	userByUID *entity.UserType
+type FakeUserQuery struct {
+	userByUID *domain.UserType
 	findErr   error
 	isFollow  bool
 	checkErr  error
 }
 
-type fakeUserCmd struct {
+type FakeUserCmd struct {
 	created struct {
 		name, avatar, uid string
 		called            bool
@@ -38,7 +38,7 @@ type fakeUserCmd struct {
 	unfollowErr error
 }
 
-type fakeRecordCmd struct {
+type FakeRecordCmd struct {
 	created struct {
 		objectKey string
 		time      int64
