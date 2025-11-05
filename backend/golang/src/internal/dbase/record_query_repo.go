@@ -3,7 +3,7 @@ package dbase
 import (
 	"context"
 	"fmt"
-	"gymlink/internal/entity"
+	"gymlink/internal/domain"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -16,7 +16,7 @@ func NewRecordQueryRepo(db *sqlx.DB) *recordQueryRepo {
 	return &recordQueryRepo{db: db}
 }
 
-func (r *recordQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordRawType, error) {
+func (r *recordQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]domain.RecordRawType, error) {
 
 	sql := `SELECT 
 			records.id,
@@ -37,7 +37,7 @@ func (r *recordQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]entit
 		return nil, fmt.Errorf("sql err : %w", err)
 	}
 	query = r.db.Rebind(query)
-	records := []entity.RecordRawType{}
+	records := []domain.RecordRawType{}
 	if err := r.db.SelectContext(ctx, &records, query, params...); err != nil {
 		return nil, fmt.Errorf("select records by user_id=%d: %w", id, err)
 	}
@@ -46,7 +46,7 @@ func (r *recordQueryRepo) GetRecordsById(ctx context.Context, id int64) ([]entit
 
 }
 
-func (r *recordQueryRepo) GetRecords(ctx context.Context) ([]entity.RecordRawType, error) {
+func (r *recordQueryRepo) GetRecords(ctx context.Context) ([]domain.RecordRawType, error) {
 
 	sql := `SELECT 
 			records.id,
@@ -58,7 +58,7 @@ func (r *recordQueryRepo) GetRecords(ctx context.Context) ([]entity.RecordRawTyp
 			records.comment,
 			(SELECT COUNT(*) FROM user_likes WHERE record_id = records.id) AS likes_count 
 			FROM records INNER JOIN users ON users.id = records.user_id ORDER BY records.id DESC LIMIT 10`
-	records := []entity.RecordRawType{}
+	records := []domain.RecordRawType{}
 	if err := r.db.SelectContext(ctx, &records, sql); err != nil {
 		return nil, fmt.Errorf("select records : %w", err)
 	}

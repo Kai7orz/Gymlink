@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"gymlink/internal/apperrs"
-	"gymlink/internal/entity"
+	"gymlink/internal/domain"
 	"mime/multipart"
 	"strconv"
 	"time"
@@ -29,13 +29,13 @@ func NewRecordService(q UserQueryRepo, e RecordQueryRepo, ec RecordCommandRepo, 
 	return &recordService{q: q, e: e, ec: ec, a: a, gc: gc, ac: ac}, nil
 }
 
-func (s *recordService) GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error) {
+func (s *recordService) GetRecordsById(ctx context.Context, id int64) ([]domain.RecordType, error) {
 	recordsRaw, err := s.e.GetRecordsById(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get records by Id : %w", err)
 	}
 
-	records := []entity.RecordType{}
+	records := []domain.RecordType{}
 
 	for _, record := range recordsRaw {
 		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 300)
@@ -43,7 +43,7 @@ func (s *recordService) GetRecordsById(ctx context.Context, id int64) ([]entity.
 			return nil, fmt.Errorf("failed to get request : %w", err)
 		}
 
-		newRecord := entity.RecordType{
+		newRecord := domain.RecordType{
 			Id:             record.Id,
 			UserId:         record.UserId,
 			UserName:       record.UserName,
@@ -60,13 +60,13 @@ func (s *recordService) GetRecordsById(ctx context.Context, id int64) ([]entity.
 	return records, nil
 }
 
-func (s *recordService) GetRecords(ctx context.Context) ([]entity.RecordType, error) {
+func (s *recordService) GetRecords(ctx context.Context) ([]domain.RecordType, error) {
 	recordsRaw, err := s.e.GetRecords(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get records : %w", err)
 	}
 
-	records := []entity.RecordType{}
+	records := []domain.RecordType{}
 
 	for _, record := range recordsRaw {
 		presignedGetRequest, err := s.ac.GetObject(ctx, record.ObjectKey, 300)
@@ -74,7 +74,7 @@ func (s *recordService) GetRecords(ctx context.Context) ([]entity.RecordType, er
 			return nil, fmt.Errorf("failed to get presigned request")
 		}
 
-		newRecord := entity.RecordType{
+		newRecord := domain.RecordType{
 			Id:             record.Id,
 			UserId:         record.UserId,
 			UserName:       record.UserName,

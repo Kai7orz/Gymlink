@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"gymlink/internal/apperrs"
-	"gymlink/internal/entity"
+	"gymlink/internal/domain"
 )
 
 // service の依存
@@ -41,7 +41,7 @@ func (s *userService) SignUpUser(ctx context.Context, name string, avatarUrl str
 	return nil
 }
 
-func (s *userService) LoginUser(ctx context.Context, idToken string) (*entity.UserType, error) {
+func (s *userService) LoginUser(ctx context.Context, idToken string) (*domain.UserType, error) {
 	//verify user
 	token, err := s.a.VerifyUser(ctx, idToken)
 	if err != nil {
@@ -55,7 +55,7 @@ func (s *userService) LoginUser(ctx context.Context, idToken string) (*entity.Us
 	return user, nil
 }
 
-func (s *userService) GetProfile(ctx context.Context, userId int64) (*entity.ProfileType, error) {
+func (s *userService) GetProfile(ctx context.Context, userId int64) (*domain.ProfileType, error) {
 	profile, err := s.p.GetProfileById(ctx, userId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get profile by user id : %w", err)
@@ -92,7 +92,7 @@ func (s *userService) FollowUser(ctx context.Context, followerIdRaw int64, follo
 	return nil
 }
 
-func (s *userService) GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error) {
+func (s *userService) GetFollowingById(ctx context.Context, userId int64) ([]domain.UserType, error) {
 	following, err := s.q.GetFollowingById(ctx, userId)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get following users : %w", err)
@@ -100,7 +100,7 @@ func (s *userService) GetFollowingById(ctx context.Context, userId int64) ([]ent
 	return following, nil
 }
 
-func (s *userService) GetFollowedById(ctx context.Context, userId int64) ([]entity.UserType, error) {
+func (s *userService) GetFollowedById(ctx context.Context, userId int64) ([]domain.UserType, error) {
 	followed, err := s.q.GetFollowedById(ctx, userId)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get followed users : %w", err)

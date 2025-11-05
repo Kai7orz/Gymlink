@@ -2,7 +2,7 @@ package dbase
 
 import (
 	"context"
-	"gymlink/internal/entity"
+	"gymlink/internal/domain"
 	"log"
 
 	"github.com/jmoiron/sqlx"
@@ -16,7 +16,7 @@ func NewProfileRepo(db *sqlx.DB) *profileRepo {
 	return &profileRepo{db: db}
 }
 
-func (r *profileRepo) GetProfileById(ctx context.Context, id int64) (*entity.ProfileType, error) {
+func (r *profileRepo) GetProfileById(ctx context.Context, id int64) (*domain.ProfileType, error) {
 
 	type followRawTypeDTO struct {
 		FollowCountRaw   int64 `json:"follow_count" db:"follow_count"`
@@ -58,7 +58,7 @@ func (r *profileRepo) GetProfileById(ctx context.Context, id int64) (*entity.Pro
 		return nil, err
 	}
 
-	profile := &entity.ProfileType{
+	profile := &domain.ProfileType{
 		Id:            profileRaw.UserId,
 		Name:          profileRaw.UserName,
 		ProfileImage:  profileRaw.ProfileImage,

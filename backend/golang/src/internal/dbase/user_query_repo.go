@@ -3,8 +3,8 @@ package dbase
 import (
 	"context"
 	"fmt"
+	"gymlink/internal/domain"
 	"gymlink/internal/dto"
-	"gymlink/internal/entity"
 	"log"
 
 	"github.com/jmoiron/sqlx"
@@ -24,9 +24,9 @@ func NewUserQueryRepo(db *sqlx.DB) *userQueryRepo {
 	return &userQueryRepo{db: db}
 }
 
-func (r *userQueryRepo) FindByToken(ctx context.Context, uid string) (*entity.UserType, error) {
+func (r *userQueryRepo) FindByToken(ctx context.Context, uid string) (*domain.UserType, error) {
 	sql := `SELECT id,name FROM users WHERE firebase_uid=?`
-	var user entity.UserType
+	var user domain.UserType
 	if err := r.db.GetContext(ctx, &user, sql, uid); err != nil {
 		return nil, fmt.Errorf("select: %w", err)
 	}
@@ -57,7 +57,7 @@ func (r *userQueryRepo) CheckFollowById(ctx context.Context, followId int64, uid
 	return followed, nil
 }
 
-func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error) {
+func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]domain.UserType, error) {
 
 	followingUsersRaw := []dto.FollowerDBType{}
 	sql := `SELECT followed_id,users.name 
@@ -70,9 +70,9 @@ func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]e
 		return nil, err
 	}
 
-	followingUsers := []entity.UserType{}
+	followingUsers := []domain.UserType{}
 	for _, user := range followingUsersRaw {
-		followingUsers = append(followingUsers, entity.UserType{
+		followingUsers = append(followingUsers, domain.UserType{
 			Id:   user.Id,
 			Name: user.Name,
 		})
@@ -80,7 +80,7 @@ func (r *userQueryRepo) GetFollowingById(ctx context.Context, userId int64) ([]e
 	return followingUsers, nil
 }
 
-func (r *userQueryRepo) GetFollowedById(ctx context.Context, userId int64) ([]entity.UserType, error) {
+func (r *userQueryRepo) GetFollowedById(ctx context.Context, userId int64) ([]domain.UserType, error) {
 	followedUsersRaw := []dto.FollowedDBType{}
 	sql := `SELECT follower_id,users.name
 			FROM follows
@@ -91,9 +91,9 @@ func (r *userQueryRepo) GetFollowedById(ctx context.Context, userId int64) ([]en
 		log.Println("SELECT followed error: ", err)
 		return nil, err
 	}
-	followedUsers := []entity.UserType{}
+	followedUsers := []domain.UserType{}
 	for _, user := range followedUsersRaw {
-		followedUsers = append(followedUsers, entity.UserType{
+		followedUsers = append(followedUsers, domain.UserType{
 			Id:   user.Id,
 			Name: user.Name,
 		})

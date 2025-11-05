@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"gymlink/internal/entity"
+	"gymlink/internal/domain"
 	"mime/multipart"
 	"time"
 
@@ -13,10 +13,10 @@ import (
 // repository の interface を記述
 // 読み取り専用のリポジトリを定義する
 type UserQueryRepo interface {
-	FindByToken(ctx context.Context, uid string) (*entity.UserType, error)
+	FindByToken(ctx context.Context, uid string) (*domain.UserType, error)
 	CheckFollowById(ctx context.Context, followId int64, uid string) (bool, error)
-	GetFollowingById(ctx context.Context, userId int64) ([]entity.UserType, error)
-	GetFollowedById(ctx context.Context, userId int64) ([]entity.UserType, error)
+	GetFollowingById(ctx context.Context, userId int64) ([]domain.UserType, error)
+	GetFollowedById(ctx context.Context, userId int64) ([]domain.UserType, error)
 }
 
 type UserCommandRepo interface {
@@ -26,12 +26,12 @@ type UserCommandRepo interface {
 }
 
 type ProfileRepo interface {
-	GetProfileById(ctx context.Context, id int64) (*entity.ProfileType, error)
+	GetProfileById(ctx context.Context, id int64) (*domain.ProfileType, error)
 }
 
 type RecordQueryRepo interface {
-	GetRecordsById(ctx context.Context, id int64) ([]entity.RecordRawType, error)
-	GetRecords(ctx context.Context) ([]entity.RecordRawType, error)
+	GetRecordsById(ctx context.Context, id int64) ([]domain.RecordRawType, error)
+	GetRecords(ctx context.Context) ([]domain.RecordRawType, error)
 }
 
 type RecordCommandRepo interface {
@@ -63,18 +63,18 @@ type AwsClient interface {
 // handler レイヤーが利用するインターフェース
 type UserService interface {
 	SignUpUser(ctx context.Context, name string, string, idToken string) error
-	LoginUser(ctx context.Context, idToken string) (*entity.UserType, error)
-	GetProfile(ctx context.Context, id int64) (*entity.ProfileType, error)
+	LoginUser(ctx context.Context, idToken string) (*domain.UserType, error)
+	GetProfile(ctx context.Context, id int64) (*domain.ProfileType, error)
 	FollowUser(ctx context.Context, followerId int64, followedId int64, idToken string) error
-	GetFollowingById(ctx context.Context, id int64) ([]entity.UserType, error)
-	GetFollowedById(ctx context.Context, id int64) ([]entity.UserType, error)
+	GetFollowingById(ctx context.Context, id int64) ([]domain.UserType, error)
+	GetFollowedById(ctx context.Context, id int64) ([]domain.UserType, error)
 	CheckFollowById(ctx context.Context, followId int64, idToken string) (bool, error)
 	DeleteFollowUser(ctx context.Context, followerId int64, followedId int64, idToken string) error
 }
 
 type RecordService interface {
-	GetRecordsById(ctx context.Context, id int64) ([]entity.RecordType, error)
-	GetRecords(ctx context.Context) ([]entity.RecordType, error)
+	GetRecordsById(ctx context.Context, id int64) ([]domain.RecordType, error)
+	GetRecords(ctx context.Context) ([]domain.RecordType, error)
 	CreateRecord(ctx context.Context, objectKey string, cleanUpTime string, cleanUpdate string, comment string, idToken string) error
 	DeleteRecordById(ctx context.Context, userId int64, recordId int64, idToken string) error
 	CreateLike(ctx context.Context, recordId int64, idToken string) error
