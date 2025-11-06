@@ -1,4 +1,4 @@
-package entity
+package domain
 
 type UserType struct {
 	Id   int64

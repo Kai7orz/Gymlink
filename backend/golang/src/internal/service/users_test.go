@@ -2,13 +2,12 @@ package service
 
 import (
 	"context"
-	"gymlink/internal/entity"
+	"errors"
+	"gymlink/internal/domain"
 	"testing"
 
 	"firebase.google.com/go/auth"
 )
-
-// テストコードはAI にベースを書かせて, それを読んで（写経）理解・活用の流れをとってます
 
 type fakeToken struct{ UID string }
 
@@ -26,13 +25,15 @@ func (f *fakeAuth) VerifyUser(ctx context.Context, idToken string) (*auth.Token,
 }
 
 type fakeUserQuery struct {
-	userByUID *entity.UserType
-	findErr   error
-	isFollow  bool
-	checkErr  error
+	userByUID      *domain.UserType
+	followingUsers []domain.UserType
+	followedUsers  []domain.UserType
+	findErr        error
+	isFollow       bool
+	checkErr       error
 }
 
-func (f *fakeUserQuery) FindByToken(ctx context.Context, uid string) (*entity.UserType, error) {
+func (f *fakeUserQuery) FindByToken(ctx context.Context, uid string) (*domain.UserType, error) {
 	if f.findErr != nil {
 		return nil, f.findErr
 	}
@@ -44,6 +45,20 @@ func (f *fakeUserQuery) CheckFollowById(ctx context.Context, followId int64, uid
 		return false, f.checkErr
 	}
 	return f.isFollow, nil
+}
+
+func (f *fakeUserQuery) GetFollowingById(ctx context.Context, userId int64) ([]domain.UserType, error) {
+	if f.findErr != nil {
+		return nil, f.checkErr
+	}
+	return f.followingUsers, nil
+}
+
+func (f *fakeUserQuery) GetFollowedById(ctx context.Context, userId int64) ([]domain.UserType, error) {
+	if f.findErr != nil {
+		return nil, f.checkErr
+	}
+	return f.followedUsers, nil
 }
 
 type fakeUserCmd struct {
@@ -106,11 +121,11 @@ func (f *fakeUserCmd) DeleteFollowUserById(ctx context.Context, followerId, foll
 }
 
 type fakeProfile struct {
-	prof *entity.ProfileType
+	prof *domain.ProfileType
 	err  error
 }
 
-func (f *fakeProfile) GetProfileById(ctx context.Context, id int64) (*entity.ProfileType, error) {
+func (f *fakeProfile) GetProfileById(ctx context.Context, id int64) (*domain.ProfileType, error) {
 	if f.err != nil {
 		return nil, f.err
 	}
@@ -156,5 +171,21 @@ func TestSignUpUser_Success(t *testing.T) {
 	}
 	if cm.created.uid != "u-123" || cm.created.name != "TestUser" {
 		t.Fatalf("args not passed correctly: %+v", cm.created)
+	}
+}
+
+func TestSignUpUser_AuthError_NoCreate(t *testing.T) {
+	q := &fakeUserQuery{}
+	cm := &fakeUserCmd{}
+	p := &fakeProfile{}
+	a := &fakeAuth{err: errors.New("auth down")}
+	svc, _ := NewUserService(q, cm, p, a)
+
+	err := svc.SignUpUser(context.Background(), "X", "A", "bad")
+	if err == nil {
+		t.Fatal("want error")
+	}
+	if cm.created.called {
+		t.Fatal("CreateUserById must Not be called on auth error")
 	}
 }

@@ -1,4 +1,4 @@
-package entity
+package domain
 
 type ProfileType struct {
 	Id            int64
