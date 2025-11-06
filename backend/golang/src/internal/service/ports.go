@@ -62,7 +62,7 @@ type AwsClient interface {
 
 // handler レイヤーが利用するインターフェース
 type UserService interface {
-	SignUpUser(ctx context.Context, name string, string, idToken string) error
+	SignUpUser(ctx context.Context, name string, avatar_url string, idToken string) error
 	LoginUser(ctx context.Context, idToken string) (*domain.UserType, error)
 	GetProfile(ctx context.Context, id int64) (*domain.ProfileType, error)
 	FollowUser(ctx context.Context, followerId int64, followedId int64, idToken string) error
