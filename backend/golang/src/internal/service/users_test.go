@@ -189,3 +189,42 @@ func TestSignUpUser_AuthError_NoCreate(t *testing.T) {
 		t.Fatal("CreateUserById must Not be called on auth error")
 	}
 }
+
+func TestFollowUser_Success(t *testing.T) {
+	q := &fakeUserQuery{userByUID: &domain.UserType{Id: 1}}
+	cm := &fakeUserCmd{}
+	p := &fakeProfile{}
+	a := &fakeAuth{wantIDToken: "idToken", retUID: "u-1"}
+	svc, _ := NewUserService(q, cm, p, a)
+	idToken := "idToken"
+
+	err := svc.FollowUser(context.Background(), 1, 2, idToken)
+	if err != nil {
+		t.Fatalf("unexpcted err: %v", err)
+	}
+
+	if !cm.follow.called {
+		t.Fatal("expected FollowUserById to be called")
+	}
+	if cm.follow.follower != 1 || cm.follow.followed != 2 {
+		t.Fatalf("unexpected follow args: %+v", cm.follow)
+	}
+}
+
+func TestFollowUser_UniqueError_NoFollow(t *testing.T) {
+	q := &fakeUserQuery{userByUID: &domain.UserType{Id: 1}}
+	cm := &fakeUserCmd{}
+	p := &fakeProfile{}
+	a := &fakeAuth{wantIDToken: "idToken", retUID: "u-1"}
+
+	svc, _ := NewUserService(q, cm, p, a)
+
+	err := svc.FollowUser(context.Background(), 1, 1, "idToken")
+	if err == nil {
+		t.Fatalf("follower must not be able to follow its account")
+	}
+
+	if cm.follow.called {
+		t.Fatal("expected to return err by FollowUserById")
+	}
+}
