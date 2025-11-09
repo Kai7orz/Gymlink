@@ -9,28 +9,11 @@ import (
 	"firebase.google.com/go/auth"
 )
 
-type fakeToken struct{ UID string }
-
-type fakeAuth struct {
-	wantIDToken string
-	retUID      string
-	err         error
-}
-
 func (f *fakeAuth) VerifyUser(ctx context.Context, idToken string) (*auth.Token, error) {
 	if f.err != nil {
 		return nil, f.err
 	}
 	return &auth.Token{UID: f.retUID}, nil
-}
-
-type fakeUserQuery struct {
-	userByUID      *domain.UserType
-	followingUsers []domain.UserType
-	followedUsers  []domain.UserType
-	findErr        error
-	isFollow       bool
-	checkErr       error
 }
 
 func (f *fakeUserQuery) FindByToken(ctx context.Context, uid string) (*domain.UserType, error) {
@@ -59,24 +42,6 @@ func (f *fakeUserQuery) GetFollowedById(ctx context.Context, userId int64) ([]do
 		return nil, f.checkErr
 	}
 	return f.followedUsers, nil
-}
-
-type fakeUserCmd struct {
-	created struct {
-		name, avatar, uid string
-		called            bool
-	}
-	follow struct {
-		follower, followed int64
-		called             bool
-	}
-	unfollow struct {
-		follower, followed int64
-		called             bool
-	}
-	createErr   error
-	followErr   error
-	unfollowErr error
 }
 
 func (f *fakeUserCmd) CreateUserById(ctx context.Context, name, avatarURL, uid string) error {
@@ -118,11 +83,6 @@ func (f *fakeUserCmd) DeleteFollowUserById(ctx context.Context, followerId, foll
 		called   bool
 	}{followerId, followedId, true}
 	return nil
-}
-
-type fakeProfile struct {
-	prof *domain.ProfileType
-	err  error
 }
 
 func (f *fakeProfile) GetProfileById(ctx context.Context, id int64) (*domain.ProfileType, error) {
@@ -227,4 +187,5 @@ func TestFollowUser_UniqueError_NoFollow(t *testing.T) {
 	if cm.follow.called {
 		t.Fatal("expected to return err by FollowUserById")
 	}
+
 }
